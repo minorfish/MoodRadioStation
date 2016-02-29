@@ -7,15 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F320E091C81942E008DC121 /* RadioInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E081C81942E008DC121 /* RadioInfo.m */; };
+		2F320E0C1C819919008DC121 /* RadioInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E0B1C819919008DC121 /* RadioInfoModel.m */; };
+		2F320E0F1C81C92E008DC121 /* RadioViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E0E1C81C92E008DC121 /* RadioViewModel.m */; };
+		2F320E151C81D17E008DC121 /* RadioPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E141C81D17E008DC121 /* RadioPlayerViewController.m */; };
 		2F33378D1C803E9800927CF8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F33378C1C803E9800927CF8 /* main.m */; };
 		2F3337901C803E9800927CF8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F33378F1C803E9800927CF8 /* AppDelegate.m */; };
 		2F3337931C803E9800927CF8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F3337921C803E9800927CF8 /* ViewController.m */; };
 		2F3337961C803E9800927CF8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F3337941C803E9800927CF8 /* Main.storyboard */; };
 		2F3337981C803E9800927CF8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F3337971C803E9800927CF8 /* Assets.xcassets */; };
 		2F33379B1C803E9800927CF8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F3337991C803E9800927CF8 /* LaunchScreen.storyboard */; };
+		816A1437E5693B1069606996 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 621CE8629E77589F0EE35ECA /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2F320E071C81942E008DC121 /* RadioInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RadioInfo.h; path = play/RadioInfo.h; sourceTree = "<group>"; };
+		2F320E081C81942E008DC121 /* RadioInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RadioInfo.m; path = play/RadioInfo.m; sourceTree = "<group>"; };
+		2F320E0A1C819919008DC121 /* RadioInfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadioInfoModel.h; sourceTree = "<group>"; };
+		2F320E0B1C819919008DC121 /* RadioInfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadioInfoModel.m; sourceTree = "<group>"; };
+		2F320E0D1C81C92E008DC121 /* RadioViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadioViewModel.h; sourceTree = "<group>"; };
+		2F320E0E1C81C92E008DC121 /* RadioViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadioViewModel.m; sourceTree = "<group>"; };
+		2F320E131C81D17E008DC121 /* RadioPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadioPlayerViewController.h; sourceTree = "<group>"; };
+		2F320E141C81D17E008DC121 /* RadioPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadioPlayerViewController.m; sourceTree = "<group>"; };
 		2F3337881C803E9800927CF8 /* MoodRadioStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoodRadioStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F33378C1C803E9800927CF8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2F33378E1C803E9800927CF8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -26,6 +39,10 @@
 		2F3337971C803E9800927CF8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F33379A1C803E9800927CF8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2F33379C1C803E9800927CF8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2F59654A1C844F91007289A8 /* UIKitMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIKitMacros.h; sourceTree = "<group>"; };
+		621CE8629E77589F0EE35ECA /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7305B22C545EDA01AA665B1F /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		8ED539642E090F9D5816D404 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,17 +50,43 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				816A1437E5693B1069606996 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1951AB34A0A715676C069AF8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				621CE8629E77589F0EE35ECA /* libPods.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2F320E061C819371008DC121 /* play */ = {
+			isa = PBXGroup;
+			children = (
+				2F320E071C81942E008DC121 /* RadioInfo.h */,
+				2F320E081C81942E008DC121 /* RadioInfo.m */,
+				2F320E0A1C819919008DC121 /* RadioInfoModel.h */,
+				2F320E0B1C819919008DC121 /* RadioInfoModel.m */,
+				2F320E0D1C81C92E008DC121 /* RadioViewModel.h */,
+				2F320E0E1C81C92E008DC121 /* RadioViewModel.m */,
+				2F320E131C81D17E008DC121 /* RadioPlayerViewController.h */,
+				2F320E141C81D17E008DC121 /* RadioPlayerViewController.m */,
+			);
+			name = play;
+			sourceTree = "<group>";
+		};
 		2F33377F1C803E9800927CF8 = {
 			isa = PBXGroup;
 			children = (
 				2F33378A1C803E9800927CF8 /* MoodRadioStation */,
 				2F3337891C803E9800927CF8 /* Products */,
+				770C8EBE75CA0D3AD92A9528 /* Pods */,
+				1951AB34A0A715676C069AF8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,6 +101,8 @@
 		2F33378A1C803E9800927CF8 /* MoodRadioStation */ = {
 			isa = PBXGroup;
 			children = (
+				2F59654A1C844F91007289A8 /* UIKitMacros.h */,
+				2F320E061C819371008DC121 /* play */,
 				2F33378E1C803E9800927CF8 /* AppDelegate.h */,
 				2F33378F1C803E9800927CF8 /* AppDelegate.m */,
 				2F3337911C803E9800927CF8 /* ViewController.h */,
@@ -79,6 +124,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		770C8EBE75CA0D3AD92A9528 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8ED539642E090F9D5816D404 /* Pods.debug.xcconfig */,
+				7305B22C545EDA01AA665B1F /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -86,9 +140,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2F33379F1C803E9800927CF8 /* Build configuration list for PBXNativeTarget "MoodRadioStation" */;
 			buildPhases = (
+				D4E35345F814FFF1A9C81E84 /* Check Pods Manifest.lock */,
 				2F3337841C803E9800927CF8 /* Sources */,
 				2F3337851C803E9800927CF8 /* Frameworks */,
 				2F3337861C803E9800927CF8 /* Resources */,
+				BB40F429B9AE695F18EB828E /* Embed Pods Frameworks */,
+				BFCEB0F2D856732C270EE4BC /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -145,12 +202,64 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		BB40F429B9AE695F18EB828E /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BFCEB0F2D856732C270EE4BC /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D4E35345F814FFF1A9C81E84 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2F3337841C803E9800927CF8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F320E151C81D17E008DC121 /* RadioPlayerViewController.m in Sources */,
 				2F3337931C803E9800927CF8 /* ViewController.m in Sources */,
+				2F320E0C1C819919008DC121 /* RadioInfoModel.m in Sources */,
+				2F320E0F1C81C92E008DC121 /* RadioViewModel.m in Sources */,
+				2F320E091C81942E008DC121 /* RadioInfo.m in Sources */,
 				2F3337901C803E9800927CF8 /* AppDelegate.m in Sources */,
 				2F33378D1C803E9800927CF8 /* main.m in Sources */,
 			);
@@ -260,6 +369,7 @@
 		};
 		2F3337A01C803E9800927CF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8ED539642E090F9D5816D404 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MoodRadioStation/Info.plist;
@@ -271,6 +381,7 @@
 		};
 		2F3337A11C803E9800927CF8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7305B22C545EDA01AA665B1F /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MoodRadioStation/Info.plist;
@@ -299,6 +410,7 @@
 				2F3337A11C803E9800927CF8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
