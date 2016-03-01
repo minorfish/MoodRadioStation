@@ -25,7 +25,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 @property (nonatomic, strong) UIImageView *playButton;
 @property (nonatomic, strong) UIView *playerView;
 @property (nonatomic, strong) UIView *progressView;
-@property (nonatomic, strong) UITextView *timeView;
+@property (nonatomic, strong) UILabel *timeView;
 
 @property (nonatomic, strong) NSNumber *remainTime;
 @property (nonatomic, strong) NSNumber *isPlaying;
@@ -48,7 +48,6 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self bind];
     [[[[NSNotificationCenter defaultCenter] rac_addObserverForName:RPRefreshProgressViewNotification object:nil] deliverOnMainThread] subscribeNext:^(NSNotification *x) {
         if ([x isKindOfClass:[NSNotification class]]) {
             [self refreshProgressView];
@@ -70,16 +69,25 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     [RACObserve(self, isPlaying) subscribeNext:^(NSNumber *isPlaying)  {
         @strongify(self);
         if ([isPlaying boolValue]) {
+            [self.viewModel play];
             [self.playButton setImage:[UIImage imageNamed:@"pause"]];
         } else {
+            [self.viewModel pause];
             [self.playButton setImage:[UIImage imageNamed:@"play"]];
         }
     }];
     
-    [RACObserve(self, remainTime) subscribeNext:^(NSNumber *remainTime) {
+    [[RACObserve(self, remainTime) ignore:nil]
+     subscribeNext:^(NSNumber *remainTime) {
         @strongify(self);
         self.timeView.text = [NSString stringWithFormat:@"-%@",[self.viewModel formatTime:[remainTime integerValue]]];
     }];
+
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
+    [[tapGestureRecognizer rac_gestureSignal] subscribeNext:^(id x) {
+        [self didTapButton];
+    }];
+    [self.playButton addGestureRecognizer:tapGestureRecognizer];
 }
 
 - (void)refreshProgressView
@@ -93,22 +101,35 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     [self loadPictureView];
     [self loadPlayerView];
     [self loadDescriptionView];
+    [self bind];
 }
 
 - (void)loadPlayerView
 {
     self.playerView = ({
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 0)];
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 100)];
+        
         [view addSubview:self.playButton];
+        
+        self.remainTime = @(self.viewModel.durationTime);
         [view addSubview:self.timeView];
         
         self.progressView = ({
-            UIView *view = [[UIView alloc] init];
+            UIView *view = [[UIView alloc] initWithFrame:self.shapeLayer.bounds];
+            view.userInteractionEnabled = YES;
+            [view.layer addSublayer:[self createCAShapeLayerWithColor:[UIColor grayColor] LineWidth:0.5]];
             [view.layer addSublayer:self.shapeLayer];
             
-            UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+            UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
+            [[tapGestureRecognizer rac_gestureSignal] subscribeNext:^(UITapGestureRecognizer *x) {
+                [self handleTapGesture:x];
+            }];
             [view addGestureRecognizer:tapGestureRecognizer];
+            
+            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] init];
+            [[panGestureRecognizer rac_gestureSignal] subscribeNext:^(UIPanGestureRecognizer *x) {
+                [self handlePanGesture:x];
+            }];
             [view addGestureRecognizer:panGestureRecognizer];
             
             view;
@@ -148,15 +169,8 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 - (CAShapeLayer *)shapeLayer
 {
     if (!_shapeLayer) {
-        _shapeLayer = [CAShapeLayer layer];
-        CGFloat lineWidth = 2;
-        UIBezierPath *path = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, SCREEN_WIDTH, lineWidth)];
-        _shapeLayer.path = path.CGPath;
+        _shapeLayer = [self createCAShapeLayerWithColor:[UIColor orangeColor] LineWidth:1];
         _shapeLayer.strokeEnd = 0;
-        _shapeLayer.strokeColor = [UIColor orangeColor].CGColor;
-        _shapeLayer.fillColor = [UIColor clearColor].CGColor;
-        _shapeLayer.lineWidth = lineWidth;
-        _shapeLayer.frame = CGRectMake(0, 0, SCREEN_WIDTH, lineWidth);
     }
     return _shapeLayer;
 }
@@ -165,16 +179,34 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 {
     if (!_playButton) {
         _playButton = [[UIImageView alloc] init];
+        _playButton.userInteractionEnabled = YES;
     }
     return _playButton;
 }
 
-- (UITextView *)timeView
+- (UILabel *)timeView
 {
     if (!_timeView) {
-        _timeView = [[UITextView alloc] init];
+        _timeView = [[UILabel alloc] init];
+        _timeView.font = Font(12);
+        _timeView.textColor = HEXCOLOR(0x999999);
     }
     return _timeView;
+}
+
+- (CAShapeLayer *)createCAShapeLayerWithColor:(UIColor *)color LineWidth:(CGFloat)lineWidth
+{
+    CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(0, 0)];
+    [path addLineToPoint:CGPointMake(SCREEN_WIDTH, 0)];
+    path.lineWidth = lineWidth;
+    shapeLayer.path = path.CGPath;
+    shapeLayer.strokeColor = color.CGColor;
+    shapeLayer.fillColor = [UIColor clearColor].CGColor;
+    shapeLayer.lineWidth = lineWidth;
+    shapeLayer.frame = CGRectMake(0, 0, SCREEN_WIDTH, lineWidth);
+    return shapeLayer;
 }
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)gesture
@@ -183,7 +215,6 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         CGPoint point = [gesture locationInView:self.progressView];
         NSTimeInterval currentTime = point.x / SCREEN_WIDTH * self.viewModel.durationTime;
         self.viewModel.currentTime = currentTime;
-        [self.viewModel play];
         self.isPlaying = @(YES);
     }
 }
@@ -193,7 +224,6 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     if (gesture.state == UIGestureRecognizerStateChanged) {
         CGPoint point = [gesture locationInView:self.progressView];
         
-        [self.viewModel pause];
         self.isPlaying = @(NO);
         self.shapeLayer.strokeEnd = point.x / SCREEN_WIDTH;
         // 更新时间显示的UI
@@ -202,10 +232,14 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     if (gesture.state == UIGestureRecognizerStateEnded) {
         self.viewModel.currentTime = self.shapeLayer.strokeEnd * self.viewModel.durationTime;
         
-        [self.viewModel play];
         // 更新中间的播放暂停按钮
         self.isPlaying = @(YES);
     }
+}
+
+- (void)didTapButton
+{
+    self.isPlaying = @(![self.isPlaying boolValue]);
 }
 
 - (void)didReceiveMemoryWarning {

@@ -8,10 +8,10 @@
 
 #import <Mantle/Mantle.h>
 
-@interface RadioInfo : MTLModel
+@interface RadioInfo : MTLModel<MTLJSONSerializing>
 
 @property (nonatomic, strong) NSString *title;
-@property (nonatomic, assign) NSUInteger radioID;
+@property (nonatomic, assign) NSInteger radioID;
 @property (nonatomic, strong) NSString *coverURL;
 @property (nonatomic, strong) NSString *speak;
 @property (nonatomic, strong) NSString *URL;

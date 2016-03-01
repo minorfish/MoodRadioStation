@@ -69,8 +69,8 @@ extern const NSString* RPRefreshProgressViewNotification;
             if (!error) {
                 self.player.delegate = self;
                 self.player.currentTime = 0;
-                [self.player prepareToPlay];
                 self.durationTime = self.player.duration;
+                [self.player prepareToPlay];
             }
         }];
     }];

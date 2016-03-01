@@ -54,10 +54,11 @@
 - (NSURLSessionDownloadTask *)getRadioWithURL:(NSString*)radioURL finished:(void(^)(NSURL *filePath, NSError *error))finished
 {
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:radioURL]];
-    return [_manager downloadTaskWithRequest:request
+    NSURLSessionDownloadTask *downloadTask = [_manager downloadTaskWithRequest:request
                                     progress:nil
                                  destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
-                                        return nil;
+                                     NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+                                     return [documentsDirectoryURL URLByAppendingPathComponent:[response suggestedFilename]];
                                     } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
                                         if (filePath && !error) {
                                             finished(filePath, error);
@@ -65,6 +66,8 @@
                                             finished(nil, error);
                                         }
                                     }];
+    [downloadTask resume];
+    return downloadTask;
 }
 
 - (RACSignal*)getRadioInfo
@@ -80,7 +83,7 @@
                     [subscriber sendError:error];
                 } else {
                     NSError *error = nil;
-                    RadioInfo *radioInfo = [RadioInfo modelWithDictionary:dict error:&error];
+                    RadioInfo *radioInfo = [MTLJSONAdapter modelOfClass:[RadioInfo class] fromJSONDictionary:dict error:&error];
                     if (!error && radioInfo) {
                         [subscriber sendNext:radioInfo];
                     } else {
