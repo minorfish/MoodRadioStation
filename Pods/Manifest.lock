@@ -32,6 +32,9 @@ PODS:
   - ReactiveCocoa/no-arc (2.5)
   - ReactiveCocoa/UI (2.5):
     - ReactiveCocoa/Core
+  - SDWebImage (3.7.5):
+    - SDWebImage/Core (= 3.7.5)
+  - SDWebImage/Core (3.7.5)
 
 DEPENDENCIES:
   - AFNetworking (~> 2.0)
@@ -39,6 +42,7 @@ DEPENDENCIES:
   - Mantle (~> 1.5)
   - Masonry (~> 0.6.0)
   - ReactiveCocoa
+  - SDWebImage
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
@@ -46,5 +50,6 @@ SPEC CHECKSUMS:
   Mantle: 4af47cf9547a4d0ad145a48cd0be3b411a5ae2b8
   Masonry: 281802d04d787ea2973179ee8bcb50500579ede2
   ReactiveCocoa: e2db045570aa97c695e7aa97c2bcab222ae51f4a
+  SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
 
 COCOAPODS: 0.39.0

@@ -16,7 +16,6 @@ extern const NSString* RPRefreshProgressViewNotification;
 
 @interface RadioViewModel()<AVAudioPlayerDelegate>
 
-@property (nonatomic, strong) RadioInfo *radioInfo;
 @property (nonatomic, strong) RadioInfoModel *model;
 
 @property (nonatomic, strong) AVAudioPlayer *player;
@@ -33,6 +32,11 @@ extern const NSString* RPRefreshProgressViewNotification;
         _model = [[RadioInfoModel alloc] init];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self stop];
 }
 
 - (RACCommand *)getRadioInfoCommand
@@ -155,5 +159,6 @@ extern const NSString* RPRefreshProgressViewNotification;
     // 播放结束通知UI发生变化
     [[NSNotificationCenter defaultCenter] postNotificationName:RPRefreshProgressViewNotification object:nil];
 }
+
 
 @end

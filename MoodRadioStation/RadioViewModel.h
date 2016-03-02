@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
 @class RACCommand;
+@class RadioInfo;
 
 @interface RadioViewModel : NSObject
 
@@ -18,6 +19,8 @@
 @property (nonatomic, assign) float progress;
 @property (nonatomic, assign) NSTimeInterval durationTime;
 @property (nonatomic, assign) NSTimeInterval currentTime;
+
+@property (nonatomic, strong) RadioInfo *radioInfo;
 
 - (void)play;
 - (void)pause;

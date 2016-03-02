@@ -16,7 +16,7 @@
     RadioInfo *radio = nil;
     return @{@keypath(radio, radioID): @"id",
               @keypath(radio, title): @"title",
-              @keypath(radio, coverURL): @"background",
+              @keypath(radio, coverURL): @"cover",
               @keypath(radio, speak): @"speak",
               @keypath(radio, URL): @"url",
               @keypath(radio, radiodDesc): @"content"

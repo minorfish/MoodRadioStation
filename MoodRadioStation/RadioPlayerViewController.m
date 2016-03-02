@@ -9,8 +9,10 @@
 #import "RadioPlayerViewController.h"
 #import "RadioViewModel.h"
 #import "RadioInfo.h"
+#import "MRSImageAnimationLoadingView.h"
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import "UIKitMacros.h"
+#import "PlayerBackgroundView.h"
 #import <Masonry/Masonry.h>
 
 const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.refrshProgress";
@@ -19,16 +21,21 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 
 @property (nonatomic, strong) RadioViewModel *viewModel;
 @property (nonatomic, strong) NSNumber *radioID;
+@property (nonatomic, strong) NSNumber *remainTime;
+@property (nonatomic, strong) NSNumber *isPlaying;
+@property (nonatomic, strong) NSNumber *progressX;
+@property (nonatomic, strong) NSNumber *isLoading;
+
+@property (nonatomic, strong) PlayerBackgroundView *playerBackgroundView;
 
 @property (nonatomic, strong) CAShapeLayer *shapeLayer;
-
 @property (nonatomic, strong) UIImageView *playButton;
 @property (nonatomic, strong) UIView *playerView;
 @property (nonatomic, strong) UIView *progressView;
 @property (nonatomic, strong) UILabel *timeView;
+@property (nonatomic, strong) UIImageView *progressBtn;
 
-@property (nonatomic, strong) NSNumber *remainTime;
-@property (nonatomic, strong) NSNumber *isPlaying;
+@property (nonatomic, strong) MRSImageAnimationLoadingView *animationLoadingView;
 
 @end
 
@@ -41,6 +48,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         _radioID = radioID;
         _viewModel = [[RadioViewModel alloc] init];
         _isPlaying = @(NO);
+        _isLoading = @(YES);
     }
     return self;
 }
@@ -48,18 +56,21 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self bind];
+    
     [[[[NSNotificationCenter defaultCenter] rac_addObserverForName:RPRefreshProgressViewNotification object:nil] deliverOnMainThread] subscribeNext:^(NSNotification *x) {
         if ([x isKindOfClass:[NSNotification class]]) {
             [self refreshProgressView];
         }
     }];
-    
+    self.isLoading = @(YES);
     [[self.viewModel.getRadioInfoCommand execute:self.radioID] subscribeNext:^(RadioInfo *radioInfo) {
+        
         // 下载音频
         [[self.viewModel.getRadioCommand execute:radioInfo.URL] subscribeNext:^(id x) {
+            self.isLoading = @(NO);
             [self setupUI];
         }];
-        // 下载图片
     }];
 }
 
@@ -83,6 +94,29 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         self.timeView.text = [NSString stringWithFormat:@"-%@",[self.viewModel formatTime:[remainTime integerValue]]];
     }];
 
+    [RACObserve(self, isLoading) subscribeNext:^(NSNumber *x) {
+        @strongify(self);
+        if ([x boolValue]) {
+            [self.animationLoadingView startAnimation];
+        } else {
+            [self.animationLoadingView stopAnimation];
+        }
+    }];
+    
+    [[RACObserve(self, progressX) ignore:nil] subscribeNext:^(NSNumber *x) {
+        @strongify(self);
+        [_progressBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(self.progressView.mas_top);
+            if ([x doubleValue] < self.progressBtn.frame.size.width/2) {
+                make.left.equalTo(self.progressView);
+            } else if ([x doubleValue] > SCREEN_WIDTH - self.progressBtn.frame.size.width/2){
+                make.right.equalTo(self.progressView);
+            } else {
+                make.centerX.equalTo(x);
+            }
+        }];
+    }];
+    
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
     [[tapGestureRecognizer rac_gestureSignal] subscribeNext:^(id x) {
         [self didTapButton];
@@ -90,86 +124,83 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     [self.playButton addGestureRecognizer:tapGestureRecognizer];
 }
 
-- (void)refreshProgressView
-{
-    self.shapeLayer.strokeEnd = self.viewModel.progress;
-    self.remainTime = @((1 - self.viewModel.progress) * self.viewModel.durationTime);
-}
-
 - (void)setupUI
 {
-    [self loadPictureView];
-    [self loadPlayerView];
+    [self.view addSubview:self.playerBackgroundView];
+    [self.view addSubview:self.playerView];
     [self loadDescriptionView];
-    [self bind];
 }
 
-- (void)loadPlayerView
+- (UIView *)playerView
 {
-    self.playerView = ({
-        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 100)];
-        
-        [view addSubview:self.playButton];
-        
-        self.remainTime = @(self.viewModel.durationTime);
-        [view addSubview:self.timeView];
-        
-        self.progressView = ({
-            UIView *view = [[UIView alloc] initWithFrame:self.shapeLayer.bounds];
-            view.userInteractionEnabled = YES;
-            [view.layer addSublayer:[self createCAShapeLayerWithColor:[UIColor grayColor] LineWidth:0.5]];
-            [view.layer addSublayer:self.shapeLayer];
+    if (!_playerView) {
+        _playerView = ({
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, self.playerBackgroundView.frame.size.height, SCREEN_WIDTH, 100)];
+            self.remainTime = @(self.viewModel.durationTime);
             
-            UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
-            [[tapGestureRecognizer rac_gestureSignal] subscribeNext:^(UITapGestureRecognizer *x) {
-                [self handleTapGesture:x];
+            [view addSubview:self.playButton];
+            [view addSubview:self.timeView];
+            [view addSubview:self.progressView];
+        
+            [_playButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(view).offset(15);
+                make.centerX.equalTo(view);
             }];
-            [view addGestureRecognizer:tapGestureRecognizer];
-            
-            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] init];
-            [[panGestureRecognizer rac_gestureSignal] subscribeNext:^(UIPanGestureRecognizer *x) {
-                [self handlePanGesture:x];
+            [_timeView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.equalTo(self.playButton);
+                make.right.equalTo(view).offset(-5);
             }];
-            [view addGestureRecognizer:panGestureRecognizer];
-            
+            [_progressView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(self.playButton.mas_bottom).offset(10);
+                make.left.equalTo(view);
+                make.bottom.equalTo(view).offset(-15);
+            }];
+        
             view;
         });
-        [view addSubview:self.progressView];
-        
-        [_playButton mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(view).offset(15);
-            make.centerX.equalTo(view);
-        }];
-        [_timeView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.equalTo(self.playButton);
-            make.right.equalTo(view).offset(-5);
-        }];
-        [_progressView mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.playButton.mas_bottom).offset(10);
-            make.left.equalTo(view);
-            make.bottom.equalTo(view).offset(-15);
-        }];
-        
-        view;
-    });
-    
-    [self.view addSubview:self.playerView];
-}
-
-- (void)loadPictureView
-{
-    
+    }
+    return _playerView;
 }
 
 - (void)loadDescriptionView
 {
+    UILabel *speakLabel = ({
+        UILabel *label = [[UILabel alloc] init];
+        label.font = Font(15);
+        label.textColor = HEXCOLOR(0x666666);
+        label.text = self.viewModel.radioInfo.speak;
+        label;
+    });
     
+    UILabel *descLabel = ({
+        UILabel *lable = [[UILabel alloc] init];
+        lable.font = Font(13);
+        lable.textColor = HEXCOLOR(0x999999);
+        lable.text = self.viewModel.radioInfo.radiodDesc;
+        lable.numberOfLines = 0;
+        lable.textAlignment = NSTextAlignmentLeft;
+        lable;
+    });
+    
+    [self.view addSubview:speakLabel];
+    [self.view addSubview:descLabel];
+    
+    [speakLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.playerView.mas_bottom).offset(15);
+        make.left.equalTo(self.view).offset(12);
+    }];
+    
+    [descLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(speakLabel.mas_bottom).offset(15);
+        make.left.equalTo(speakLabel);
+        make.right.lessThanOrEqualTo(self.view).offset(-12);
+    }];
 }
 
 - (CAShapeLayer *)shapeLayer
 {
     if (!_shapeLayer) {
-        _shapeLayer = [self createCAShapeLayerWithColor:[UIColor orangeColor] LineWidth:1];
+        _shapeLayer = [self createCAShapeLayerWithColor:[UIColor orangeColor] LineWidth:0.5];
         _shapeLayer.strokeEnd = 0;
     }
     return _shapeLayer;
@@ -194,6 +225,43 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     return _timeView;
 }
 
+- (UIView *)progressView
+{
+    if (!_progressView) {
+        _progressView = ({
+            UIView *view = [[UIView alloc] initWithFrame:self.shapeLayer.bounds];
+            view.backgroundColor = [UIColor blueColor];
+            view.userInteractionEnabled = YES;
+            
+            [view.layer addSublayer:[self createCAShapeLayerWithColor:[UIColor grayColor] LineWidth:0.5]];
+            [view.layer addSublayer:self.shapeLayer];
+            
+            _progressBtn = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"progress_btn"]];
+            _progressBtn.userInteractionEnabled = YES;
+            [view addSubview:_progressBtn];
+            [_progressBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.equalTo(view.mas_left);
+                make.centerY.equalTo(view.mas_top);
+            }];
+            
+            UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
+            [[tapGestureRecognizer rac_gestureSignal] subscribeNext:^(UITapGestureRecognizer *x) {
+                [self handleTapGesture:x];
+            }];
+            [_progressBtn addGestureRecognizer:tapGestureRecognizer];
+            
+            UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] init];
+            [[panGestureRecognizer rac_gestureSignal] subscribeNext:^(UIPanGestureRecognizer *x) {
+                [self handlePanGesture:x];
+            }];
+            [_progressBtn addGestureRecognizer:panGestureRecognizer];
+            
+            view;
+        });
+    }
+    return _progressView;
+}
+
 - (CAShapeLayer *)createCAShapeLayerWithColor:(UIColor *)color LineWidth:(CGFloat)lineWidth
 {
     CAShapeLayer *shapeLayer = [CAShapeLayer layer];
@@ -209,6 +277,25 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     return shapeLayer;
 }
 
+- (PlayerBackgroundView *)playerBackgroundView
+{
+    if (!_playerBackgroundView) {
+        _playerBackgroundView = [[PlayerBackgroundView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 400) Title:self.viewModel.radioInfo.title];
+        _playerBackgroundView.URLString = self.viewModel.radioInfo.coverURL;
+    }
+    return _playerBackgroundView;
+}
+
+- (MRSImageAnimationLoadingView *)animationLoadingView
+{
+    if (!_animationLoadingView) {
+        _animationLoadingView = [MRSImageAnimationLoadingView loadingViewByView:self.view];
+        [self.view addSubview:_animationLoadingView];
+    }
+    return _animationLoadingView;
+}
+
+#pragma mark GestureRecognizer
 - (void)handleTapGesture:(UITapGestureRecognizer *)gesture
 {
     if (gesture.state == UIGestureRecognizerStateEnded) {
@@ -216,6 +303,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         NSTimeInterval currentTime = point.x / SCREEN_WIDTH * self.viewModel.durationTime;
         self.viewModel.currentTime = currentTime;
         self.isPlaying = @(YES);
+        self.progressX = @(point.x);
     }
 }
 
@@ -228,6 +316,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         self.shapeLayer.strokeEnd = point.x / SCREEN_WIDTH;
         // 更新时间显示的UI
         self.remainTime = @(self.viewModel.durationTime * (1 - self.shapeLayer.strokeEnd));
+        self.progressX = @(point.x);
     }
     if (gesture.state == UIGestureRecognizerStateEnded) {
         self.viewModel.currentTime = self.shapeLayer.strokeEnd * self.viewModel.durationTime;
@@ -242,18 +331,16 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     self.isPlaying = @(![self.isPlaying boolValue]);
 }
 
+#pragma mark NotificationFunc
+- (void)refreshProgressView
+{
+    self.shapeLayer.strokeEnd = self.viewModel.progress;
+    self.remainTime = @((1 - self.viewModel.progress) * self.viewModel.durationTime);
+    self.progressX = @(self.viewModel.progress * SCREEN_WIDTH);
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
