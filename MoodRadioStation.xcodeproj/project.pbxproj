@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2F320E091C81942E008DC121 /* RadioInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E081C81942E008DC121 /* RadioInfo.m */; };
-		2F320E0C1C819919008DC121 /* RadioInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E0B1C819919008DC121 /* RadioInfoModel.m */; };
-		2F320E0F1C81C92E008DC121 /* RadioViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E0E1C81C92E008DC121 /* RadioViewModel.m */; };
-		2F320E151C81D17E008DC121 /* RadioPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E141C81D17E008DC121 /* RadioPlayerViewController.m */; };
 		2F33378D1C803E9800927CF8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F33378C1C803E9800927CF8 /* main.m */; };
 		2F3337901C803E9800927CF8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F33378F1C803E9800927CF8 /* AppDelegate.m */; };
 		2F3337931C803E9800927CF8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F3337921C803E9800927CF8 /* ViewController.m */; };
@@ -19,23 +16,20 @@
 		2F33379B1C803E9800927CF8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F3337991C803E9800927CF8 /* LaunchScreen.storyboard */; };
 		2F524F2D1C85719400DB6DD2 /* play@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F524F2C1C85719400DB6DD2 /* play@2x.png */; };
 		2F524F2F1C85D7FB00DB6DD2 /* pause@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F524F2E1C85D7FB00DB6DD2 /* pause@2x.png */; };
-		2FCC59841C86A76E008B2621 /* MRSImageAnimationLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59831C86A76E008B2621 /* MRSImageAnimationLoadingView.m */; };
-		2FCC59871C86C1AE008B2621 /* MRSImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59861C86C1AE008B2621 /* MRSImageView.m */; };
-		2FCC598D1C86DE49008B2621 /* PlayerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC598C1C86DE49008B2621 /* PlayerBackgroundView.m */; };
 		2FCC598F1C86DEE5008B2621 /* progress_btn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FCC598E1C86DEE5008B2621 /* progress_btn@2x.png */; };
 		2FCC59931C86DF26008B2621 /* default_photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FCC59921C86DF26008B2621 /* default_photo@2x.png */; };
+		2FCC599C1C872704008B2621 /* PlayerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59951C872704008B2621 /* PlayerBackgroundView.m */; };
+		2FCC599D1C872704008B2621 /* RadioInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59971C872704008B2621 /* RadioInfoModel.m */; };
+		2FCC599E1C872704008B2621 /* RadioPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59991C872704008B2621 /* RadioPlayerViewController.m */; };
+		2FCC599F1C872704008B2621 /* RadioViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC599B1C872704008B2621 /* RadioViewModel.m */; };
+		2FCC59A51C87273C008B2621 /* MRSImageAnimationLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59A21C87273C008B2621 /* MRSImageAnimationLoadingView.m */; };
+		2FCC59A61C87273C008B2621 /* MRSImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59A41C87273C008B2621 /* MRSImageView.m */; };
 		816A1437E5693B1069606996 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 621CE8629E77589F0EE35ECA /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2F320E071C81942E008DC121 /* RadioInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RadioInfo.h; path = play/RadioInfo.h; sourceTree = "<group>"; };
 		2F320E081C81942E008DC121 /* RadioInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RadioInfo.m; path = play/RadioInfo.m; sourceTree = "<group>"; };
-		2F320E0A1C819919008DC121 /* RadioInfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadioInfoModel.h; sourceTree = "<group>"; };
-		2F320E0B1C819919008DC121 /* RadioInfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadioInfoModel.m; sourceTree = "<group>"; };
-		2F320E0D1C81C92E008DC121 /* RadioViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadioViewModel.h; sourceTree = "<group>"; };
-		2F320E0E1C81C92E008DC121 /* RadioViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadioViewModel.m; sourceTree = "<group>"; };
-		2F320E131C81D17E008DC121 /* RadioPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadioPlayerViewController.h; sourceTree = "<group>"; };
-		2F320E141C81D17E008DC121 /* RadioPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadioPlayerViewController.m; sourceTree = "<group>"; };
 		2F3337881C803E9800927CF8 /* MoodRadioStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoodRadioStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F33378C1C803E9800927CF8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2F33378E1C803E9800927CF8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -49,14 +43,20 @@
 		2F524F2C1C85719400DB6DD2 /* play@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "play@2x.png"; path = "Resources/play@2x.png"; sourceTree = SOURCE_ROOT; };
 		2F524F2E1C85D7FB00DB6DD2 /* pause@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pause@2x.png"; path = "Resources/pause@2x.png"; sourceTree = SOURCE_ROOT; };
 		2F59654A1C844F91007289A8 /* UIKitMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIKitMacros.h; sourceTree = "<group>"; };
-		2FCC59821C86A76E008B2621 /* MRSImageAnimationLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRSImageAnimationLoadingView.h; sourceTree = "<group>"; };
-		2FCC59831C86A76E008B2621 /* MRSImageAnimationLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRSImageAnimationLoadingView.m; sourceTree = "<group>"; };
-		2FCC59851C86C1AE008B2621 /* MRSImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRSImageView.h; sourceTree = "<group>"; };
-		2FCC59861C86C1AE008B2621 /* MRSImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRSImageView.m; sourceTree = "<group>"; };
-		2FCC598B1C86DE49008B2621 /* PlayerBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerBackgroundView.h; sourceTree = "<group>"; };
-		2FCC598C1C86DE49008B2621 /* PlayerBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerBackgroundView.m; sourceTree = "<group>"; };
 		2FCC598E1C86DEE5008B2621 /* progress_btn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "progress_btn@2x.png"; path = "Resources/progress_btn@2x.png"; sourceTree = SOURCE_ROOT; };
 		2FCC59921C86DF26008B2621 /* default_photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "default_photo@2x.png"; path = "Resources/default_photo@2x.png"; sourceTree = SOURCE_ROOT; };
+		2FCC59941C872704008B2621 /* PlayerBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlayerBackgroundView.h; path = play/PlayerBackgroundView.h; sourceTree = "<group>"; };
+		2FCC59951C872704008B2621 /* PlayerBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlayerBackgroundView.m; path = play/PlayerBackgroundView.m; sourceTree = "<group>"; };
+		2FCC59961C872704008B2621 /* RadioInfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RadioInfoModel.h; path = play/RadioInfoModel.h; sourceTree = "<group>"; };
+		2FCC59971C872704008B2621 /* RadioInfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RadioInfoModel.m; path = play/RadioInfoModel.m; sourceTree = "<group>"; };
+		2FCC59981C872704008B2621 /* RadioPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RadioPlayerViewController.h; path = play/RadioPlayerViewController.h; sourceTree = "<group>"; };
+		2FCC59991C872704008B2621 /* RadioPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RadioPlayerViewController.m; path = play/RadioPlayerViewController.m; sourceTree = "<group>"; };
+		2FCC599A1C872704008B2621 /* RadioViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RadioViewModel.h; path = play/RadioViewModel.h; sourceTree = "<group>"; };
+		2FCC599B1C872704008B2621 /* RadioViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RadioViewModel.m; path = play/RadioViewModel.m; sourceTree = "<group>"; };
+		2FCC59A11C87273C008B2621 /* MRSImageAnimationLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSImageAnimationLoadingView.h; path = MRSUIFoundation/MRSImageAnimationLoadingView.h; sourceTree = "<group>"; };
+		2FCC59A21C87273C008B2621 /* MRSImageAnimationLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSImageAnimationLoadingView.m; path = MRSUIFoundation/MRSImageAnimationLoadingView.m; sourceTree = "<group>"; };
+		2FCC59A31C87273C008B2621 /* MRSImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSImageView.h; path = MRSUIFoundation/MRSImageView.h; sourceTree = "<group>"; };
+		2FCC59A41C87273C008B2621 /* MRSImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSImageView.m; path = MRSUIFoundation/MRSImageView.m; sourceTree = "<group>"; };
 		621CE8629E77589F0EE35ECA /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7305B22C545EDA01AA665B1F /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		8ED539642E090F9D5816D404 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -87,18 +87,14 @@
 			children = (
 				2F320E071C81942E008DC121 /* RadioInfo.h */,
 				2F320E081C81942E008DC121 /* RadioInfo.m */,
-				2F320E0A1C819919008DC121 /* RadioInfoModel.h */,
-				2F320E0B1C819919008DC121 /* RadioInfoModel.m */,
-				2F320E0D1C81C92E008DC121 /* RadioViewModel.h */,
-				2F320E0E1C81C92E008DC121 /* RadioViewModel.m */,
-				2F320E131C81D17E008DC121 /* RadioPlayerViewController.h */,
-				2F320E141C81D17E008DC121 /* RadioPlayerViewController.m */,
-				2FCC59851C86C1AE008B2621 /* MRSImageView.h */,
-				2FCC59861C86C1AE008B2621 /* MRSImageView.m */,
-				2FCC598B1C86DE49008B2621 /* PlayerBackgroundView.h */,
-				2FCC598C1C86DE49008B2621 /* PlayerBackgroundView.m */,
-				2FCC59821C86A76E008B2621 /* MRSImageAnimationLoadingView.h */,
-				2FCC59831C86A76E008B2621 /* MRSImageAnimationLoadingView.m */,
+				2FCC59941C872704008B2621 /* PlayerBackgroundView.h */,
+				2FCC59951C872704008B2621 /* PlayerBackgroundView.m */,
+				2FCC59961C872704008B2621 /* RadioInfoModel.h */,
+				2FCC59971C872704008B2621 /* RadioInfoModel.m */,
+				2FCC59981C872704008B2621 /* RadioPlayerViewController.h */,
+				2FCC59991C872704008B2621 /* RadioPlayerViewController.m */,
+				2FCC599A1C872704008B2621 /* RadioViewModel.h */,
+				2FCC599B1C872704008B2621 /* RadioViewModel.m */,
 			);
 			name = play;
 			sourceTree = "<group>";
@@ -124,6 +120,7 @@
 		2F33378A1C803E9800927CF8 /* MoodRadioStation */ = {
 			isa = PBXGroup;
 			children = (
+				2FCC59A01C872723008B2621 /* MRSUIFoundation */,
 				2F524F271C85326B00DB6DD2 /* Resources */,
 				2F59654A1C844F91007289A8 /* UIKitMacros.h */,
 				2F320E061C819371008DC121 /* play */,
@@ -157,6 +154,17 @@
 				2FCC59921C86DF26008B2621 /* default_photo@2x.png */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		2FCC59A01C872723008B2621 /* MRSUIFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				2FCC59A11C87273C008B2621 /* MRSImageAnimationLoadingView.h */,
+				2FCC59A21C87273C008B2621 /* MRSImageAnimationLoadingView.m */,
+				2FCC59A31C87273C008B2621 /* MRSImageView.h */,
+				2FCC59A41C87273C008B2621 /* MRSImageView.m */,
+			);
+			name = MRSUIFoundation;
 			sourceTree = "<group>";
 		};
 		770C8EBE75CA0D3AD92A9528 /* Pods */ = {
@@ -294,16 +302,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F320E151C81D17E008DC121 /* RadioPlayerViewController.m in Sources */,
+				2FCC59A51C87273C008B2621 /* MRSImageAnimationLoadingView.m in Sources */,
+				2FCC599E1C872704008B2621 /* RadioPlayerViewController.m in Sources */,
 				2F3337931C803E9800927CF8 /* ViewController.m in Sources */,
-				2F320E0C1C819919008DC121 /* RadioInfoModel.m in Sources */,
-				2FCC598D1C86DE49008B2621 /* PlayerBackgroundView.m in Sources */,
-				2F320E0F1C81C92E008DC121 /* RadioViewModel.m in Sources */,
 				2F320E091C81942E008DC121 /* RadioInfo.m in Sources */,
 				2F3337901C803E9800927CF8 /* AppDelegate.m in Sources */,
-				2FCC59871C86C1AE008B2621 /* MRSImageView.m in Sources */,
+				2FCC59A61C87273C008B2621 /* MRSImageView.m in Sources */,
+				2FCC599C1C872704008B2621 /* PlayerBackgroundView.m in Sources */,
 				2F33378D1C803E9800927CF8 /* main.m in Sources */,
-				2FCC59841C86A76E008B2621 /* MRSImageAnimationLoadingView.m in Sources */,
+				2FCC599F1C872704008B2621 /* RadioViewModel.m in Sources */,
+				2FCC599D1C872704008B2621 /* RadioInfoModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
