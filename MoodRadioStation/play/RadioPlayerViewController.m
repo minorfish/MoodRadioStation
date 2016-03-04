@@ -14,6 +14,7 @@
 #import "UIKitMacros.h"
 #import "PlayerBackgroundView.h"
 #import <Masonry/Masonry.h>
+#import "FMListModel.h"
 
 const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.refrshProgress";
 
@@ -62,6 +63,10 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         if ([x isKindOfClass:[NSNotification class]]) {
             [self refreshProgressView];
         }
+    }];
+    
+    [[FMListModel alloc] getFMHtmlWithP:@"bed" Page:@"bed" N:@"睡前" finished:^(NSArray *dictArray, NSError *error) {
+
     }];
     self.isLoading = @(YES);
     [[self.viewModel.getRadioInfoCommand execute:self.radioID] subscribeNext:^(RadioInfo *radioInfo) {
