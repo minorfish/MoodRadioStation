@@ -6,11 +6,16 @@
 //  Copyright © 2016年 Minor. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "MRSModel.h"
 @class AFHTTPRequestOperation;
+@class  RACSignal;
 
-@interface FMListModel : NSObject
+@interface FMListModel : MRSModel
 
-- (AFHTTPRequestOperation *)getFMHtmlWithP:(NSString *)p Page:(NSString *)page N:(NSString *)n finished:(void(^)(NSArray *dictArray, NSError *error))finished
+@property (nonatomic, strong) NSNumber *rows;
+@property (nonatomic, strong) NSNumber *offset;
+@property (nonatomic, strong) NSString *tag;
+
+@property (nonatomic, strong) RACSignal *refreshList;
 
 @end

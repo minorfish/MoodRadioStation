@@ -56,7 +56,7 @@
             self.isLoading = @(NO);
             self.pullImage.hidden = NO;
             self.showAnimation = NO;
-            self.stateLabel.text = @"下拉刷新";
+            self.stateLabel.text = @"上拉刷新";
             [self.activityIndicatorView stopAnimating];
         }
             break;

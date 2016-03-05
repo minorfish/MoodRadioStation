@@ -14,11 +14,12 @@
 + (NSDictionary *)JSONKeyPathsByPropertyKey
 {
     FMInfo *info = nil;
-    return @{@keypath(info, pkID): @"pkID",
-              @keypath(info, title): @"title",
-              @keypath(info, imageURL): @"imgURL",
-              @keypath(info, speakName): @"speakName"
-              };
+    return @{@keypath(info, ID): @"id",
+             @keypath(info, cover): @"cover",
+             @keypath(info, mediaURL): @"url",
+             @keypath(info, background): @"background",
+             @keypath(info, title): @"title",
+             @keypath(info, speak): @"speak"};
 }
 
 @end

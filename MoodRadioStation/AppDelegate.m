@@ -7,8 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "RadioPlayerViewController.h"
-#import <hpple/TFHpple.h>
+#import "TagListViewController.h"
 
 @interface AppDelegate ()
 
@@ -16,38 +15,11 @@
 
 @implementation AppDelegate
 
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-//    NSString *baseURL = @"http://fm.xinli001.com";
-//    NSString *URL = @"/fragment?t=1456462608428&n=place";
-//    
-//    NSURLSessionConfiguration *defaultSessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-//    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:
-//                             [NSURL URLWithString:URL relativeToURL:[NSURL URLWithString:baseURL]]];
-//    
-//    NSURLSession *session = [NSURLSession sessionWithConfiguration:defaultSessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
-//    
-//    [[session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-//        NSString *newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-//        NSLog(@"data%@", newStr);
-//        
-//    TFHpple * doc = [[TFHpple alloc] initWithHTMLData:data];
-//    TFHppleElement *elements = [doc peekAtSearchWithXPathQuery:@"//div"];
-//    
-//    for (TFHppleElement *e in [elements children]) {
-//        if ([e objectForKey:@"class"] && [e text]) {
-//            NSLog(@"%@ %@\n", [e objectForKey:@"class"], [e text]);
-//        }
-//    }
-//        
-//    }] resume];
-    
-    
-    
-    RadioPlayerViewController *playViewContoller = [[RadioPlayerViewController alloc] initWithRadioID:@(99388843)];
+    TagListViewController *tagListViewController = [[TagListViewController alloc] initWithRows:@(15) Tag:@"减压"];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = playViewContoller;
+    self.window.rootViewController = tagListViewController;
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;

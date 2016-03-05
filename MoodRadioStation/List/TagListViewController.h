@@ -8,6 +8,8 @@
 
 #import "MRSListViewController.h"
 
-@interface MoodCategoryListViewController : MRSListViewController
+@interface TagListViewController : MRSListViewController
+
+- (instancetype)initWithRows:(NSNumber *)rows Tag:(NSString *)tag;
 
 @end

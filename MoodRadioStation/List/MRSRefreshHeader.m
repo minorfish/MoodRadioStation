@@ -55,19 +55,27 @@
     return self;
 }
 
+- (void)setRefreshing:(BOOL)refreshing
+{
+    if (_refreshing != refreshing) {
+        _refreshing = refreshing;
+        [self sendActionsForControlEvents:UIControlEventValueChanged];
+    }
+}
+
 - (void)setRefreshState:(MRSRefreshState)refreshState
 {
     switch (refreshState) {
         case MRSRefreshState_normal: {
-            self.refreshing = @(NO);
+            self.refreshing = NO;
             self.pullImage.hidden = NO;
             self.showAnimation = NO;
-            self.stateLabel.text = @"上拉刷新";
+            self.stateLabel.text = @"下拉刷新";
             [self.activityIndicatorView stopAnimating];
         }
             break;
         case MRSRefreshState_loading: {
-            self.refreshing = @(YES);
+            self.refreshing = YES;
             self.pullImage.hidden = YES;
             self.showAnimation = YES;
             self.stateLabel.text = @"正在刷新";
@@ -79,7 +87,7 @@
         }
             break;
         case MRSRefreshState_pulling: {
-            self.refreshing = @(NO);
+            self.refreshing = NO;
             self.pullImage.hidden = NO;
             self.stateLabel.text = @"松开立即刷新";
         }
@@ -112,11 +120,11 @@
 
 - (void)refreshViewDidEndDragging:(UIScrollView *)refreshView willDecelerate:(BOOL)decelerate
 {
-    if (refreshView.contentOffset.y < -50 && self.refreshState == !MRSRefreshState_loading && !self.hidden) {
+    if (refreshView.contentOffset.y < -50 && self.refreshState != MRSRefreshState_loading) {
         [self setRefreshState:MRSRefreshState_loading];
         
         UIEdgeInsets contentInsets = refreshView.contentInset;
-        contentInsets.top = self.originEdgeInsets.top + 56;
+        contentInsets.top = self.originEdgeInsets.top + 30;
         [UIView animateWithDuration:0.2 animations:^{
             refreshView.contentInset = contentInsets;
         }];
@@ -132,7 +140,7 @@
     self.refreshView.contentOffset = CGPointZero;
     [self setRefreshState:MRSRefreshState_loading];
     [UIView animateWithDuration:0.2 animations:^{
-        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top + 56)];
+        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top + 30)];
     }];
 }
 

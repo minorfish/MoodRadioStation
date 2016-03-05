@@ -10,9 +10,11 @@
 
 @interface FMInfo : MTLModel<MTLJSONSerializing>
 
-@property (nonatomic, assign) long long pkID;
+@property (nonatomic, assign) long long ID;
 @property (nonatomic, strong) NSString *title;
-@property (nonatomic, strong) NSString *imageURL;
-@property (nonatomic, strong) NSString *speakName;
+@property (nonatomic, strong) NSString *cover;
+@property (nonatomic, strong) NSString *speak;
+@property (nonatomic, strong) NSString *background;
+@property (nonatomic, strong) NSString *mediaURL;
 
 @end

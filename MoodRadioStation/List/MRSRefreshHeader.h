@@ -19,7 +19,7 @@ typedef NS_ENUM(NSInteger, MRSRefreshState) {
 @property (nonatomic, assign) MRSRefreshState refreshState;
 
 @property (nonatomic, assign) UIEdgeInsets originEdgeInsets;
-@property (nonatomic, strong) NSNumber *refreshing;
+@property (nonatomic, assign, getter=isRefreshing) BOOL refreshing;
 
 - (instancetype)initWithFrame:(CGRect)frame RefreshView:(UIScrollView *)refreshView;
 
