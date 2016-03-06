@@ -8,6 +8,8 @@
 
 #import <Mantle/Mantle.h>
 
+@class  MRSSpeakerInfo;
+
 @interface RadioInfo : MTLModel<MTLJSONSerializing>
 
 @property (nonatomic, strong) NSString *title;
@@ -16,5 +18,7 @@
 @property (nonatomic, strong) NSString *speak;
 @property (nonatomic, strong) NSString *URL;
 @property (nonatomic, strong) NSString *radiodDesc;
+
+@property (nonatomic, strong) MRSSpeakerInfo *speakerInfo;
 
 @end

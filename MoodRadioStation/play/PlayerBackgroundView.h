@@ -8,9 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+@class MRSURLImageView;
+
 @interface PlayerBackgroundView : UIView
 
-@property (nonatomic, strong) NSString *URLString;
+@property (nonatomic, strong) MRSURLImageView *imageView;
+@property (nonatomic, strong) UILabel *titleLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame Title:(NSString *)titleString;
 

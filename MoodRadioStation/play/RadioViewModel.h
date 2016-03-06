@@ -13,14 +13,18 @@
 
 @interface RadioViewModel : NSObject
 
-@property (nonatomic, strong) RACCommand *getRadioInfoCommand;
-@property (nonatomic, strong) RACCommand *getRadioCommand;
+@property (nonatomic, readonly) RACCommand *getRadioInfoCommand;
+@property (nonatomic, readonly) RACCommand *getRadioCommand;
 
-@property (nonatomic, assign) float progress;
-@property (nonatomic, assign) NSTimeInterval durationTime;
+@property (nonatomic, readonly) float progress;
+@property (nonatomic, readonly) NSTimeInterval durationTime;
 @property (nonatomic, assign) NSTimeInterval currentTime;
 
-@property (nonatomic, strong) RadioInfo *radioInfo;
+@property (nonatomic, readonly) RadioInfo *radioInfo;
+
+@property (nonatomic, readonly) NSError *error;
+@property (nonatomic, readonly) BOOL radioInfoLoading;
+@property (nonatomic, readonly) BOOL radioLoading;
 
 - (void)play;
 - (void)pause;

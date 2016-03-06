@@ -7,6 +7,7 @@
 //
 
 #import "RadioInfo.h"
+#import "MRSSpeakerInfo.h"
 #import <ReactiveCocoa/ReactiveCocoa.h>
 
 @implementation RadioInfo
@@ -19,8 +20,16 @@
               @keypath(radio, coverURL): @"cover",
               @keypath(radio, speak): @"speak",
               @keypath(radio, URL): @"url",
-              @keypath(radio, radiodDesc): @"content"
+              @keypath(radio, radiodDesc): @"content",
+              @keypath(radio, speakerInfo): @"diantai"
              };
+}
+
++ (MTLValueTransformer *)speakerInfoJSONTransformer
+{
+    return [MTLValueTransformer transformerWithBlock:^MRSSpeakerInfo*(NSDictionary *dict) {
+        return [MTLJSONAdapter modelOfClass:[MRSSpeakerInfo class] fromJSONDictionary:dict error:nil];
+    }];
 }
 
 @end

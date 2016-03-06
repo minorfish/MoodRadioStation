@@ -9,12 +9,28 @@
 #import <Foundation/Foundation.h>
 
 @class RACCommand;
+@class MRSFetchResultController;
+@class RACSubject;
+@class RACDisposable;
 
 @interface FMListViewModel : NSObject
 
-@property (nonatomic, strong) RACCommand *refreshListCommand;
+@property (nonatomic, readonly) RACCommand *refreshListCommand;
+@property (nonatomic, readonly) RACCommand *loadMoreCommand;
 
-@property (nonatomic, strong, readonly) NSArray *infoArray;
+// 数据加载完成
+@property (nonatomic, readonly) RACSubject *dataLoadedSignal;
+//  重新刷新
+@property (nonatomic, readonly) RACSubject *refreshingSignal;
+
+@property (nonatomic, readonly) NSError *error;
+
+// 刷新状态
+@property (nonatomic, readonly) BOOL loading;
+
+@property (nonatomic, readonly) MRSFetchResultController *fetchResultController;
+
+@property (nonatomic, readonly) RACDisposable *previousDataRefreshDispose;
 
 - (instancetype)initWithRows:(NSNumber *)rows Tag:(NSString *)tag;
 

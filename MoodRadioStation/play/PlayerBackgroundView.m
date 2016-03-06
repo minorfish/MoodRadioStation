@@ -17,19 +17,9 @@
 //
 
 #import "PlayerBackgroundView.h"
-#import "MRSImageView.h"
+#import "MRSURLImageView.h"
 #import "UIKitMacros.h"
 #import <Masonry/Masonry.h>
-
-@interface PlayerBackgroundView()
-
-@property (nonatomic, strong) UIImage *loadingImage;
-@property (nonatomic, strong) UIImage *defaultImage;
-
-@property (nonatomic, strong) MRSImageView *imageView;
-@property (nonatomic, strong) UILabel *titleLabel;
-
-@end
 
 @implementation PlayerBackgroundView
 
@@ -66,43 +56,14 @@
     return _titleLabel;
 }
 
-- (UIImage *)loadingImage
-{
-    if (!_loadingImage) {
-        _loadingImage = [UIImage imageNamed:@"default_photo"];
-    }
-    return _loadingImage;
-}
-
-- (UIImage *)defaultImage
-{
-    if (!_defaultImage) {
-        _defaultImage = [UIImage imageNamed:@"default_photo"];
-    }
-    return _defaultImage;
-}
-
-- (MRSImageView *)imageView
+- (MRSURLImageView *)imageView
 {
     if (!_imageView) {
-        _imageView = [[MRSImageView alloc] init];
+        _imageView = [[MRSURLImageView alloc] init];
+        _imageView.defaultImage = [UIImage imageNamed:@"default_photo"];
+        _imageView.loadingImage = [UIImage imageNamed:@"default_photo"];
     }
     return _imageView;
-}
-
-- (void)setURLString:(NSString *)URLString
-{
-    if ([_URLString isEqualToString:URLString])
-        return;
-    
-    _URLString = [URLString copy];
-    
-    [self.imageView sd_setImageWithURL:[NSURL URLWithString:URLString]
-                      placeholderImage:self.loadingImage
-                              fallback:self.defaultImage
-                               options:SDWebImageRetryFailed
-                         progressBlock:nil
-                            completion:nil];
 }
 
 @end

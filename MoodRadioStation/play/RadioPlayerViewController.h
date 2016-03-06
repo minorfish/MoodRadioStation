@@ -10,6 +10,6 @@
 
 @interface RadioPlayerViewController : UIViewController
 
-- (instancetype)initWithRadioID:(NSNumber *)radioID;
+- (instancetype)initWithRadioID:(NSNumber *)radioID RadioURL:(NSString *)URL;
 
 @end

@@ -18,8 +18,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     TagListViewController *tagListViewController = [[TagListViewController alloc] initWithRows:@(15) Tag:@"减压"];
+    UINavigationController *sourceNavigationController = [[UINavigationController alloc] initWithRootViewController:tagListViewController];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = tagListViewController;
+    self.window.rootViewController = sourceNavigationController;
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;

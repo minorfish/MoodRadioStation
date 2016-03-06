@@ -10,6 +10,9 @@
 #import <Masonry/Masonry.h>
 #import "UIKitMacros.h"
 
+#define LOADMORE_OFFSET 30
+#define LOADMOREVIEW_HEIGHT 30
+
 @interface MRSLoadingMoreCell()
 
 @property (nonatomic, assign) BOOL showAnimation;
@@ -91,11 +94,11 @@
     if (self.loadingMoreState == MRSLoadingMoreState_loading) {
     } else {
         contentInset.bottom = self.originEdgeInsets.bottom;
-        if (self.loadingMoreState == MRSLoadingMoreState_normal && offset > 0 && offset < 30 + self.originEdgeInsets.bottom){
+        if (self.loadingMoreState == MRSLoadingMoreState_normal && offset > 0 && offset < LOADMORE_OFFSET + self.originEdgeInsets.bottom){
             [self setLoadingMoreState:MRSLoadingMoreState_normal];
-        } else if (self.loadingMoreState == MRSLoadingMoreState_dragging && offset > 0 && offset < 30 + self.originEdgeInsets.bottom){
+        } else if (self.loadingMoreState == MRSLoadingMoreState_dragging && offset > 0 && offset < LOADMORE_OFFSET + self.originEdgeInsets.bottom){
             [self setLoadingMoreState:MRSLoadingMoreState_normal];
-        } else if (self.loadingMoreState == MRSLoadingMoreState_normal && refreshView.contentOffset.y > 30 + self.originEdgeInsets.bottom) {
+        } else if (self.loadingMoreState == MRSLoadingMoreState_normal && refreshView.contentOffset.y > LOADMORE_OFFSET + self.originEdgeInsets.bottom) {
             [self setLoadingMoreState:MRSLoadingMoreState_dragging];
         }
     }
@@ -105,11 +108,11 @@
 - (void)refreshViewDidEndDragging:(UIScrollView *)refreshView willDecelerate:(BOOL)decelerate
 {
     CGFloat offset = refreshView.contentOffset.y - (refreshView.contentSize.height - refreshView.frame.size.height);
-    if (self.loadingMoreState != MRSLoadingMoreState_loading && offset > 30 + self.originEdgeInsets.bottom) {
+    if (self.loadingMoreState != MRSLoadingMoreState_loading && offset > LOADMORE_OFFSET + self.originEdgeInsets.bottom && self.enabled) {
         [self setLoadingMoreState:MRSLoadingMoreState_loading];
         
         UIEdgeInsets contentInset = refreshView.contentInset;
-        contentInset.bottom = self.originEdgeInsets.bottom + 30;
+        contentInset.bottom = self.originEdgeInsets.bottom + LOADMOREVIEW_HEIGHT;
         [UIView animateWithDuration:0.2 animations:^{
             refreshView.contentInset = contentInset;
         }];
@@ -121,21 +124,18 @@
 
 - (void)beginLoading
 {
+    self.refreshView.contentOffset = CGPointZero;
     [UIView animateWithDuration:0.2 animations:^{
         [self setLoadingMoreState:MRSLoadingMoreState_loading];
-        UIEdgeInsets contentInset = self.refreshView.contentInset;
-        contentInset.bottom = self.originEdgeInsets.bottom + 30;
-        [self.refreshView setContentInset:contentInset];
+        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top - LOADMOREVIEW_HEIGHT)];
     }];
 }
 
 - (void)stopLoading
 {
     [UIView animateWithDuration:0.2 animations:^{
-        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top)];
-        UIEdgeInsets contentInset = self.refreshView.contentInset;
-        contentInset.bottom = self.originEdgeInsets.bottom;
-        [self.refreshView setContentInset:contentInset];
+        CGFloat offset = self.refreshView.contentOffset.y;
+        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top + offset + LOADMOREVIEW_HEIGHT)];
     } completion:^(BOOL finished) {
         [self setLoadingMoreState:MRSLoadingMoreState_normal];
     }];
@@ -166,6 +166,14 @@
         _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     }
     return _activityIndicatorView;
+}
+
+- (void)setEnabled:(BOOL)enabled
+{
+    [super setEnabled:enabled];
+    if (!enabled) {
+        [self removeFromSuperview];
+    }
 }
 
 @end

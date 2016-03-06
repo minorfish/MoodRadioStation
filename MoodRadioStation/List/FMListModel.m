@@ -54,10 +54,14 @@
         AFHTTPRequestOperation *op = [self getFMListWithRows:self.rows  offset:self.offset tag:self.tag finished:^(NSDictionary *dict, NSError *error) {
             if (!disposable.isDisposed) {
                 if (!error && dict[@"data"]) {
-                    NSArray *array = [dict[@"data"] mapCar:^id(NSDictionary *obj, NSUInteger idx, BOOL *stop) {
-                        return [MTLJSONAdapter modelOfClass:[FMInfo class] fromJSONDictionary:obj error:nil];
-                    }];
-                    [subscriber sendNext:array];
+                    if ([dict[@"count"] integerValue]) {
+                        NSArray *array = [dict[@"data"] mapCar:^id(NSDictionary *obj, NSUInteger idx, BOOL *stop) {
+                            return [MTLJSONAdapter modelOfClass:[FMInfo class] fromJSONDictionary:obj error:nil];
+                        }];
+                        [subscriber sendNext:array];
+                    } else {
+                        [subscriber sendNext:nil];
+                    }
                 } else {
                     [subscriber sendError:error];
                 }

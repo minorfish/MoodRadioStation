@@ -6,11 +6,11 @@
 //  Copyright © 2016年 Minor. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "MRSModel.h"
 @class RACSignal;
 @class RACSubject;
 
-@interface RadioInfoModel : NSObject
+@interface RadioInfoModel : MRSModel
 
 @property (nonatomic, strong) RACSignal *getRadioInfo;
 @property (nonatomic, strong) RACSignal *getRadio;

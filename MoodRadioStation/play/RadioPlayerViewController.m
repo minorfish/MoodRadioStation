@@ -13,6 +13,7 @@
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import "UIKitMacros.h"
 #import "PlayerBackgroundView.h"
+#import "MRSURLImageView.h"
 #import <Masonry/Masonry.h>
 #import "FMListModel.h"
 
@@ -26,6 +27,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 @property (nonatomic, strong) NSNumber *isPlaying;
 @property (nonatomic, strong) NSNumber *progressX;
 @property (nonatomic, strong) NSNumber *isLoading;
+@property (nonatomic, strong) NSString *radioURL;
 
 @property (nonatomic, strong) PlayerBackgroundView *playerBackgroundView;
 
@@ -42,11 +44,12 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 
 @implementation RadioPlayerViewController
 
-- (instancetype)initWithRadioID:(NSNumber *)radioID
+- (instancetype)initWithRadioID:(NSNumber *)radioID RadioURL:(NSString *)URL
 {
     self = [super init];
     if (self) {
         _radioID = radioID;
+        _radioURL = URL;
         _viewModel = [[RadioViewModel alloc] init];
         _isPlaying = @(NO);
         _isLoading = @(YES);
@@ -66,14 +69,9 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     }];
     
     self.isLoading = @(YES);
-    [[self.viewModel.getRadioInfoCommand execute:self.radioID] subscribeNext:^(RadioInfo *radioInfo) {
-        
-        // 下载音频
-        [[self.viewModel.getRadioCommand execute:radioInfo.URL] subscribeNext:^(id x) {
-            self.isLoading = @(NO);
-            [self setupUI];
-        }];
-    }];
+    [self.viewModel.getRadioInfoCommand execute:self.radioID];
+    [self.viewModel.getRadioCommand execute:self.radioURL];
+    
 }
 
 - (void)bind
@@ -117,6 +115,22 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
                 make.centerX.equalTo(x);
             }
         }];
+    }];
+    
+    [[RACSignal combineLatest:@[
+                                [RACObserve(self.viewModel, radioInfoLoading) distinctUntilChanged],
+                                [RACObserve(self.viewModel, radioLoading) distinctUntilChanged]
+                                ]] subscribeNext:^(id x) {
+        @strongify(self);
+        if (!self.viewModel.radioInfoLoading && !self.viewModel.radioLoading) {
+            [self setupUI];
+            self.isLoading = @(NO);
+        }
+    }];
+    
+    [[[RACObserve(self.viewModel, error) ignore:nil] distinctUntilChanged] subscribeNext:^(id x) {
+        @strongify(self);
+        self.isLoading = @(NO);
     }];
     
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
@@ -283,7 +297,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 {
     if (!_playerBackgroundView) {
         _playerBackgroundView = [[PlayerBackgroundView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 400) Title:self.viewModel.radioInfo.title];
-        _playerBackgroundView.URLString = self.viewModel.radioInfo.coverURL;
+        _playerBackgroundView.imageView.URLString = self.viewModel.radioInfo.coverURL;
     }
     return _playerBackgroundView;
 }

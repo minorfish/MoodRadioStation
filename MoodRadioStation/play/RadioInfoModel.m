@@ -13,61 +13,26 @@
 
 @interface RadioInfoModel()
 
-@property (nonatomic, strong) AFURLSessionManager *manager;
+@property (nonatomic, strong) NSString *key;
 
 @end
 
 @implementation RadioInfoModel
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        _manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-    }
-    return self;
-}
+@dynamic key;
 
 // 获取播放界面需要的信息
 - (AFHTTPRequestOperation *)getRadioWithID:(NSUInteger)ID finished:(void (^)(NSDictionary* dict, NSError* error))finished
 {
-    NSString *URL = [NSString stringWithFormat:@"http://fm.xinli001.com/broadcast?pk=%lu", ID];
+    NSString *path = @"http://yiapi.xinli001.com/fm/broadcast-detail-old.json?";
     
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:URL]];
-    
-    AFHTTPRequestOperation *op = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    op.responseSerializer = [AFJSONResponseSerializer serializer];
-    op.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/html"];
-    [op setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        if ([responseObject isKindOfClass:[NSDictionary class]]) {
-            finished(responseObject[@"data"], nil);
-        }
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        finished(nil, error);
-    }];
-    [[NSOperationQueue currentQueue] addOperation:op];
-    return op;
-}
-
-// 下载音频文件
-- (NSURLSessionDownloadTask *)getRadioWithURL:(NSString*)radioURL finished:(void(^)(NSURL *filePath, NSError *error))finished
-{
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:radioURL]];
-    NSURLSessionDownloadTask *downloadTask = [_manager downloadTaskWithRequest:request
-                                    progress:nil
-                                 destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
-                                     NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
-                                     return [documentsDirectoryURL URLByAppendingPathComponent:[response suggestedFilename]];
-                                    } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
-                                        if (filePath && !error) {
-                                            finished(filePath, error);
-                                        } else {
-                                            finished(nil, error);
-                                        }
-                                    }];
-    [downloadTask resume];
-    return downloadTask;
+    NSDictionary *dict = @{@"key": self.key,
+                           @"id": @(ID)};
+    return [self getURL:path
+          Parmas:dict
+        finished:^(id data, NSError *error) {
+            finished(data, error);
+        }];
 }
 
 - (RACSignal*)getRadioInfo

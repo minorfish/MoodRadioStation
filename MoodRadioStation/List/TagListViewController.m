@@ -14,10 +14,14 @@
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import "TagListCellItem.h"
 #import "MRSImageAnimationLoadingView.h"
+#import "MRSFetchResultController.h"
+#import "RadioPlayerViewController.h"
+#import "FMInfo.h"
 
 @interface TagListViewController()
 
 @property (nonatomic, strong) FMListViewModel *viewModel;
+
 @property (nonatomic, strong) NSString *tag;
 
 @property (nonatomic, strong) UIView *noContentView;
@@ -38,11 +42,7 @@
 
 - (void)viewDidLoad
 {
-    [self bind];
-    
     self.refreshControll = [[MRSRefreshHeader alloc] initWithFrame:CGRectMake(0, -30, SCREEN_WIDTH, 30) RefreshView:self.tableView];
-    CGFloat top = self.tableView.frame.origin.y + self.tableView.frame.size.height;
-    self.loadigMoreControll = [[MRSLoadingMoreCell alloc] initWithFrame:CGRectMake(0, top, SCREEN_WIDTH, 30) RefreshView:self.tableView];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.tableView.backgroundColor = [UIColor clearColor];
@@ -51,25 +51,62 @@
     self.tableView.delegate = self;
     self.navigationItem.title = self.tag;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(back:)];
-    
-   }
+    [self bind];
+    [self refresh];
+}
 
-- (void)refresh
+- (void)dealloc
 {
-    self.tableView.userInteractionEnabled = NO;
-    @weakify(self);
-    [[[[self.viewModel refreshListCommand] execute:@(YES)] deliverOnMainThread]
-     subscribeNext:^(id x) {
-         @strongify(self)
-         [self.refreshControll stopRefreshing];
-         [self.tableView reloadData];
-         self.tableView.userInteractionEnabled = YES;
-     }];
+    self.tableView.delegate = nil;
+    self.tableView.dataSource = nil;
+    self.refreshControll = nil;
+    self.loadigMoreControll = nil;
 }
 
 - (void)bind
 {
+    @weakify(self);
+    [self.viewModel.refreshingSignal subscribeNext:^(id x) {
+        @strongify(self);
+        
+    }];
     
+    [self.viewModel.dataLoadedSignal subscribeNext:^(id x) {
+        @strongify(self);
+        if ([self.loadigMoreControll.isLoading boolValue]) {
+            [self.loadigMoreControll stopLoading];
+            self.loadigMoreControll.enabled = x? YES: NO;
+        }
+        
+        [self resetLoadMoreViewFrame];
+        [self.tableView reloadData];
+    }];
+    
+    [[[RACObserve(self.viewModel, loading) distinctUntilChanged] takeUntil:self.rac_willDeallocSignal] subscribeNext:^(NSNumber  *x) {
+        if ([x boolValue]) {
+            if (self.refreshControll.isRefreshing) {
+                [self.refreshControll stopRefreshing];
+            }
+        } 
+    }];
+}
+
+- (void)resetLoadMoreViewFrame
+{
+    CGFloat height = self.tableView.contentInset.top + self.viewModel.fetchResultController.numberOfObject * [TagListCellItem CellHeight];
+    if (height >= SCREEN_HEIGHT) {
+        self.loadigMoreControll = [[MRSLoadingMoreCell alloc] initWithFrame:CGRectMake(0, height, SCREEN_WIDTH, 30) RefreshView:self.tableView];
+    }
+}
+
+- (void)refresh
+{
+    [[self.viewModel refreshListCommand] execute:nil];
+}
+
+- (void)loadMore
+{
+    [[self.viewModel loadMoreCommand] execute:nil];
 }
 
 #pragma mark - tableViewDelete
@@ -80,27 +117,26 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    FMInfo *fmInfo = [self.viewModel.fetchResultController objectAtIndexPath:indexPath];
+    RadioPlayerViewController *playerController = [[RadioPlayerViewController alloc] initWithRadioID:@(fmInfo.ID) RadioURL:fmInfo.mediaURL];
+    [self.navigationController pushViewController:playerController animated:YES];
 }
 
 #pragma mark - tableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.viewModel.infoArray count];
+    return [self.viewModel.fetchResultController numberOfObject];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row > [self.viewModel.infoArray count])
-        return nil;
-    
     TagListCellView *cell = [tableView dequeueReusableCellWithIdentifier:@"TagListCellView"];
     if (!cell) {
         cell = [[TagListCellView alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"TagListCellView"];
         ;
     }
     TagListCellItem *item = [[TagListCellItem alloc] init];
-    item.fmInfo = [self.viewModel.infoArray objectAtIndex:indexPath.row];
+    item.fmInfo = [self.viewModel.fetchResultController objectAtIndexPath:indexPath];
     cell.item = item;
     return cell;
 }

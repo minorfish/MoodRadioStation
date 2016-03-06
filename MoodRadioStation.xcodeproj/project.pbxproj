@@ -25,6 +25,9 @@
 		2FB9EC5B1C8AB46700356374 /* list_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FB9EC5A1C8AB46700356374 /* list_default@2x.png */; };
 		2FB9EC5D1C8ABF2A00356374 /* RadioPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FB9EC5C1C8ABF2A00356374 /* RadioPlayerViewController.m */; };
 		2FB9EC611C8AE48C00356374 /* back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FB9EC601C8AE48C00356374 /* back@2x.png */; };
+		2FCB2A221C8BC98000851689 /* MRSFetchResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCB2A211C8BC98000851689 /* MRSFetchResultController.m */; };
+		2FCB2A251C8BCDEB00851689 /* MRSFetchResultSectionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCB2A241C8BCDEB00851689 /* MRSFetchResultSectionInfo.m */; };
+		2FCB2A281C8C47EE00851689 /* MRSSpeakerInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCB2A271C8C47EE00851689 /* MRSSpeakerInfo.m */; };
 		2FCC598F1C86DEE5008B2621 /* progress_btn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FCC598E1C86DEE5008B2621 /* progress_btn@2x.png */; };
 		2FCC599C1C872704008B2621 /* PlayerBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59951C872704008B2621 /* PlayerBackgroundView.m */; };
 		2FCC599D1C872704008B2621 /* RadioInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FCC59971C872704008B2621 /* RadioInfoModel.m */; };
@@ -71,6 +74,12 @@
 		2FB9EC5A1C8AB46700356374 /* list_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "list_default@2x.png"; path = "Resources/list_default@2x.png"; sourceTree = SOURCE_ROOT; };
 		2FB9EC5C1C8ABF2A00356374 /* RadioPlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RadioPlayerViewController.m; path = play/RadioPlayerViewController.m; sourceTree = "<group>"; };
 		2FB9EC601C8AE48C00356374 /* back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "back@2x.png"; path = "Resources/back@2x.png"; sourceTree = SOURCE_ROOT; };
+		2FCB2A201C8BC98000851689 /* MRSFetchResultController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSFetchResultController.h; path = MRSUIFoundation/MRSFetchResultController.h; sourceTree = "<group>"; };
+		2FCB2A211C8BC98000851689 /* MRSFetchResultController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSFetchResultController.m; path = MRSUIFoundation/MRSFetchResultController.m; sourceTree = "<group>"; };
+		2FCB2A231C8BCDEB00851689 /* MRSFetchResultSectionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSFetchResultSectionInfo.h; path = MRSUIFoundation/MRSFetchResultSectionInfo.h; sourceTree = "<group>"; };
+		2FCB2A241C8BCDEB00851689 /* MRSFetchResultSectionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSFetchResultSectionInfo.m; path = MRSUIFoundation/MRSFetchResultSectionInfo.m; sourceTree = "<group>"; };
+		2FCB2A261C8C47EE00851689 /* MRSSpeakerInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSSpeakerInfo.h; path = play/MRSSpeakerInfo.h; sourceTree = "<group>"; };
+		2FCB2A271C8C47EE00851689 /* MRSSpeakerInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSSpeakerInfo.m; path = play/MRSSpeakerInfo.m; sourceTree = "<group>"; };
 		2FCC598E1C86DEE5008B2621 /* progress_btn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "progress_btn@2x.png"; path = "Resources/progress_btn@2x.png"; sourceTree = SOURCE_ROOT; };
 		2FCC59941C872704008B2621 /* PlayerBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlayerBackgroundView.h; path = play/PlayerBackgroundView.h; sourceTree = "<group>"; };
 		2FCC59951C872704008B2621 /* PlayerBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlayerBackgroundView.m; path = play/PlayerBackgroundView.m; sourceTree = "<group>"; };
@@ -128,6 +137,8 @@
 				2FB9EC5C1C8ABF2A00356374 /* RadioPlayerViewController.m */,
 				2F320E071C81942E008DC121 /* RadioInfo.h */,
 				2F320E081C81942E008DC121 /* RadioInfo.m */,
+				2FCB2A261C8C47EE00851689 /* MRSSpeakerInfo.h */,
+				2FCB2A271C8C47EE00851689 /* MRSSpeakerInfo.m */,
 				2FCC59941C872704008B2621 /* PlayerBackgroundView.h */,
 				2FCC59951C872704008B2621 /* PlayerBackgroundView.m */,
 				2FCC59961C872704008B2621 /* RadioInfoModel.h */,
@@ -210,6 +221,10 @@
 				2FCC59A41C87273C008B2621 /* MRSImageView.m */,
 				2FB9EC4C1C8A98C800356374 /* MRSModel.h */,
 				2FB9EC4D1C8A98C800356374 /* MRSModel.m */,
+				2FCB2A231C8BCDEB00851689 /* MRSFetchResultSectionInfo.h */,
+				2FCB2A241C8BCDEB00851689 /* MRSFetchResultSectionInfo.m */,
+				2FCB2A201C8BC98000851689 /* MRSFetchResultController.h */,
+				2FCB2A211C8BC98000851689 /* MRSFetchResultController.m */,
 			);
 			name = MRSUIFoundation;
 			sourceTree = "<group>";
@@ -381,6 +396,7 @@
 				2FCC59A51C87273C008B2621 /* MRSImageAnimationLoadingView.m in Sources */,
 				2F3337931C803E9800927CF8 /* ViewController.m in Sources */,
 				2F320E091C81942E008DC121 /* RadioInfo.m in Sources */,
+				2FCB2A281C8C47EE00851689 /* MRSSpeakerInfo.m in Sources */,
 				2F3337901C803E9800927CF8 /* AppDelegate.m in Sources */,
 				2FE0DE031C89D5C300A705C3 /* FMInfo.m in Sources */,
 				2FCC59A61C87273C008B2621 /* MRSImageView.m in Sources */,
@@ -394,7 +410,9 @@
 				2FE0DE061C89D5C300A705C3 /* MRSLoadingMoreCell.m in Sources */,
 				2FE0DE051C89D5C300A705C3 /* TagListViewController.m in Sources */,
 				2FE0DE041C89D5C300A705C3 /* FMListModel.m in Sources */,
+				2FCB2A251C8BCDEB00851689 /* MRSFetchResultSectionInfo.m in Sources */,
 				2F33378D1C803E9800927CF8 /* main.m in Sources */,
+				2FCB2A221C8BC98000851689 /* MRSFetchResultController.m in Sources */,
 				2FCC599F1C872704008B2621 /* RadioViewModel.m in Sources */,
 				2FE0DE071C89D5C300A705C3 /* MRSRefreshHeader.m in Sources */,
 				2FCC599D1C872704008B2621 /* RadioInfoModel.m in Sources */,

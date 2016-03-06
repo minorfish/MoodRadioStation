@@ -10,6 +10,9 @@
 #import "UIKitMacros.h"
 #import <Masonry/Masonry.h>
 
+#define REFRESH_OFFSET 60
+#define REFRESHVIEW_HEIGHT 30
+
 @interface MRSRefreshHeader()
 
 @property (nonatomic, assign) BOOL showAnimation;
@@ -106,11 +109,11 @@
         contentInset.top = self.originEdgeInsets.top;
         if (refreshView.isDragging || refreshView.isDecelerating) {
             
-            if (self.state == MRSRefreshState_normal && refreshView.contentOffset.y < 0 && refreshView.contentOffset.y > -50) {
+            if (self.state == MRSRefreshState_normal && refreshView.contentOffset.y < 0 && refreshView.contentOffset.y > -REFRESH_OFFSET) {
                 [self setRefreshState:MRSRefreshState_normal];
-            } else if (self.state == MRSRefreshState_pulling && refreshView.contentOffset.y < 0 && refreshView.contentOffset.y > -50) {
+            } else if (self.state == MRSRefreshState_pulling && refreshView.contentOffset.y < 0 && refreshView.contentOffset.y > -REFRESH_OFFSET) {
                 [self setRefreshState:MRSRefreshState_normal];
-            } else if (self.state == MRSRefreshState_normal && refreshView.contentOffset.y < -50) {
+            } else if (self.state == MRSRefreshState_normal && refreshView.contentOffset.y < -REFRESH_OFFSET) {
                 [self setRefreshState:MRSRefreshState_pulling];
             }
         }
@@ -120,11 +123,11 @@
 
 - (void)refreshViewDidEndDragging:(UIScrollView *)refreshView willDecelerate:(BOOL)decelerate
 {
-    if (refreshView.contentOffset.y < -50 && self.refreshState != MRSRefreshState_loading) {
+    if (refreshView.contentOffset.y < -REFRESH_OFFSET && self.refreshState != MRSRefreshState_loading) {
         [self setRefreshState:MRSRefreshState_loading];
         
         UIEdgeInsets contentInsets = refreshView.contentInset;
-        contentInsets.top = self.originEdgeInsets.top + 30;
+        contentInsets.top = self.originEdgeInsets.top + REFRESHVIEW_HEIGHT;
         [UIView animateWithDuration:0.2 animations:^{
             refreshView.contentInset = contentInsets;
         }];
@@ -140,7 +143,7 @@
     self.refreshView.contentOffset = CGPointZero;
     [self setRefreshState:MRSRefreshState_loading];
     [UIView animateWithDuration:0.2 animations:^{
-        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top + 30)];
+        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top + REFRESHVIEW_HEIGHT)];
     }];
 }
 
