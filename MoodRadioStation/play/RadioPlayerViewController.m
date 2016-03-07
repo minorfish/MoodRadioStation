@@ -57,6 +57,27 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     return self;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+    self.navigationController.navigationBar.hidden = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    }
+    self.navigationController.navigationBar.hidden = NO;
+}
+
+- (void)dealloc
+{
+    [self.viewModel stop];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -94,7 +115,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         self.timeView.text = [NSString stringWithFormat:@"-%@",[self.viewModel formatTime:[remainTime integerValue]]];
     }];
 
-    [RACObserve(self, isLoading) subscribeNext:^(NSNumber *x) {
+    [[RACObserve(self, isLoading) distinctUntilChanged] subscribeNext:^(NSNumber *x) {
         @strongify(self);
         if ([x boolValue]) {
             [self.animationLoadingView startAnimation];
@@ -118,11 +139,11 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     }];
     
     [[RACSignal combineLatest:@[
-                                [RACObserve(self.viewModel, radioInfoLoading) distinctUntilChanged],
-                                [RACObserve(self.viewModel, radioLoading) distinctUntilChanged]
+                                self.viewModel.radioInfoLoaded ,
+                                self.viewModel.radioLoaded
                                 ]] subscribeNext:^(id x) {
         @strongify(self);
-        if (!self.viewModel.radioInfoLoading && !self.viewModel.radioLoading) {
+        if (!self.viewModel.error) {
             [self setupUI];
             self.isLoading = @(NO);
         }
@@ -264,7 +285,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
             [[tapGestureRecognizer rac_gestureSignal] subscribeNext:^(UITapGestureRecognizer *x) {
                 [self handleTapGesture:x];
             }];
-            [_progressBtn addGestureRecognizer:tapGestureRecognizer];
+            [view addGestureRecognizer:tapGestureRecognizer];
             
             UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] init];
             [[panGestureRecognizer rac_gestureSignal] subscribeNext:^(UIPanGestureRecognizer *x) {
@@ -298,6 +319,11 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     if (!_playerBackgroundView) {
         _playerBackgroundView = [[PlayerBackgroundView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 400) Title:self.viewModel.radioInfo.title];
         _playerBackgroundView.imageView.URLString = self.viewModel.radioInfo.coverURL;
+        @weakify(self);
+        _playerBackgroundView.block = ^{
+            @strongify(self);
+            [self navBack];
+        };
     }
     return _playerBackgroundView;
 }
@@ -345,6 +371,12 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 - (void)didTapButton
 {
     self.isPlaying = @(![self.isPlaying boolValue]);
+}
+
+- (void)navBack
+{
+    [self.viewModel stop];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark NotificationFunc

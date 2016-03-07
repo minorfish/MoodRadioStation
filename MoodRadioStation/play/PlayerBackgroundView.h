@@ -15,6 +15,8 @@
 @property (nonatomic, strong) MRSURLImageView *imageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 
+@property (nonatomic, copy) void(^block)();
+
 - (instancetype)initWithFrame:(CGRect)frame Title:(NSString *)titleString;
 
 @end

@@ -23,8 +23,8 @@
 @property (nonatomic, readonly) RadioInfo *radioInfo;
 
 @property (nonatomic, readonly) NSError *error;
-@property (nonatomic, readonly) BOOL radioInfoLoading;
-@property (nonatomic, readonly) BOOL radioLoading;
+@property (nonatomic, readonly) RACSubject *radioInfoLoaded;
+@property (nonatomic, readonly) RACSubject *radioLoaded;
 
 - (void)play;
 - (void)pause;

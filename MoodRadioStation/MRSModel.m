@@ -8,11 +8,12 @@
 
 #import "MRSModel.h"
 #import <AFNetworking/AFNetworking.h>
+#import <ReactiveCocoa/ReactiveCocoa.h>
 
 @interface MRSModel()
 
-@property (nonatomic, strong) AFURLSessionManager *manager;
 @property (nonatomic, strong) NSString *key;
+
 @end
 
 @implementation MRSModel
@@ -21,8 +22,8 @@
 {
     self = [super init];
     if (self) {
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        _manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+//        NSURLSessionConfiguration *backGroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"DownLoadFMBackgroundSession"];
+        _manager = [[AFURLSessionManager alloc] init];
         _key = @"c0d28ec0954084b4426223366293d190";
     }
     return self;

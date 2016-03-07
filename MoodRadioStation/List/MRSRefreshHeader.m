@@ -109,11 +109,11 @@
         contentInset.top = self.originEdgeInsets.top;
         if (refreshView.isDragging || refreshView.isDecelerating) {
             
-            if (self.state == MRSRefreshState_normal && refreshView.contentOffset.y < 0 && refreshView.contentOffset.y > -REFRESH_OFFSET) {
+            if (self.state == MRSRefreshState_normal && refreshView.contentOffset.y < 0 && refreshView.contentOffset.y > -[self refreshThreshold]) {
                 [self setRefreshState:MRSRefreshState_normal];
-            } else if (self.state == MRSRefreshState_pulling && refreshView.contentOffset.y < 0 && refreshView.contentOffset.y > -REFRESH_OFFSET) {
+            } else if (self.state == MRSRefreshState_pulling && refreshView.contentOffset.y < 0 && refreshView.contentOffset.y > -[self refreshThreshold]) {
                 [self setRefreshState:MRSRefreshState_normal];
-            } else if (self.state == MRSRefreshState_normal && refreshView.contentOffset.y < -REFRESH_OFFSET) {
+            } else if (self.state == MRSRefreshState_normal && refreshView.contentOffset.y < -[self refreshThreshold]) {
                 [self setRefreshState:MRSRefreshState_pulling];
             }
         }
@@ -123,7 +123,7 @@
 
 - (void)refreshViewDidEndDragging:(UIScrollView *)refreshView willDecelerate:(BOOL)decelerate
 {
-    if (refreshView.contentOffset.y < -REFRESH_OFFSET && self.refreshState != MRSRefreshState_loading) {
+    if (refreshView.contentOffset.y < -[self refreshThreshold] && self.refreshState != MRSRefreshState_loading) {
         [self setRefreshState:MRSRefreshState_loading];
         
         UIEdgeInsets contentInsets = refreshView.contentInset;
@@ -191,6 +191,11 @@
         _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     }
     return _activityIndicatorView;
+}
+
+- (CGFloat)refreshThreshold
+{
+    return REFRESH_OFFSET + self.originEdgeInsets.top;
 }
 
 @end

@@ -27,8 +27,8 @@ extern const NSString* RPRefreshProgressViewNotification;
 @property (nonatomic, strong) RadioInfo *radioInfo;
 
 @property (nonatomic, strong) NSError *error;
-@property (nonatomic, assign) BOOL radioInfoLoading;
-@property (nonatomic, assign) BOOL radioLoading;
+@property (nonatomic, strong) RACSubject *radioInfoLoaded;
+@property (nonatomic, strong) RACSubject *radioLoaded;
 
 @property (nonatomic, strong) AVAudioPlayer *player;
 @property (nonatomic, strong) CADisplayLink *displayLink;
@@ -58,17 +58,15 @@ extern const NSString* RPRefreshProgressViewNotification;
         @strongify(self);
         self.model.ID = ID;
         self.error = nil;
-        self.radioInfoLoading = YES;
         return [[[self.model getRadioInfo] catch:^RACSignal *(NSError *error) {
-            self.radioInfoLoading = NO;
             self.error = error;
             return [RACSignal empty];
         }] doNext:^(RadioInfo *value) {
             @strongify(self);
             if (!value)
                 return;
-            self.radioInfoLoading = NO;
             self.radioInfo = value;
+            [self.radioInfoLoaded sendNext:@(YES)];
         }];
     }];
     
@@ -80,11 +78,9 @@ extern const NSString* RPRefreshProgressViewNotification;
     @weakify(self);
     _getRadioCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSString *radioURL) {
         @strongify(self);
-        self.radioLoading = YES;
         self.error = nil;
-        self.model.radioURL = self.radioInfo.URL;
+        self.model.radioURL = radioURL;
         return [[[self.model getRadio] catch:^RACSignal *(NSError *error) {
-            self.radioLoading = NO;
             self.error = error;
             return [RACSignal empty];
         }] doNext:^(NSURL *filePath) {
@@ -96,8 +92,8 @@ extern const NSString* RPRefreshProgressViewNotification;
                 self.player.currentTime = 0;
                 self.durationTime = self.player.duration;
                 [self.player prepareToPlay];
+                [self.radioLoaded sendNext:@(YES)];
             }
-            self.radioLoading = NO;
             self.error = error;
         }];
     }];
@@ -112,6 +108,22 @@ extern const NSString* RPRefreshProgressViewNotification;
         _displayLink.paused = NO;
     }
     return _displayLink;
+}
+
+- (RACSubject *)radioLoaded
+{
+    if (!_radioLoaded) {
+        _radioLoaded = [RACSubject subject];
+    }
+    return _radioLoaded;
+}
+
+- (RACSubject *)radioInfoLoaded
+{
+    if (!_radioInfoLoaded) {
+        _radioInfoLoaded = [RACSubject subject];
+    }
+    return _radioInfoLoaded;
 }
 
 - (void)displayLinkAction:(CADisplayLink *)dis

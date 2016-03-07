@@ -21,6 +21,16 @@
 
 @dynamic key;
 
+- (instancetype)init{
+    self = [super init];
+    if (self) {
+        [self.manager setTaskWillPerformHTTPRedirectionBlock:^NSURLRequest * _Nonnull(NSURLSession * _Nonnull session, NSURLSessionTask * _Nonnull task, NSURLResponse * _Nonnull response, NSURLRequest * _Nonnull request) {
+            return request;
+        }];
+    }
+    return self;
+}
+
 // 获取播放界面需要的信息
 - (AFHTTPRequestOperation *)getRadioWithID:(NSUInteger)ID finished:(void (^)(NSDictionary* dict, NSError* error))finished
 {
@@ -30,8 +40,8 @@
                            @"id": @(ID)};
     return [self getURL:path
           Parmas:dict
-        finished:^(id data, NSError *error) {
-            finished(data, error);
+        finished:^(NSDictionary *data, NSError *error) {
+            finished(data[@"data"], error);
         }];
 }
 

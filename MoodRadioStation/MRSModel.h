@@ -7,9 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+
 @class AFHTTPRequestOperation;
+@class AFURLSessionManager;
 
 @interface MRSModel : NSObject
+
+@property (nonatomic, strong) AFURLSessionManager *manager;
 
 - (AFHTTPRequestOperation *)getURL:(NSString *)path
                             Parmas:(NSDictionary*)parmas

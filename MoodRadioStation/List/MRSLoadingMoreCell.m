@@ -92,13 +92,14 @@
     CGFloat offset = refreshView.contentOffset.y - (refreshView.contentSize.height - refreshView.frame.size.height);
     UIEdgeInsets contentInset = refreshView.contentInset;
     if (self.loadingMoreState == MRSLoadingMoreState_loading) {
+        
     } else {
         contentInset.bottom = self.originEdgeInsets.bottom;
-        if (self.loadingMoreState == MRSLoadingMoreState_normal && offset > 0 && offset < LOADMORE_OFFSET + self.originEdgeInsets.bottom){
+        if (self.loadingMoreState == MRSLoadingMoreState_normal && offset > 0 && offset < [self loadThreshold]){
             [self setLoadingMoreState:MRSLoadingMoreState_normal];
-        } else if (self.loadingMoreState == MRSLoadingMoreState_dragging && offset > 0 && offset < LOADMORE_OFFSET + self.originEdgeInsets.bottom){
+        } else if (self.loadingMoreState == MRSLoadingMoreState_dragging && offset > 0 && offset < [self loadThreshold]){
             [self setLoadingMoreState:MRSLoadingMoreState_normal];
-        } else if (self.loadingMoreState == MRSLoadingMoreState_normal && refreshView.contentOffset.y > LOADMORE_OFFSET + self.originEdgeInsets.bottom) {
+        } else if (self.loadingMoreState == MRSLoadingMoreState_normal && refreshView.contentOffset.y > [self loadThreshold]) {
             [self setLoadingMoreState:MRSLoadingMoreState_dragging];
         }
     }
@@ -108,7 +109,7 @@
 - (void)refreshViewDidEndDragging:(UIScrollView *)refreshView willDecelerate:(BOOL)decelerate
 {
     CGFloat offset = refreshView.contentOffset.y - (refreshView.contentSize.height - refreshView.frame.size.height);
-    if (self.loadingMoreState != MRSLoadingMoreState_loading && offset > LOADMORE_OFFSET + self.originEdgeInsets.bottom && self.enabled) {
+    if (self.loadingMoreState != MRSLoadingMoreState_loading && offset > [self loadThreshold] && self.enabled) {
         [self setLoadingMoreState:MRSLoadingMoreState_loading];
         
         UIEdgeInsets contentInset = refreshView.contentInset;
@@ -134,8 +135,8 @@
 - (void)stopLoading
 {
     [UIView animateWithDuration:0.2 animations:^{
-        CGFloat offset = self.refreshView.contentOffset.y;
-        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top + offset + LOADMOREVIEW_HEIGHT)];
+//        CGFloat offset = self.refreshView.contentOffset.y;
+//        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top + offset + LOADMOREVIEW_HEIGHT)];
     } completion:^(BOOL finished) {
         [self setLoadingMoreState:MRSLoadingMoreState_normal];
     }];
@@ -174,6 +175,11 @@
     if (!enabled) {
         [self removeFromSuperview];
     }
+}
+
+- (CGFloat)loadThreshold
+{
+    return self.originEdgeInsets.top + LOADMORE_OFFSET;
 }
 
 @end

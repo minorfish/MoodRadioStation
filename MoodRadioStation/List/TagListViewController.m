@@ -25,6 +25,7 @@
 @property (nonatomic, strong) NSString *tag;
 
 @property (nonatomic, strong) UIView *noContentView;
+@property (nonatomic, strong) UINavigationBar *customizeNavigationBar;
 
 @end
 
@@ -43,14 +44,27 @@
 - (void)viewDidLoad
 {
     self.refreshControll = [[MRSRefreshHeader alloc] initWithFrame:CGRectMake(0, -30, SCREEN_WIDTH, 30) RefreshView:self.tableView];
+    self.refreshControll.originEdgeInsets = UIEdgeInsetsMake(60, 0, 0, 0);
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
+    
+
     self.navigationItem.title = self.tag;
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"back"] style:UIBarButtonItemStylePlain target:self action:@selector(back:)];
+    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+    
+    UIImageView *backView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"back"]];
+    UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+    [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+        // navBack func
+    }];
+    [backView addGestureRecognizer:tapGes];
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backView];
+    
     [self bind];
     [self refresh];
 }
@@ -93,9 +107,10 @@
 
 - (void)resetLoadMoreViewFrame
 {
-    CGFloat height = self.tableView.contentInset.top + self.viewModel.fetchResultController.numberOfObject * [TagListCellItem CellHeight];
+    CGFloat height = self.viewModel.fetchResultController.numberOfObject * [TagListCellItem CellHeight];
     if (height >= SCREEN_HEIGHT) {
         self.loadigMoreControll = [[MRSLoadingMoreCell alloc] initWithFrame:CGRectMake(0, height, SCREEN_WIDTH, 30) RefreshView:self.tableView];
+        self.loadigMoreControll.originEdgeInsets = UIEdgeInsetsMake(60, 0, 0, 0);
     }
 }
 
