@@ -24,17 +24,18 @@
 @dynamic key;
 
 - (AFHTTPRequestOperation *)getFMListWithRows:(NSNumber *)rows
-                                      offset:(NSNumber *)offset
-                                         tag:(NSString *)tag
-                                  finished:(void(^)(NSDictionary *dict, NSError *error))finished
+                                      Offset:(NSNumber *)offset
+                                         KeyString:(NSString *)keyString
+                                     KeyValue:(NSString *)keyValue
+                                  Finished:(void(^)(NSDictionary *dict, NSError *error))finished
 {
-    if (!rows || !offset || !tag)
+    if (!rows || !offset || !keyValue || !keyString)
         return nil;
     
     NSString *path = @"http://bapi.xinli001.com/fm2/broadcast_list.json/";
     NSDictionary *parmas = @{@"rows": rows,
                              @"offset": offset,
-                             @"tag": tag,
+                             keyString: keyValue,
                              @"key": self.key};
     return [self getURL:path Parmas:parmas finished:^(id data, NSError *error) {
         if (!error && [data isKindOfClass:[NSDictionary class]]) {
@@ -51,7 +52,11 @@
     _refreshList = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         @strongify(self);
         __block RACDisposable *disposable = nil;
-        AFHTTPRequestOperation *op = [self getFMListWithRows:self.rows  offset:self.offset tag:self.tag finished:^(NSDictionary *dict, NSError *error) {
+        AFHTTPRequestOperation *op = [self getFMListWithRows:self.rows
+                                                      Offset:self.offset
+                                                   KeyString:self.keyString
+                                                    KeyValue:self.keyValue
+                                                    Finished:^(NSDictionary *dict, NSError *error) {
             if (!disposable.isDisposed) {
                 if (!error && dict[@"data"]) {
                     if ([dict[@"count"] integerValue]) {

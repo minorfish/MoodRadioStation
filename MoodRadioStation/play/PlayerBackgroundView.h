@@ -17,6 +17,4 @@
 
 @property (nonatomic, copy) void(^block)();
 
-- (instancetype)initWithFrame:(CGRect)frame Title:(NSString *)titleString;
-
 @end

@@ -29,9 +29,10 @@
 @property (nonatomic, readonly) BOOL loading;
 
 @property (nonatomic, readonly) MRSFetchResultController *fetchResultController;
+@property (nonatomic, readonly) NSArray *infoArray;
 
 @property (nonatomic, readonly) RACDisposable *previousDataRefreshDispose;
 
-- (instancetype)initWithRows:(NSNumber *)rows Tag:(NSString *)tag;
+- (instancetype)initWithRows:(NSNumber *)rows KeyString:(NSString *)keyString KeyValue:(NSString *)keyValue;
 
 @end

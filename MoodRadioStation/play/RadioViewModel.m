@@ -23,6 +23,7 @@ extern const NSString* RPRefreshProgressViewNotification;
 
 @property (nonatomic, assign) float progress;
 @property (nonatomic, assign) NSTimeInterval durationTime;
+@property (nonatomic, strong) NSURL *filePath;
 
 @property (nonatomic, strong) RadioInfo *radioInfo;
 
@@ -49,6 +50,8 @@ extern const NSString* RPRefreshProgressViewNotification;
 - (void)dealloc
 {
     [self stop];
+    [self.radioInfoLoaded sendCompleted];
+    [self.radioLoaded sendCompleted];
 }
 
 - (RACCommand *)getRadioInfoCommand
@@ -58,6 +61,7 @@ extern const NSString* RPRefreshProgressViewNotification;
         @strongify(self);
         self.model.ID = ID;
         self.error = nil;
+        [self.radioInfoLoaded sendNext:@(NO)];
         return [[[self.model getRadioInfo] catch:^RACSignal *(NSError *error) {
             self.error = error;
             return [RACSignal empty];
@@ -80,21 +84,24 @@ extern const NSString* RPRefreshProgressViewNotification;
         @strongify(self);
         self.error = nil;
         self.model.radioURL = radioURL;
+        [self.radioLoaded sendNext:@(NO)];
         return [[[self.model getRadio] catch:^RACSignal *(NSError *error) {
             self.error = error;
             return [RACSignal empty];
         }] doNext:^(NSURL *filePath) {
             @strongify(self);
-            NSError *error = nil;
-            self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:filePath error:&error];
-            if (!error) {
-                self.player.delegate = self;
-                self.player.currentTime = 0;
-                self.durationTime = self.player.duration;
-                [self.player prepareToPlay];
-                [self.radioLoaded sendNext:@(YES)];
-            }
-            self.error = error;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSError *error = nil;
+                self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:filePath error:&error];
+                if (!error) {
+                    self.player.delegate = self;
+                    self.player.currentTime = 0;
+                    self.durationTime = self.player.duration;
+                    [self.player prepareToPlay];
+                    [self.radioLoaded sendNext:@(YES)];
+                }
+                self.error = error;
+            });
         }];
     }];
     return _getRadioCommand;
@@ -128,6 +135,9 @@ extern const NSString* RPRefreshProgressViewNotification;
 
 - (void)displayLinkAction:(CADisplayLink *)dis
 {
+    if (self.player.duration <= 0) {
+        return;
+    }
     self.progress = self.player.currentTime / self.player.duration;
     // 通知根据时间进度更新UI
     [[NSNotificationCenter defaultCenter] postNotificationName:RPRefreshProgressViewNotification object:nil];
@@ -152,11 +162,9 @@ extern const NSString* RPRefreshProgressViewNotification;
 
 - (void)stop
 {
-    if (self.player.playing) {
-        [self pause];
-    }
-    
+    [self.player stop];
     self.player.currentTime = 0;
+    self.player = nil;
     [self.displayLink invalidate];
     self.displayLink = nil;
 }

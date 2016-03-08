@@ -14,7 +14,8 @@
 
 @property (nonatomic, strong) NSNumber *rows;
 @property (nonatomic, strong) NSNumber *offset;
-@property (nonatomic, strong) NSString *tag;
+@property (nonatomic, strong) NSString *keyString;
+@property (nonatomic, strong) NSString *keyValue;
 
 @property (nonatomic, strong) RACSignal *refreshList;
 

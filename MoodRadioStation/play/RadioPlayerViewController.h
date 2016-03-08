@@ -10,6 +10,10 @@
 
 @interface RadioPlayerViewController : UIViewController
 
-- (instancetype)initWithRadioID:(NSNumber *)radioID RadioURL:(NSString *)URL;
+@property (nonatomic, strong) NSNumber *isPlaying;
+@property (nonatomic, strong) NSNumber *currentFMIndex;
+@property (nonatomic, strong) NSMutableArray *requestFMInfoArray;
+
+- (instancetype)initWithKeyString:(NSString *)keyString KeyVale:(NSString *)keyValue Rows:(NSNumber *)rows;
 
 @end

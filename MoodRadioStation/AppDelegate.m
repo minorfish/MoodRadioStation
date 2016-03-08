@@ -17,7 +17,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    TagListViewController *tagListViewController = [[TagListViewController alloc] initWithRows:@(15) Tag:@"减压"];
+    TagListViewController *tagListViewController = [[TagListViewController alloc] initWithRows:@(15) KeyString:@"is_teacher" KeyValue:@"0"];
     UINavigationController *sourceNavigationController = [[UINavigationController alloc] initWithRootViewController:tagListViewController];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = sourceNavigationController;

@@ -26,6 +26,7 @@
 @property (nonatomic, strong) MRSURLImageView *URLImageView;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *speakLabel;
+@property (nonatomic, strong) UIView *seperateLine;
 
 @end
 
@@ -40,6 +41,7 @@
         [self.contentView addSubview:self.URLImageView];
         [self.contentView addSubview:self.titleLabel];
         [self.contentView addSubview:self.speakLabel];
+        [self.contentView addSubview:self.seperateLine];
         [self.contentView setNeedsUpdateConstraints];
     }
     return self;
@@ -68,6 +70,12 @@
     [_speakLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.titleLabel.mas_bottom).offset(10);
         make.left.equalTo(self.titleLabel);
+    }];
+    [_seperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(self);
+        make.height.equalTo(@0.5);
+        make.left.equalTo(self).offset(12);
+        make.bottom.equalTo(self);
     }];
 }
 
@@ -100,6 +108,15 @@
         _speakLabel.textColor = HEXCOLOR(0x999999);
     }
     return _speakLabel;
+}
+
+- (UIView*)seperateLine
+{
+    if (!_seperateLine) {
+        _seperateLine = [[UIView alloc] init];
+        _seperateLine.backgroundColor = HEXCOLOR(0xe5e5e5);
+    }
+    return _seperateLine;
 }
 
 @end

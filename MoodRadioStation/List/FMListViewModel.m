@@ -31,15 +31,18 @@
 
 @end
 
-@implementation FMListViewModel
+@implementation FMListViewModel {
+    NSMutableArray* _infoArray;
+}
 
-- (instancetype)initWithRows:(NSNumber *)rows Tag:(NSString *)tag
+- (instancetype)initWithRows:(NSNumber *)rows KeyString:(NSString *)keyString KeyValue:(NSString *)keyValue
 {
     self = [super init];
     if (self) {
         _model = [[FMListModel alloc] init];
         _model.offset  = @(0);
-        _model.tag = tag;
+        _model.keyString = keyString;
+        _model.keyValue = keyValue;
         _model.rows = rows;
         _fetchResultController = [[MRSFetchResultController alloc] init];
         _fetchResultController.delegate = self;
@@ -47,12 +50,23 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self.refreshingSignal sendCompleted];
+    [self.dataLoadedSignal sendCompleted];
+}
+
 - (RACCommand *)refreshListCommand
 {
     @weakify(self);
-    _refreshListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id x) {
+    _refreshListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSNumber *offset) {
         @strongify(self);
         self.error = nil;
+        if (offset) {
+            self.model.offset = offset;
+        } else {
+            self.model.offset = @(0);
+        }
         [self refreshDataNeedReset:YES];
         return [RACSignal empty];
     }];
@@ -66,7 +80,6 @@
         @strongify(self);
         self.loading = YES;
         self.error = nil;
-       
         return [[[self.model refreshList] catch:^RACSignal *(NSError *error) {
             self.error = error;
             self.loading = NO;
@@ -75,6 +88,7 @@
             @strongify(self);
             if (dictArray) {
                 [self.fetchResultController addObjectsInLastSection:dictArray];
+                [_infoArray addObjectsFromArray:dictArray];
                 self.model.offset = @(self.fetchResultController.numberOfObject);
             }
             self.loading = NO;
@@ -92,7 +106,11 @@
         }
         
         if (needRest) {
-            self.model.offset = @(0);
+            if (!_infoArray) {
+                _infoArray = [NSMutableArray array];
+            } else {
+                [_infoArray removeAllObjects];
+            }
             [_fetchResultController removeAllSections];
         }
         
@@ -108,11 +126,17 @@
             @strongify(self)
             if (dictArray) {
                 [self.fetchResultController addObjectsInLastSection:dictArray];
+                [_infoArray addObjectsFromArray:dictArray];
                 self.model.offset = @(self.fetchResultController.numberOfObject);
             }
             self.loading = NO;
         }];
     });
+}
+
+- (NSArray *)infoArray
+{
+    return _infoArray;
 }
 
 - (RACSubject *)dataLoadedSignal

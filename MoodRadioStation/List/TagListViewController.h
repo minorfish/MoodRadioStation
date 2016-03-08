@@ -10,6 +10,6 @@
 
 @interface TagListViewController : MRSListViewController
 
-- (instancetype)initWithRows:(NSNumber *)rows Tag:(NSString *)tag;
+- (instancetype)initWithRows:(NSNumber *)rows KeyString:(NSString *)keyString KeyValue:(NSString *)keyValue;
 
 @end

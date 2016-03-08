@@ -30,7 +30,7 @@
 
 @implementation PlayerBackgroundView
 
-- (instancetype)initWithFrame:(CGRect)frame Title:(NSString *)titleString
+- (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -48,7 +48,6 @@
         self.backView.userInteractionEnabled = YES;
         [self.backView addGestureRecognizer:tapGes];
         self.imageView.clipsToBounds = YES;
-        self.titleLabel.text = titleString;
         
         [_imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.size.equalTo(self);

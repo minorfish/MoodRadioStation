@@ -16,41 +16,51 @@
 #import "MRSURLImageView.h"
 #import <Masonry/Masonry.h>
 #import "FMListModel.h"
+#import "MRSNoContentView.h"
+#import "MRSSpeakerDescView.h"
+#import "MRSSpeakerInfo.h"
+#import "MRSCircleImageView.h"
+#import "FMInfo.h"
+#import "FMListViewModel.h"
 
 const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.refrshProgress";
 
 @interface RadioPlayerViewController ()
 
 @property (nonatomic, strong) RadioViewModel *viewModel;
-@property (nonatomic, strong) NSNumber *radioID;
+
 @property (nonatomic, strong) NSNumber *remainTime;
-@property (nonatomic, strong) NSNumber *isPlaying;
 @property (nonatomic, strong) NSNumber *progressX;
 @property (nonatomic, strong) NSNumber *isLoading;
-@property (nonatomic, strong) NSString *radioURL;
 
 @property (nonatomic, strong) PlayerBackgroundView *playerBackgroundView;
 
-@property (nonatomic, strong) CAShapeLayer *shapeLayer;
-@property (nonatomic, strong) UIImageView *playButton;
+@property (nonatomic, strong) UIImageView *playOrPauseButton;
+@property (nonatomic, strong) UIImageView *nextButton;
+@property (nonatomic, strong) UIImageView *preButton;
 @property (nonatomic, strong) UIView *playerView;
+
 @property (nonatomic, strong) UIView *progressView;
 @property (nonatomic, strong) UILabel *timeView;
 @property (nonatomic, strong) UIImageView *progressBtn;
+@property (nonatomic, strong) CAShapeLayer *shapeLayer;
+
+@property (nonatomic, strong) MRSSpeakerDescView *speakerDescView;
 
 @property (nonatomic, strong) MRSImageAnimationLoadingView *animationLoadingView;
+
+@property (nonatomic, strong) FMListViewModel *fmListViewModel;
 
 @end
 
 @implementation RadioPlayerViewController
 
-- (instancetype)initWithRadioID:(NSNumber *)radioID RadioURL:(NSString *)URL
+- (instancetype)initWithKeyString:(NSString *)keyString KeyVale:(NSString *)keyValue Rows:(NSNumber *)rows
 {
     self = [super init];
     if (self) {
-        _radioID = radioID;
-        _radioURL = URL;
         _viewModel = [[RadioViewModel alloc] init];
+        _fmListViewModel = [[FMListViewModel alloc] initWithRows:rows KeyString:keyString KeyValue:keyValue];
         _isPlaying = @(NO);
         _isLoading = @(YES);
     }
@@ -81,6 +91,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self setupUI];
     [self bind];
     
     [[[[NSNotificationCenter defaultCenter] rac_addObserverForName:RPRefreshProgressViewNotification object:nil] deliverOnMainThread] subscribeNext:^(NSNotification *x) {
@@ -89,10 +100,20 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         }
     }];
     
-    self.isLoading = @(YES);
-    [self.viewModel.getRadioInfoCommand execute:self.radioID];
-    [self.viewModel.getRadioCommand execute:self.radioURL];
+    [self refresh];
+}
+
+- (void)refresh
+{
+    FMInfo *reqestFMInfo = (FMInfo *)[self.requestFMInfoArray objectAtIndex:[self.currentFMIndex unsignedIntegerValue]];
     
+    if (!reqestFMInfo)
+        return;
+ 
+    [self.viewModel stop];
+    self.isLoading = @(YES);
+    [self.viewModel.getRadioInfoCommand execute:@(reqestFMInfo.ID)];
+    [self.viewModel.getRadioCommand execute:reqestFMInfo.mediaURL];
 }
 
 - (void)bind
@@ -102,10 +123,10 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         @strongify(self);
         if ([isPlaying boolValue]) {
             [self.viewModel play];
-            [self.playButton setImage:[UIImage imageNamed:@"pause"]];
+            [self.playOrPauseButton setImage:[UIImage imageNamed:@"pause"]];
         } else {
             [self.viewModel pause];
-            [self.playButton setImage:[UIImage imageNamed:@"play"]];
+            [self.playOrPauseButton setImage:[UIImage imageNamed:@"play"]];
         }
     }];
     
@@ -141,11 +162,12 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     [[RACSignal combineLatest:@[
                                 self.viewModel.radioInfoLoaded ,
                                 self.viewModel.radioLoaded
-                                ]] subscribeNext:^(id x) {
+                                ]] subscribeNext:^(RACTuple *array) {
         @strongify(self);
-        if (!self.viewModel.error) {
-            [self setupUI];
+        if (!self.viewModel.error && [array objectAtIndex:0] && [array objectAtIndex:1]) {
+            [self refreshViewWithData];
             self.isLoading = @(NO);
+            self.isPlaying = @(YES);
         }
     }];
     
@@ -154,18 +176,46 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         self.isLoading = @(NO);
     }];
     
+    [[[RACObserve(self, currentFMIndex) ignore:nil] distinctUntilChanged] subscribeNext:^(id x) {
+        @strongify(self);
+        [self refresh];
+    }];
+    
+    [self.fmListViewModel.dataLoadedSignal subscribeNext:^(NSNumber *x) {
+        @strongify(self);
+        if (![x boolValue])
+            return;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.requestFMInfoArray addObjectsFromArray:self.fmListViewModel.infoArray];
+            self.currentFMIndex = @([self.currentFMIndex longLongValue] + 1);
+        });
+    }];
+    
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
     [[tapGestureRecognizer rac_gestureSignal] subscribeNext:^(id x) {
         [self didTapButton];
     }];
-    [self.playButton addGestureRecognizer:tapGestureRecognizer];
+    [self.playOrPauseButton addGestureRecognizer:tapGestureRecognizer];
 }
 
 - (void)setupUI
 {
     [self.view addSubview:self.playerBackgroundView];
     [self.view addSubview:self.playerView];
-    [self loadDescriptionView];
+    [self.view addSubview:self.speakerDescView];
+}
+
+- (void)refreshViewWithData
+{
+    self.progressBtn.hidden = NO;
+    self.remainTime = @(self.viewModel.durationTime);
+    self.playerBackgroundView.titleLabel.text = self.viewModel.radioInfo.title;
+    self.playerBackgroundView.imageView.URLString = self.viewModel.radioInfo.coverURL;
+    
+    MRSSpeakerInfo *speaker = self.viewModel.radioInfo.speakerInfo;
+    self.speakerDescView.circleImageView.URLString = speaker.cover;
+    self.speakerDescView.speakerNameLabel.text = speaker.name;
+    self.speakerDescView.fmNumLabel.text = [NSString stringWithFormat:@"%@个节目", @(speaker.fmNum)];
 }
 
 - (UIView *)playerView
@@ -173,22 +223,31 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     if (!_playerView) {
         _playerView = ({
             UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, self.playerBackgroundView.frame.size.height, SCREEN_WIDTH, 100)];
-            self.remainTime = @(self.viewModel.durationTime);
             
-            [view addSubview:self.playButton];
+            [view addSubview:self.playOrPauseButton];
             [view addSubview:self.timeView];
             [view addSubview:self.progressView];
-        
-            [_playButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+            [view addSubview:self.nextButton];
+            [view addSubview:self.preButton];
+            
+            [_playOrPauseButton mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.top.equalTo(view).offset(15);
                 make.centerX.equalTo(view);
             }];
+            [_preButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(self.playOrPauseButton);
+                make.right.equalTo(self.playOrPauseButton.mas_left).offset(-40);
+            }];
+            [_nextButton mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.top.equalTo(self.playOrPauseButton);
+                make.left.equalTo(self.playOrPauseButton.mas_right).offset(40);
+            }];
             [_timeView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.centerY.equalTo(self.playButton);
+                make.centerY.equalTo(self.playOrPauseButton);
                 make.right.equalTo(view).offset(-5);
             }];
             [_progressView mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.top.equalTo(self.playButton.mas_bottom).offset(10);
+                make.top.equalTo(self.playOrPauseButton.mas_bottom).offset(10);
                 make.left.equalTo(view);
                 make.bottom.equalTo(view).offset(-15);
             }];
@@ -197,41 +256,6 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         });
     }
     return _playerView;
-}
-
-- (void)loadDescriptionView
-{
-    UILabel *speakLabel = ({
-        UILabel *label = [[UILabel alloc] init];
-        label.font = Font(15);
-        label.textColor = HEXCOLOR(0x666666);
-        label.text = self.viewModel.radioInfo.speak;
-        label;
-    });
-    
-    UILabel *descLabel = ({
-        UILabel *lable = [[UILabel alloc] init];
-        lable.font = Font(13);
-        lable.textColor = HEXCOLOR(0x999999);
-        lable.text = self.viewModel.radioInfo.radiodDesc;
-        lable.numberOfLines = 0;
-        lable.textAlignment = NSTextAlignmentLeft;
-        lable;
-    });
-    
-    [self.view addSubview:speakLabel];
-    [self.view addSubview:descLabel];
-    
-    [speakLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.playerView.mas_bottom).offset(15);
-        make.left.equalTo(self.view).offset(12);
-    }];
-    
-    [descLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(speakLabel.mas_bottom).offset(15);
-        make.left.equalTo(speakLabel);
-        make.right.lessThanOrEqualTo(self.view).offset(-12);
-    }];
 }
 
 - (CAShapeLayer *)shapeLayer
@@ -243,13 +267,48 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     return _shapeLayer;
 }
 
-- (UIImageView *)playButton
+- (UIImageView *)playOrPauseButton
 {
-    if (!_playButton) {
-        _playButton = [[UIImageView alloc] init];
-        _playButton.userInteractionEnabled = YES;
+    if (!_playOrPauseButton) {
+        _playOrPauseButton = [[UIImageView alloc] init];
+        _playOrPauseButton.userInteractionEnabled = YES;
     }
-    return _playButton;
+    return _playOrPauseButton;
+}
+
+- (UIImageView *)nextButton
+{
+    if (!_nextButton) {
+        _nextButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"next"]];
+        _nextButton.userInteractionEnabled = YES;
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+        [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+            if ([self.currentFMIndex longLongValue] + 1 < [self.requestFMInfoArray count]) {
+                self.currentFMIndex = @([self.currentFMIndex longLongValue] + 1);
+            } else {
+                [self.fmListViewModel.refreshListCommand
+                   execute:@(self.requestFMInfoArray.count)];
+            }
+        }];
+        [_nextButton addGestureRecognizer:tapGes];
+    }
+    return _nextButton;
+}
+
+- (UIImageView *)preButton
+{
+    if (!_preButton) {
+        _preButton = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pre"]];
+        _preButton.userInteractionEnabled = YES;
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+        [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+            if ([self.currentFMIndex longLongValue] - 1 >= 0) {
+                self.currentFMIndex = @([self.currentFMIndex longLongValue] - 1);
+            }
+        }];
+        [_preButton addGestureRecognizer:tapGes];
+    }
+    return _preButton;
 }
 
 - (UILabel *)timeView
@@ -276,6 +335,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
             _progressBtn = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"progress_btn"]];
             _progressBtn.userInteractionEnabled = YES;
             [view addSubview:_progressBtn];
+            _progressBtn.hidden = YES;
             [_progressBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
                 make.left.equalTo(view.mas_left);
                 make.centerY.equalTo(view.mas_top);
@@ -317,8 +377,8 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 - (PlayerBackgroundView *)playerBackgroundView
 {
     if (!_playerBackgroundView) {
-        _playerBackgroundView = [[PlayerBackgroundView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 400) Title:self.viewModel.radioInfo.title];
-        _playerBackgroundView.imageView.URLString = self.viewModel.radioInfo.coverURL;
+        _playerBackgroundView = [[PlayerBackgroundView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 400)];
+        _playerBackgroundView.imageView.image = _playerBackgroundView.imageView.defaultImage;
         @weakify(self);
         _playerBackgroundView.block = ^{
             @strongify(self);
@@ -326,6 +386,16 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         };
     }
     return _playerBackgroundView;
+}
+
+- (MRSSpeakerDescView *)speakerDescView
+{
+    if (!_speakerDescView) {
+        _speakerDescView = [[MRSSpeakerDescView alloc] initWithFrame:CGRectMake(0, self.playerView.frame.origin.y + self.playerView.frame.size.height + 15, SCREEN_WIDTH, 84)];
+        _speakerDescView.circleImageView.image = _speakerDescView.circleImageView.defaultImage;
+        _speakerDescView.backgroundColor = [UIColor whiteColor];
+    }
+    return _speakerDescView;
 }
 
 - (MRSImageAnimationLoadingView *)animationLoadingView
@@ -375,7 +445,6 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 
 - (void)navBack
 {
-    [self.viewModel stop];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -387,7 +456,8 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     self.progressX = @(self.viewModel.progress * SCREEN_WIDTH);
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
 }
 
