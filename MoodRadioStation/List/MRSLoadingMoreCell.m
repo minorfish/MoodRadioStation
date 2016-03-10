@@ -135,8 +135,8 @@
 - (void)stopLoading
 {
     [UIView animateWithDuration:0.2 animations:^{
-//        CGFloat offset = self.refreshView.contentOffset.y;
-//        [self.refreshView setContentOffset:CGPointMake(0, -self.originEdgeInsets.top + offset + LOADMOREVIEW_HEIGHT)];
+        CGFloat offset = self.refreshView.contentOffset.y;
+        [self.refreshView setContentOffset:CGPointMake(0, offset - LOADMOREVIEW_HEIGHT)];
     } completion:^(BOOL finished) {
         [self setLoadingMoreState:MRSLoadingMoreState_normal];
     }];

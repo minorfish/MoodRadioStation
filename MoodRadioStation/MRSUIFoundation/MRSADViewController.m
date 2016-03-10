@@ -10,7 +10,7 @@
 #import "MRSADScrollView.h"
 #import "UIKitMacros.h"
 
-@interface MRSADViewController ()<MRSADScrollerViewDataSource, MRSADScrollerViewDelegate>
+@interface MRSADViewController ()<MRSADScrollerViewDelegate>
 
 @property (nonatomic, strong) MRSADScrollView *ADScrollView;
 @property (nonatomic, strong) NSTimer *timer;
@@ -26,7 +26,7 @@
 {
     self = [super init];
     if (self) {
-        _adViewHeight = SCREEN_WIDTH / 375.0 * 94;
+        _adViewHeight = SCREEN_WIDTH / 375.0 * 240;
     }
     return self;
 }
@@ -53,7 +53,6 @@
         _ADScrollView = [[MRSADScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, _adViewHeight)];
         _ADScrollView.scrollsToTop = NO;// 点击设备栏回顶部
         _ADScrollView.ADDelegate = self;
-        _ADScrollView.ADDataSource = self;
     }
     return _ADScrollView;
 }
@@ -61,7 +60,7 @@
 - (NSTimer *)timer
 {
     if (!_timer) {
-        _timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(scrollNext) userInfo:nil repeats:YES];
+        _timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(scrollNext) userInfo:nil repeats:YES];
     }
     return _timer;
 }
@@ -69,7 +68,7 @@
 - (UIPageControl *)pageControl
 {
     if (!_pageControl) {
-        _pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 200)/2, self.view.frame.size.height - 7 - 10, 200, 7)];
+        _pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake((self.ADView.frame.size.width - 200)/2, self.ADView.frame.size.height - 7 - 10, 200, 7)];
         _pageControl.hidesForSinglePage = YES;
         _pageControl.pageIndicatorTintColor = RGBCOLOR(226, 226, 226);
     }
@@ -101,7 +100,7 @@
 - (void)startTimer
 {
     [self stopTimer];
-    [self.timer performSelector:@selector(fire) withObject:self afterDelay:1];
+    [self.timer performSelector:@selector(fire) withObject:self afterDelay:5];
 }
 
 @end

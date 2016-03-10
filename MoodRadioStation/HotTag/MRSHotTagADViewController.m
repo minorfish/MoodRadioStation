@@ -13,13 +13,14 @@
 #import "MRSURLImageView.h"
 #import "MRSHotTagInfo.h"
 
-@interface MRSHotTagADViewController ()
+@interface MRSHotTagADViewController ()<MRSADScrollerViewDataSource>
 
 @property (nonatomic, strong) NSArray *ADArray;
 
 @property (nonatomic, strong) MRSADScrollView *ADScrollView;
 @property (nonatomic, strong) UIPageControl *pageControl;
 @property (nonatomic, strong) UIView *ADView;
+@property (nonatomic, strong) MRSHotTagViewModel *viewModel;
 
 @end
 
@@ -34,14 +35,15 @@
     if (flagID <= 0 || flagID > 4)
         return;
     
-    MRSHotTagViewModel *viewModel = [[MRSHotTagViewModel alloc] init];
-    viewModel.flag = flagID;
-    viewModel.rows = 5;
-    viewModel.offset = 0;
+    self.viewModel = nil;
+    self.viewModel = [[MRSHotTagViewModel alloc] init];
+    self.viewModel.flag = flagID;
+    self.viewModel.rows = 5;
+    self.viewModel.offset = 0;
     
-    [viewModel.getHotTagCommand execute:nil];
+    [self.viewModel.getHotTagCommand execute:nil];
     
-    [viewModel.dataLoaded subscribeNext:^(NSArray *array) {
+    [self.viewModel.dataLoaded subscribeNext:^(NSArray *array) {
         if (!array.count) {
             [self stopTimer];
             finished(nil);
@@ -94,24 +96,21 @@
 - (UIView *)pageAtIndex:(NSInteger)index forScrollView:(MRSADScrollView *)scrollView
 {
     __block MRSHotTagInfo *info = [self.ADArray objectAtIndex:index];
-    MRSURLImageView *ADView = [[MRSURLImageView alloc] init];
-    ADView.defaultImage = [UIImage imageNamed:@"AD_defalt"];
-    ADView.loadingImage = [UIImage imageNamed:@"AD_defalt"];
+    MRSURLImageView *imageView = [[MRSURLImageView alloc] initWithFrame:self.ADView.frame];
+    imageView.defaultImage = [UIImage imageNamed:@"AD_defalt"];
+    imageView.loadingImage = [UIImage imageNamed:@"AD_defalt"];
     if (info) {
-        ADView.URLString = info.coverURL;
-        ADView.userInteractionEnabled = YES;
+        imageView.URLString = info.coverURL;
+        imageView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
         [tapGes.rac_gestureSignal subscribeNext:^(id x) {
-            [self didTap];
+            if (self.didTapWithTag) {
+                self.didTapWithTag(info.title);
+            }
         }];
-        [ADView addGestureRecognizer:tapGes];
+        [imageView addGestureRecognizer:tapGes];
     }
-    return ADView;
-}
-
-- (void)didTap
-{
-    
+    return imageView;
 }
 
 @end

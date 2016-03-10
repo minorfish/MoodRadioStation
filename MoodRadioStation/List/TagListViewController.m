@@ -67,10 +67,12 @@
     self.navigationItem.title = self.keyValue;
     self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     
-    UIImageView *backView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"back"]];
+    UIImageView *backView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
+    backView.image = [UIImage imageNamed:@"back"];
+    backView.contentMode = UIViewContentModeScaleAspectFit;
     UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
     [tapGes.rac_gestureSignal subscribeNext:^(id x) {
-        // navBack func
+        [self navBack];
     }];
     [backView addGestureRecognizer:tapGes];
     
@@ -81,6 +83,11 @@
     
     [self bind];
     [self refresh];
+}
+
+- (void)navBack
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -106,10 +113,6 @@
     
     [self.viewModel.dataLoadedSignal subscribeNext:^(id x) {
         @strongify(self);
-        if ([self.loadigMoreControll.isLoading boolValue]) {
-            [self.loadigMoreControll stopLoading];
-            self.loadigMoreControll.enabled = x? YES: NO;
-        }
         
         [self resetLoadMoreViewFrame];
         [self.tableView reloadData];
@@ -117,12 +120,16 @@
     
     [[[RACObserve(self.viewModel, loading) distinctUntilChanged] takeUntil:self.rac_willDeallocSignal] subscribeNext:^(NSNumber  *x) {
         @strongify(self);
-        if ([x boolValue]) {
+        if (![x boolValue]) {
             if (self.refreshControll.isRefreshing) {
                 [self.refreshControll stopRefreshing];
             }
-        } else if ([self.viewModel.fetchResultController numberOfObject] > 0) {
-            self.noContentView.hidden = YES;
+            if ([self.loadigMoreControll.isLoading boolValue]) {
+                [self.loadigMoreControll stopLoading];
+            }
+            if ([self.viewModel.fetchResultController numberOfObject] > 0) {
+                self.noContentView.hidden = YES;
+            }
         }
     }];
     

@@ -7,6 +7,7 @@
 //
 
 #import "MRSADScrollView.h"
+#import <ReactiveCocoa/ReactiveCocoa.h>
 
 #define TAGINDEX(i) i + 1000
 
@@ -43,6 +44,10 @@
         _total = [_ADDataSource pageCountForScrollView:self];
         
         self.contentSize = CGSizeMake(_pageSize.width * (_total > 1 ? 3 : 1), _pageSize.height);
+         self.currentIndex = 0;
+        [RACObserve(self, contentOffset) subscribeNext:^(id x) {
+            NSLog(@"%@", x);
+        }];
     }
 }
 
@@ -56,7 +61,7 @@
     CGFloat currentX = _pageSize.width;
     if (currentIndex == 0) {
         currentX = 0;
-    } else {
+    } else if (currentIndex == _total - 1) {
         currentX = 2 *_pageSize.width;
     }
     
@@ -71,22 +76,25 @@
         UIView *view = [self viewWithTag:TAGINDEX(currentIndex + i)];
         if (!view) {
             UIView *view = [_ADDataSource pageAtIndex:currentIndex + i forScrollView:self];
+            view.frame = CGRectMake(currentX + i * _pageSize.width, view.frame.origin.y, _pageSize.width, _pageSize.height);
             view.tag = TAGINDEX(currentIndex + i);
             if (view) {
                 [self addSubview:view];
             }
+        } else {
+            view.frame = CGRectMake(currentX + i * _pageSize.width, view.frame.origin.y, _pageSize.width, _pageSize.height);
         }
-        view.frame = CGRectMake(currentX + i * _pageSize.width, view.frame.origin.y, _pageSize.width, _pageSize.height);
     }
     
     for (int i = -1; i <= 1 ; i++) {
-        if (_currentIndex + i != currentIndex  - 1 && _currentIndex + i != currentIndex && _currentIndex + i != currentIndex + 1) {
+        if (_currentIndex + i != currentIndex - 1 && _currentIndex + i != currentIndex && _currentIndex + i != currentIndex + 1) {
                 UIView *view = [self viewWithTag:TAGINDEX(_currentIndex + i)];
             [view removeFromSuperview];
         }
     }
         
     _currentIndex = currentIndex;
+    
     self.contentOffset = CGPointMake(currentX, self.contentOffset.y);
 }
 

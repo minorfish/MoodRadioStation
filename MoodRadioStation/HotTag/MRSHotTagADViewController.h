@@ -10,4 +10,6 @@
 
 @interface MRSHotTagADViewController : MRSADViewController
 
+@property (nonatomic, strong) void(^didTapWithTag)(NSString *tag);
+
 @end
