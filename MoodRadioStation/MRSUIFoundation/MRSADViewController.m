@@ -14,7 +14,6 @@
 
 @property (nonatomic, strong) MRSADScrollView *ADScrollView;
 @property (nonatomic, strong) NSTimer *timer;
-@property (nonatomic, assign) CGFloat adViewHeight;
 @property (nonatomic, strong) UIPageControl *pageControl;
 @property (nonatomic, strong) UIView *ADView;
 

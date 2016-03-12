@@ -45,9 +45,6 @@
         
         self.contentSize = CGSizeMake(_pageSize.width * (_total > 1 ? 3 : 1), _pageSize.height);
          self.currentIndex = 0;
-        [RACObserve(self, contentOffset) subscribeNext:^(id x) {
-            NSLog(@"%@", x);
-        }];
     }
 }
 
@@ -115,7 +112,7 @@
             self.currentIndex = _currentIndex + 1;
         } else if (_currentIndex + 1 < _total && scrollView.contentOffset.x + self.pageSize.width >= scrollView.contentSize.width) {
             self.currentIndex = _currentIndex + 1;
-        } else if (_currentIndex + 1 == _total && scrollView.contentOffset.x + self.pageSize.width <= scrollView.contentSize.width) {
+        } else if (_currentIndex + 1 == _total && scrollView.contentOffset.x <= self.pageSize.width) {
             self.currentIndex = _currentIndex - 1;
         } else if (_currentIndex > 0 && scrollView.contentOffset.x <= 0) {
             self.currentIndex = _currentIndex - 1;

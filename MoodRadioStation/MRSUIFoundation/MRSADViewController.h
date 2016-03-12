@@ -11,6 +11,7 @@
 @interface MRSADViewController : UIViewController
 
 @property (nonatomic, assign) NSInteger flagID;
+@property (nonatomic, assign) CGFloat adViewHeight;
 
 - (void)loadADView:(NSInteger)flagID finished:(void (^)(UIView *view))finished;
 - (void)stopTimer;
