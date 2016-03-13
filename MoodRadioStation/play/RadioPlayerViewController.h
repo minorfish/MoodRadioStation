@@ -13,6 +13,7 @@
 @property (nonatomic, strong) NSNumber *isPlaying;
 @property (nonatomic, strong) NSNumber *currentFMIndex;
 @property (nonatomic, strong) NSMutableArray *requestFMInfoArray;
+@property (nonatomic, assign) BOOL isRequsetRadioInfo;
 
 - (instancetype)initWithKeyString:(NSString *)keyString KeyVale:(NSString *)keyValue Rows:(NSNumber *)rows;
 

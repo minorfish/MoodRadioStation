@@ -63,6 +63,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         _fmListViewModel = [[FMListViewModel alloc] initWithRows:rows KeyString:keyString KeyValue:keyValue];
         _isPlaying = @(NO);
         _isLoading = @(YES);
+        _isRequsetRadioInfo = YES;
     }
     return self;
 }
@@ -100,10 +101,10 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         }
     }];
     
-    [self refresh];
+    [self refreshWithIsxRequestrefresh:YES];
 }
 
-- (void)refresh
+- (void)refreshWithIsxRequestrefresh:(BOOL)isRequest
 {
     FMInfo *reqestFMInfo = (FMInfo *)[self.requestFMInfoArray objectAtIndex:[self.currentFMIndex unsignedIntegerValue]];
     
@@ -112,7 +113,11 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
  
     [self.viewModel stop];
     self.isLoading = @(YES);
-    [self.viewModel.getRadioInfoCommand execute:@(reqestFMInfo.ID)];
+    if (isRequest) {
+        [self.viewModel.getRadioInfoCommand execute:@(reqestFMInfo.ID)];
+    } else {
+        [self.viewModel.radioInfoLoaded sendNext:@(YES)];
+    }
     [self.viewModel.getRadioCommand execute:reqestFMInfo.mediaURL];
 }
 
@@ -178,7 +183,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     
     [[[RACObserve(self, currentFMIndex) ignore:nil] distinctUntilChanged] subscribeNext:^(id x) {
         @strongify(self);
-        [self refresh];
+        [self refreshWithIsxRequestrefresh:YES];
     }];
     
     [self.fmListViewModel.dataLoadedSignal subscribeNext:^(NSNumber *x) {
