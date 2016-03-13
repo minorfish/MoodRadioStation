@@ -21,6 +21,8 @@
 @property (nonatomic, weak)   UIView *ADView;
 @property (nonatomic, strong) MRSCategoryView *moodCategoryView;
 @property (nonatomic, strong) MRSCategoryView *sightCategoryView;
+@property (nonatomic, strong) UIView *moodView;
+@property (nonatomic, strong) UIView *sightView;
 @property (nonatomic, strong) UIView *searchView;
 @property (nonatomic, strong) UIScrollView *contentView;
 @property (nonatomic, assign) CGFloat contentViewHeight;
@@ -65,8 +67,24 @@
     
     [self loadADView];
     [self loadSearchView];
-    [self loadMoodCategoryView];
-    [self loadSightCategoryView];
+    
+    [self.contentView addSubview:self.moodView];
+    [self.contentView addSubview:self.sightView];
+    
+    [self.moodView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.searchView.mas_bottom).offset(15);
+        make.bottom.equalTo(self.sightView.mas_top);
+        make.left.equalTo(@0);
+        make.width.equalTo(@(SCREEN_WIDTH));
+    }];
+    
+    [self.sightView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.moodView.mas_bottom).offset(15);
+        make.bottom.equalTo(self.contentView.mas_bottom);
+        make.left.equalTo(@0);
+        make.width.equalTo(@(SCREEN_WIDTH));
+    }];
+
     [self.contentView setContentSize:CGSizeMake(SCREEN_WIDTH, self.contentViewHeight)];
 }
 
@@ -135,72 +153,59 @@
     [bgView addGestureRecognizer:tapGes];
 }
 
-- (void)loadMoodCategoryView
+- (UIView *)moodView
 {
-    UIView *view = [[UIView alloc] init];
-    view.userInteractionEnabled = YES;
-    UILabel *titleLabel = [[UILabel alloc] init];
-    titleLabel.text = @"心情";
-    titleLabel.font = Font(15);
-    
-    [view addSubview:titleLabel];
-    [view addSubview:self.moodCategoryView];
-    self.moodCategoryView.userInteractionEnabled = YES;
-    [self.contentView addSubview:view];
-    
-    [titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(@12);
-        make.top.equalTo(view);
-    }];
-    [self.moodCategoryView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(titleLabel.mas_bottom).offset(5);
-        make.left.equalTo(@0);
-        make.width.height.equalTo(@(SCREEN_WIDTH));
-        make.bottom.equalTo(view);
-    }];
-    [view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.searchView.mas_bottom).offset(15);
-        make.left.equalTo(@0);
-        make.height.equalTo(view.mas_height);
-        make.width.equalTo(view.mas_width);
-    }];
-    
-    UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
-    [tapGes.rac_gestureSignal subscribeNext:^(id x) {
-        NSLog(@"");
-    }];
-    [self.moodCategoryView addGestureRecognizer:tapGes];
+    if (!_moodView) {
+        _moodView = [[UIView alloc] init];
+        
+        UILabel *titleLabel = [[UILabel alloc] init];
+        titleLabel.text = @"心情";
+        titleLabel.font = Font(15);
+        
+        [_moodView addSubview:titleLabel];
+        [_moodView addSubview:self.moodCategoryView];
+        self.moodCategoryView.userInteractionEnabled = YES;
+        [self.contentView addSubview:_moodView];
+        
+        [titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(@12);
+            make.top.equalTo(_moodView);
+        }];
+        [self.moodCategoryView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(titleLabel.mas_bottom).offset(5);
+            make.left.equalTo(@0);
+            make.width.height.equalTo(@(SCREEN_WIDTH));
+            make.bottom.equalTo(_moodView);
+        }];
+    }
+    return _moodView;
 }
 
-- (void)loadSightCategoryView
+- (UIView *)sightView
 {
-    UIView *view = [[UIView alloc] init];
-    view.userInteractionEnabled = YES;
-    
-    UILabel *titleLabel = [[UILabel alloc] init];
-    titleLabel.text = @"场景";
-    titleLabel.font = Font(15);
-    
-    [view addSubview:titleLabel];
-    [view addSubview:self.sightCategoryView];
-    [self.contentView addSubview:view];
-    
-    [titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(@12);
-        make.top.equalTo(view);
-    }];
-    [self.sightCategoryView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(titleLabel.mas_bottom).offset(5);
-        make.left.equalTo(@0);
-        make.width.height.equalTo(@(SCREEN_WIDTH));
-        make.bottom.equalTo(view);
-    }];
-    [view mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.moodCategoryView.mas_bottom).offset(15);
-        make.left.equalTo(@0);
-        make.height.equalTo(view.mas_height);
-        make.width.equalTo(view.mas_width);
-    }];
+    if (!_sightView) {
+        _sightView = [[UIView alloc] init];
+        
+        UILabel *titleLabel = [[UILabel alloc] init];
+        titleLabel.text = @"场景";
+        titleLabel.font = Font(15);
+        
+        [_sightView addSubview:titleLabel];
+        [_sightView addSubview:self.sightCategoryView];
+        [self.contentView addSubview:_sightView];
+        
+        [titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(@12);
+            make.top.equalTo(_sightView);
+        }];
+        [self.sightCategoryView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(titleLabel.mas_bottom).offset(5);
+            make.left.equalTo(@0);
+            make.width.height.equalTo(@(SCREEN_WIDTH));
+            make.bottom.equalTo(_sightView);
+        }];
+    }
+    return _sightView;
 }
 
 - (MRSCategoryView *)moodCategoryView
@@ -270,16 +275,6 @@
 {
     TagListViewController *vc = [[TagListViewController alloc] initWithRows:@(15) KeyString:@"tag" KeyValue:tagString];
     [self.navigationController pushViewController:vc animated:YES];
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    NSLog(@"%@", self);
-}
-
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    BOOL isInside = [self.view pointInside:point withEvent:event];
-    return isInside ? self : nil;
 }
 
 @end
