@@ -28,7 +28,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.userInteractionEnabled = YES;
         self.imageArrays = images;
         self.nameArrays = names;
         self.cloumns = cloumns;
@@ -46,7 +45,6 @@
                     view = nil;
                 }
                 view = [[UIView alloc] initWithFrame:CGRectMake(0, top , SCREEN_WIDTH, viewHeight)];
-                view.userInteractionEnabled = YES;
                 top += viewHeight;
                 preView = nil;
             }
@@ -80,7 +78,6 @@
     
     UIView *view = ({
         UIView *view = [[UIView alloc] init];
-        view.backgroundColor = [UIColor blueColor];
         UILabel *nameLabel = [[UILabel alloc] init];
         nameLabel.text = [self.nameArrays objectAtIndex:index];
         nameLabel.font = Font(14);
@@ -119,13 +116,4 @@
     return bgView;
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    NSLog(@"%@", self);
-}
-
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    UIView *view = [super hitTest:point withEvent:event];
-    return view;
-}
 @end

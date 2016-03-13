@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "MRSFindViewController.h"
+#import "MRSHomeViewController.h"
 @interface AppDelegate ()
 
 @end
@@ -16,9 +16,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-//    TagListViewController *tagListViewController = [[TagListViewController alloc] initWithRows:@(15) KeyString:@"is_teacher" KeyValue:@"0"];
-    MRSFindViewController *findVC = [[MRSFindViewController alloc] init];
-    UINavigationController *sourceNavigationController = [[UINavigationController alloc] initWithRootViewController:findVC];
+    MRSHomeViewController *homeVC = [[MRSHomeViewController alloc] init];
+    UINavigationController *sourceNavigationController = [[UINavigationController alloc] initWithRootViewController:homeVC];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = sourceNavigationController;
     self.window.backgroundColor = [UIColor whiteColor];

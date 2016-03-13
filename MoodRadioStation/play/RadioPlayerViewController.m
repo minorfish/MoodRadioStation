@@ -148,13 +148,13 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     [[RACObserve(self, progressX) ignore:nil] subscribeNext:^(NSNumber *x) {
         @strongify(self);
         [_progressBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.equalTo(self.progressView.mas_top);
+            make.top.bottom.equalTo(self.progressView);
             if ([x doubleValue] < self.progressBtn.frame.size.width/2) {
-                make.left.equalTo(self.progressView);
-            } else if ([x doubleValue] > SCREEN_WIDTH - self.progressBtn.frame.size.width/2){
-                make.right.equalTo(self.progressView);
+                make.left.equalTo(@0);
+            } else if ([x doubleValue] > SCREEN_WIDTH - self.progressBtn.frame.size.width){
+                make.right.equalTo(@0);
             } else {
-                make.centerX.equalTo(x);
+                make.left.equalTo(x);
             }
         }];
     }];
@@ -203,6 +203,19 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     [self.view addSubview:self.playerBackgroundView];
     [self.view addSubview:self.playerView];
     [self.view addSubview:self.speakerDescView];
+    
+    [_playerBackgroundView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.equalTo(self.view);
+        make.height.equalTo(@400);
+    }];
+    [_playerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.playerBackgroundView.mas_bottom);
+        make.left.right.equalTo(self.view);
+    }];
+    [_speakerDescView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.playerView.mas_bottom).offset(15);
+        make.left.right.equalTo(self.view);
+    }];
 }
 
 - (void)refreshViewWithData
@@ -222,7 +235,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 {
     if (!_playerView) {
         _playerView = ({
-            UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, self.playerBackgroundView.frame.size.height, SCREEN_WIDTH, 100)];
+            UIView *view = [[UIView alloc] init];
             
             [view addSubview:self.playOrPauseButton];
             [view addSubview:self.timeView];
@@ -251,7 +264,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
                 make.left.equalTo(view);
                 make.bottom.equalTo(view).offset(-15);
             }];
-        
+            
             view;
         });
     }
@@ -325,20 +338,28 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 {
     if (!_progressView) {
         _progressView = ({
-            UIView *view = [[UIView alloc] initWithFrame:self.shapeLayer.bounds];
-            view.backgroundColor = [UIColor blueColor];
-            view.userInteractionEnabled = YES;
             
-            [view.layer addSublayer:[self createCAShapeLayerWithColor:[UIColor grayColor] LineWidth:0.5]];
-            [view.layer addSublayer:self.shapeLayer];
-            
+            UIView *view = [[UIView alloc] init];
+
+            UIView *layerView = [[UIView alloc] initWithFrame:self.shapeLayer.bounds];
+            [layerView.layer addSublayer:[self createCAShapeLayerWithColor:[UIColor grayColor] LineWidth:0.5]];
+            [layerView.layer addSublayer:self.shapeLayer];
             _progressBtn = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"progress_btn"]];
             _progressBtn.userInteractionEnabled = YES;
-            [view addSubview:_progressBtn];
             _progressBtn.hidden = YES;
+            
+            [view addSubview:layerView];
+            [view addSubview:_progressBtn];
+            
+            [layerView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.equalTo(view);
+                make.left.right.equalTo(view);
+                make.width.equalTo(@(self.shapeLayer.bounds.size.width));
+                make.height.equalTo(@(self.shapeLayer.bounds.size.height));
+            }];
             [_progressBtn mas_remakeConstraints:^(MASConstraintMaker *make) {
-                make.left.equalTo(view.mas_left);
-                make.centerY.equalTo(view.mas_top);
+                make.left.equalTo(view);
+                make.top.bottom.equalTo(view);
             }];
             
             UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] init];
@@ -377,7 +398,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 - (PlayerBackgroundView *)playerBackgroundView
 {
     if (!_playerBackgroundView) {
-        _playerBackgroundView = [[PlayerBackgroundView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 400)];
+        _playerBackgroundView = [[PlayerBackgroundView alloc] init];
         _playerBackgroundView.imageView.image = _playerBackgroundView.imageView.defaultImage;
         @weakify(self);
         _playerBackgroundView.block = ^{
@@ -391,7 +412,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 - (MRSSpeakerDescView *)speakerDescView
 {
     if (!_speakerDescView) {
-        _speakerDescView = [[MRSSpeakerDescView alloc] initWithFrame:CGRectMake(0, self.playerView.frame.origin.y + self.playerView.frame.size.height + 15, SCREEN_WIDTH, 84)];
+        _speakerDescView = [[MRSSpeakerDescView alloc] init];
         _speakerDescView.circleImageView.image = _speakerDescView.circleImageView.defaultImage;
         _speakerDescView.backgroundColor = [UIColor whiteColor];
     }
