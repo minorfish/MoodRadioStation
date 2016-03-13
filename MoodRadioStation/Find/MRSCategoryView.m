@@ -80,7 +80,6 @@
     
     UIView *view = ({
         UIView *view = [[UIView alloc] init];
-        view.backgroundColor = [UIColor blueColor];
         UILabel *nameLabel = [[UILabel alloc] init];
         nameLabel.text = [self.nameArrays objectAtIndex:index];
         nameLabel.font = Font(14);
@@ -117,15 +116,5 @@
     [bgView addGestureRecognizer:tapGes];
     
     return bgView;
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    NSLog(@"%@", self);
-}
-
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    UIView *view = [super hitTest:point withEvent:event];
-    return view;
 }
 @end
