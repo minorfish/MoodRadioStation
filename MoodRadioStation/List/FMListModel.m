@@ -59,14 +59,10 @@
                                                     Finished:^(NSDictionary *dict, NSError *error) {
             if (!disposable.isDisposed) {
                 if (!error && dict[@"data"]) {
-                    if ([dict[@"count"] integerValue]) {
-                        NSArray *array = [dict[@"data"] mapCar:^id(NSDictionary *obj, NSUInteger idx, BOOL *stop) {
-                            return [MTLJSONAdapter modelOfClass:[FMInfo class] fromJSONDictionary:obj error:nil];
-                        }];
-                        [subscriber sendNext:array];
-                    } else {
-                        [subscriber sendNext:nil];
-                    }
+                    NSArray *array = [dict[@"data"] mapCar:^id(NSDictionary *obj, NSUInteger idx, BOOL *stop) {
+                        return [MTLJSONAdapter modelOfClass:[FMInfo class] fromJSONDictionary:obj error:nil];
+                    }];
+                    [subscriber sendNext:array];
                 } else {
                     [subscriber sendError:error];
                 }

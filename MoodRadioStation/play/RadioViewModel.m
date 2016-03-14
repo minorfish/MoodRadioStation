@@ -24,9 +24,6 @@ extern const NSString* RPRefreshProgressViewNotification;
 @property (nonatomic, assign) float progress;
 @property (nonatomic, assign) NSTimeInterval durationTime;
 @property (nonatomic, strong) NSURL *filePath;
-
-@property (nonatomic, strong) RadioInfo *radioInfo;
-
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, strong) RACSubject *radioInfoLoaded;
 @property (nonatomic, strong) RACSubject *radioLoaded;

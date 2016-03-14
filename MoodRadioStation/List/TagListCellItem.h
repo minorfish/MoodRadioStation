@@ -22,5 +22,8 @@
 @interface TagListCellView : UITableViewCell
 
 @property (nonatomic, strong) TagListCellItem *item;
+@property (nonatomic, assign) BOOL isShowSeperateLine;
+
+- (void)setCellInfoWithCover:(NSString *)cover Title:(NSString *)title Speak:(NSString *)speak;
 
 @end

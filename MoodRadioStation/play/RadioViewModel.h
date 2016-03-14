@@ -20,7 +20,7 @@
 @property (nonatomic, readonly) NSTimeInterval durationTime;
 @property (nonatomic, assign) NSTimeInterval currentTime;
 
-@property (nonatomic, readonly) RadioInfo *radioInfo;
+@property (nonatomic, strong) RadioInfo *radioInfo;
 
 @property (nonatomic, readonly) NSError *error;
 @property (nonatomic, readonly) RACSubject *radioInfoLoaded;

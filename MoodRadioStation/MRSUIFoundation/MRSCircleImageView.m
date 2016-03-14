@@ -14,9 +14,8 @@
 {
     [super setURLString:URLString];
     self.layer.masksToBounds = YES;
-    self.layer.cornerRadius = 30;
-    self.layer.borderColor = [UIColor whiteColor].CGColor;
-    self.layer.borderWidth = 1;
+    self.layer.cornerRadius = self.frame.size.width / 2;
+    self.layer.backgroundColor = [UIColor whiteColor].CGColor;
 }
 
 @end

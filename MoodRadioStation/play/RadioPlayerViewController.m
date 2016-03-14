@@ -63,7 +63,6 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         _fmListViewModel = [[FMListViewModel alloc] initWithRows:rows KeyString:keyString KeyValue:keyValue];
         _isPlaying = @(NO);
         _isLoading = @(YES);
-        _isRequsetRadioInfo = YES;
     }
     return self;
 }
@@ -101,24 +100,26 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         }
     }];
     
-    [self refreshWithIsxRequestrefresh:YES];
+    [self refresh];
 }
 
-- (void)refreshWithIsxRequestrefresh:(BOOL)isRequest
+- (void)refresh
 {
-    FMInfo *reqestFMInfo = (FMInfo *)[self.requestFMInfoArray objectAtIndex:[self.currentFMIndex unsignedIntegerValue]];
+    id reqestFMInfo = [self.requestFMInfoArray objectAtIndex:[self.currentFMIndex unsignedIntegerValue]];
     
-    if (!reqestFMInfo)
-        return;
- 
     [self.viewModel stop];
     self.isLoading = @(YES);
-    if (isRequest) {
-        [self.viewModel.getRadioInfoCommand execute:@(reqestFMInfo.ID)];
-    } else {
+    
+    if ([reqestFMInfo isKindOfClass:[FMInfo class]]) {
+        FMInfo *info = (FMInfo *)reqestFMInfo;
+        [self.viewModel.getRadioInfoCommand execute:@(info.ID)];
+        [self.viewModel.getRadioCommand execute:info.mediaURL];
+    } else if ([reqestFMInfo isKindOfClass:[RadioInfo class]]){
+        RadioInfo *info = (RadioInfo *)reqestFMInfo;
+        self.viewModel.radioInfo = info;
+        [self.viewModel.getRadioCommand execute:info.URL];
         [self.viewModel.radioInfoLoaded sendNext:@(YES)];
     }
-    [self.viewModel.getRadioCommand execute:reqestFMInfo.mediaURL];
 }
 
 - (void)bind
@@ -183,7 +184,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     
     [[[RACObserve(self, currentFMIndex) ignore:nil] distinctUntilChanged] subscribeNext:^(id x) {
         @strongify(self);
-        [self refreshWithIsxRequestrefresh:YES];
+        [self refresh];
     }];
     
     [self.fmListViewModel.dataLoadedSignal subscribeNext:^(NSNumber *x) {

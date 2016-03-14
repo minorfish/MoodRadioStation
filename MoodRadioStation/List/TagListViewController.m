@@ -63,7 +63,6 @@
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     
-
     self.navigationItem.title = self.keyValue;
     self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
     
@@ -215,8 +214,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    self.playerVC.currentFMIndex = @(indexPath.row);
     self.playerVC.requestFMInfoArray = [self.viewModel.infoArray mutableCopy];
+    self.playerVC.currentFMIndex = @(indexPath.row);
     
     [self pushVC:self.playerVC animated:YES];
 }

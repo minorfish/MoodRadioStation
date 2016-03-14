@@ -36,6 +36,7 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
+        self.isShowSeperateLine = YES;
         self.clipsToBounds = YES;
         self.backgroundColor = [UIColor whiteColor];
         [self.contentView addSubview:self.URLImageView];
@@ -52,6 +53,19 @@
     self.URLImageView.URLString = item.fmInfo.cover;
     self.titleLabel.text = item.fmInfo.title;
     self.speakLabel.text = [NSString stringWithFormat:@"主播 %@", item.fmInfo.speak];
+}
+
+- (void)setIsShowSeperateLine:(BOOL)isShowSeperateLine
+{
+    _isShowSeperateLine = isShowSeperateLine;
+    [self.contentView setNeedsLayout];
+}
+
+- (void)setCellInfoWithCover:(NSString *)cover Title:(NSString *)title Speak:(NSString *)speak
+{
+    self.URLImageView.URLString = cover;
+    self.titleLabel.text = title;
+    self.speakLabel.text = [NSString stringWithFormat:@"主播 %@", speak];
 }
 
 - (void)updateConstraints
@@ -73,7 +87,11 @@
     }];
     [_seperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.width.equalTo(self);
-        make.height.equalTo(@0.5);
+        if (_isShowSeperateLine) {
+            make.height.equalTo(@0.5);
+        } else {
+            make.height.equalTo(@0);
+        }
         make.left.equalTo(self).offset(12);
         make.bottom.equalTo(self);
     }];

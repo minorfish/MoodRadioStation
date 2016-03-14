@@ -8,6 +8,7 @@
 
 #import "MRSHomeViewController.h"
 #import "MRSFindViewController.h"
+#import "MRSIndexViewController.h"
 
 @interface MRSHomeViewController ()<UITabBarControllerDelegate>
 
@@ -17,7 +18,7 @@
 
 - (void)viewDidLoad
 {
-    UIViewController *indexBarController = [[UIViewController alloc] init];
+    MRSIndexViewController *indexBarController = [[MRSIndexViewController alloc] init];
     indexBarController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"主页" image:[UIImage imageNamed:@"nav_index"] selectedImage:[UIImage imageNamed:@"nav_index_act"]];
     
     MRSFindViewController *findBarController = [[MRSFindViewController alloc] init];
