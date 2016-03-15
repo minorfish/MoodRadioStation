@@ -47,4 +47,15 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    NSLog(@"localNotification");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSDictionary *userInfo = [notification userInfo];
+        
+        NSString *notificationName = [userInfo objectForKey:@"cancelAction"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+    });
+}
+
 @end

@@ -9,6 +9,7 @@
 #import "MRSHomeViewController.h"
 #import "MRSFindViewController.h"
 #import "MRSIndexViewController.h"
+#import "MRSSettingViewController.h"
 
 @interface MRSHomeViewController ()<UITabBarControllerDelegate>
 
@@ -24,7 +25,7 @@
     MRSFindViewController *findBarController = [[MRSFindViewController alloc] init];
     findBarController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"发现" image:[UIImage imageNamed:@"nav_find"] selectedImage:[UIImage imageNamed:@"nav_find_act"]];
     
-    UIViewController *settingBarController = [[UIViewController alloc] init];
+    MRSSettingViewController *settingBarController = [[MRSSettingViewController alloc] init];
     settingBarController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:[UIImage imageNamed:@"nav_setting"] selectedImage:[UIImage imageNamed:@"nav_setting_act"]];
     
     self.viewControllers = @[indexBarController, findBarController, settingBarController];
