@@ -83,7 +83,7 @@
     [imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(view);
         make.centerX.equalTo(view);
-        make.width.height.equalTo(@100);
+        make.width.height.equalTo(@(100 * scaleFactorBaseiPhone6));
     }];
     
     [nameLabel mas_remakeConstraints:^(MASConstraintMaker *make) {

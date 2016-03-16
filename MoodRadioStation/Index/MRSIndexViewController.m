@@ -18,6 +18,9 @@
 #import "RadioInfo.h"
 #import "RadioPlayerViewController.h"
 #import "MRSCellViewProductor.h"
+#import "AppDelegate.h"
+#import "FMListViewModel.h"
+
 
 @interface MRSIndexViewController ()
 
@@ -47,16 +50,6 @@
     return self;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    self.navigationController.navigationBar.hidden = YES;
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    self.navigationController.navigationBar.hidden = NO;
-}
-
 - (void)viewDidLoad
 {
     [_viewModel.getIndexCommand execute:nil];
@@ -70,7 +63,7 @@
 
 - (void)setupUI
 {
-    self.contentView = [[UIScrollView alloc] init];
+    self.contentView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
 
     self.contentView.backgroundColor = HEXCOLOR(0xf0efed);
     
@@ -80,12 +73,8 @@
     [self loadLastefmView];
     [self loadLessionView];
     
-    [_contentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
-        make.size.equalTo(self.view);
-    }];
     [_categoryView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.contentView).offset(10);
+        make.top.equalTo(self.contentView);
         make.left.right.equalTo(self.contentView);
     }];
     [_hotFMView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -124,11 +113,18 @@
         _hotfmViewProductor = [[MRSHotFmViewProductor alloc] init];
         _hotfmViewProductor.cloumn = 3;
        
+        @weakify(self);
         _hotfmViewProductor.didTap = ^(NSInteger index, NSArray *array){
-            RadioPlayerViewController *vc = [[RadioPlayerViewController alloc] initWithKeyString:nil KeyVale:nil Rows:nil];
-            vc.currentFMIndex = @(index);
-            vc.requestFMInfoArray = array;
-            [self.navigationController pushViewController:vc animated:YES];
+            @strongify(self);
+            AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+            if (!delegate.radioPlayer) {
+                delegate.radioPlayer = [[RadioPlayerViewController alloc] initWithKeyString:nil KeyVale:nil Rows:nil];
+            } else {
+                delegate.radioPlayer.fmListViewModel = [[FMListViewModel alloc] initWithRows:nil KeyString:nil KeyValue:nil];
+            }
+            delegate.radioPlayer.currentFMIndex = @(index);
+            delegate.radioPlayer.requestFMInfoArray = [array mutableCopy];
+            [self.navigationController pushViewController:delegate.radioPlayer animated:YES];
         };
     }
     return _hotfmViewProductor;
@@ -137,12 +133,20 @@
 - (MRSCellViewProductor *)lessionViewProductor
 {
     if (!_lessionViewProductor) {
+        @weakify(self);
         _lessionViewProductor = [[MRSCellViewProductor alloc] init];
         _lessionViewProductor.didTap = ^(NSInteger index, NSArray *array){
-            RadioPlayerViewController *vc = [[RadioPlayerViewController alloc] initWithKeyString:@"is_teacher" KeyVale:@"1" Rows:@(15)];
-            vc.currentFMIndex = @(index);
-            vc.requestFMInfoArray = [array mutableCopy];
-            [self.navigationController pushViewController:vc animated:YES];
+            @strongify(self);
+            AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+            if (!delegate.radioPlayer) {
+                delegate.radioPlayer = [[RadioPlayerViewController alloc] initWithKeyString:@"is_teacher" KeyVale:@"1" Rows:@(15)];
+            } else {
+                delegate.radioPlayer.fmListViewModel = [[FMListViewModel alloc] initWithRows:@(15) KeyString:@"is_teacher" KeyValue:@"1"];
+            }
+
+            delegate.radioPlayer.currentFMIndex = @(index);
+            delegate.radioPlayer.requestFMInfoArray = [array mutableCopy];
+            [self.navigationController pushViewController:delegate.radioPlayer animated:YES];
         };
     }
     return _lessionViewProductor;
@@ -151,12 +155,20 @@
 - (MRSCellViewProductor *)lastefmViewProductor
 {
     if (!_lastefmViewProductor) {
+        @weakify(self);
         _lastefmViewProductor = [[MRSCellViewProductor alloc] init];
         _lastefmViewProductor.didTap = ^(NSInteger index, NSArray *array){
-            RadioPlayerViewController *vc = [[RadioPlayerViewController alloc] initWithKeyString:@"is_teacher" KeyVale:@"0" Rows:@(15)];
-            vc.currentFMIndex = @(index);
-            vc.requestFMInfoArray = [array mutableCopy];
-            [self.navigationController pushViewController:vc animated:YES];
+            @strongify(self);
+            AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+            if (!delegate.radioPlayer) {
+                delegate.radioPlayer = [[RadioPlayerViewController alloc] initWithKeyString:@"is_teacher" KeyVale:@"0" Rows:@(15)];
+            } else {
+                delegate.radioPlayer.fmListViewModel = [[FMListViewModel alloc] initWithRows:@(15) KeyString:@"is_teacher" KeyValue:@"0"];
+            }
+            
+            delegate.radioPlayer.currentFMIndex = @(index);
+            delegate.radioPlayer.requestFMInfoArray = [array mutableCopy];
+            [self.navigationController pushViewController:delegate.radioPlayer animated:YES];
         };
     }
     return _lastefmViewProductor;
@@ -239,7 +251,7 @@
         self.lastefmViewProductor.infoArray = _viewModel.indexInfo.latestfmArray;
         UIView *cellView = [self.lastefmViewProductor loadCellView];
         
-        UIView *moreCellView = [self loadMoreCellViewWithTitle:@"最新FM"KeyValue:@"0"];
+        UIView *moreCellView = [self loadMoreCellViewWithTitle:@"最新FM" KeyValue:@"0"];
         UIView *seperateLine = [[UIView alloc] init];
         seperateLine.backgroundColor = HEXCOLOR(0xe5e5e5);
         

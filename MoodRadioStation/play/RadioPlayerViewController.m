@@ -49,8 +49,6 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 
 @property (nonatomic, strong) MRSImageAnimationLoadingView *animationLoadingView;
 
-@property (nonatomic, strong) FMListViewModel *fmListViewModel;
-
 @end
 
 @implementation RadioPlayerViewController
@@ -61,8 +59,6 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     if (self) {
         _viewModel = [[RadioViewModel alloc] init];
         _fmListViewModel = [[FMListViewModel alloc] initWithRows:rows KeyString:keyString KeyValue:keyValue];
-        _isPlaying = @(NO);
-        _isLoading = @(YES);
     }
     return self;
 }
@@ -89,6 +85,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 }
 
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
     
     [self setupUI];
@@ -212,7 +209,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     
     [_playerBackgroundView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.equalTo(self.view);
-        make.height.equalTo(@400);
+        make.height.equalTo(@(SCREEN_HEIGHT/2));
     }];
     [_playerView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.playerBackgroundView.mas_bottom);
@@ -305,7 +302,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
             if ([self.currentFMIndex longLongValue] + 1 < [self.requestFMInfoArray count]) {
                 self.currentFMIndex = @([self.currentFMIndex longLongValue] + 1);
             } else {
-                [self.fmListViewModel.refreshListCommand
+                [self.fmListViewModel.loadMoreCommand
                    execute:@(self.requestFMInfoArray.count)];
             }
         }];

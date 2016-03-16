@@ -44,16 +44,6 @@
     return _ADViewController;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self.navigationController.navigationBar setHidden:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [self.navigationController.navigationBar setHidden:NO];
-}
-
 - (void)viewDidLoad
 {
     self.view.backgroundColor = HEXCOLOR(0xf0efed);

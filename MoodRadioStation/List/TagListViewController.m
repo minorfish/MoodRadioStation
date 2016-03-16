@@ -19,6 +19,7 @@
 #import "FMInfo.h"
 #import "MRSNoContentView.h"
 #import "MRSPlayerImageAnimationLoadingView.h"
+#import "AppDelegate.h"
 
 @interface TagListViewController()
 
@@ -34,6 +35,7 @@
 @property (nonatomic, strong) UIImageView *playerAnimationImageView;
 
 @property (nonatomic, strong) NSNumber *isPlaying;
+@property (nonatomic, assign) BOOL isInitPlayer;
 
 @end
 
@@ -214,6 +216,16 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (!_isInitPlayer) {
+        if (!self.playerVC) {
+            self.playerVC = [[RadioPlayerViewController alloc]
+                     initWithKeyString:self.keyString KeyVale:self.keyValue Rows:self.rows];
+        } else {
+            self.playerVC.fmListViewModel = [[FMListViewModel alloc] initWithRows:self.rows KeyString:self.keyString KeyValue:self.keyValue];
+        }
+        _isInitPlayer = YES;
+    }
+    
     self.playerVC.requestFMInfoArray = [self.viewModel.infoArray mutableCopy];
     self.playerVC.currentFMIndex = @(indexPath.row);
     
@@ -227,14 +239,17 @@
 
 - (RadioPlayerViewController *)playerVC
 {
-    if (!_playerVC) {
-        _playerVC = [[RadioPlayerViewController alloc]
-                     initWithKeyString:self.keyString KeyVale:self.keyValue Rows:self.rows];
-        _playerVC.requestFMInfoArray = [self.viewModel.infoArray mutableCopy];
-        _playerVC.currentFMIndex = @(0);
-    }
-    return _playerVC;
+    AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+    return delegate.radioPlayer;
 }
+
+- (void)setPlayerVC:(RadioPlayerViewController *)playerVC
+{
+    AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+    delegate.radioPlayer = nil;
+    delegate.radioPlayer = playerVC;
+}
+
 #pragma mark - tableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {

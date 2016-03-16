@@ -59,14 +59,10 @@
 - (RACCommand *)refreshListCommand
 {
     @weakify(self);
-    _refreshListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSNumber *offset) {
+    _refreshListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id x) {
         @strongify(self);
         self.error = nil;
-        if (offset) {
-            self.model.offset = offset;
-        } else {
-            self.model.offset = @(0);
-        }
+        self.model.offset = @(0);
         [self refreshDataNeedReset:YES];
         return [RACSignal empty];
     }];
@@ -76,7 +72,10 @@
 - (RACCommand *)loadMoreCommand
 {
     @weakify(self);
-    _loadMoreCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
+    _loadMoreCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSNumber *offset) {
+        if (offset) {
+            self.model.offset = offset;
+        }
         @strongify(self);
         self.loading = YES;
         self.error = nil;
@@ -87,8 +86,11 @@
         }] doNext:^(NSArray *dictArray) {
             @strongify(self);
             if (dictArray) {
-                [self.fetchResultController addObjectsInLastSection:dictArray];
+                if (!_infoArray) {
+                    _infoArray = [[NSMutableArray alloc] init];
+                }
                 [_infoArray addObjectsFromArray:dictArray];
+                [self.fetchResultController addObjectsInLastSection:dictArray];
                 self.model.offset = @(self.fetchResultController.numberOfObject);
             }
             self.loading = NO;

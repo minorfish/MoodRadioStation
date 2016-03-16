@@ -47,10 +47,10 @@ const NSString *MRSMRSPauseDisplayLinkNotification = @"com.minor.notification.re
 + (void)scheduleClosePlayOnDate:(NSDate *)date
 {
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:@"closePlay", @"type",
-                              @"cancelAction", MRSMRSPauseDisplayLinkNotification,
+                              MRSMRSPauseDisplayLinkNotification, @"cancelAction",
                               nil];
     [MRSDingshiManager scheduleNotificationWithFireDate:date
-                                               timeZone:[NSTimeZone systemTimeZone] repeateInterval:0 alertBody:nil alertAction:nil launchImage:nil
+                                               timeZone:[NSTimeZone defaultTimeZone] repeateInterval:0 alertBody:nil alertAction:nil launchImage:nil
                                               soundName:nil
                                             badgeNumber:1
                                                userInfo:userInfo];

@@ -29,16 +29,16 @@
         [self addSubview:self.timeLabel];
         [self addSubview:self.titleLabel];
         [self addSubview:self.switchBtn];
-        self.isOn = NO;
+        self.isOn = @(NO);
         [self setNeedsDisplay];
     }
     return self;
 }
 
-- (void)setIsOn:(BOOL)isOn
+- (void)setIsOn:(NSNumber *)isOn
 {
     _isOn = isOn;
-    [self.switchBtn setImage:[UIImage imageNamed:isOn? @"on": @"off"]];
+    [self.switchBtn setImage:[UIImage imageNamed:[isOn boolValue]? @"on": @"off"]];
 }
 
 - (UIImageView *)dingshiImageView
@@ -78,7 +78,7 @@
         _switchBtn.layer.cornerRadius = 15;
         UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
         [tapGes.rac_gestureSignal subscribeNext:^(id x) {
-            self.isOn = !self.isOn;
+            self.isOn = @(![self.isOn boolValue]);
         }];
         [_switchBtn addGestureRecognizer:tapGes];
         _switchBtn.layer.backgroundColor = [UIColor whiteColor].CGColor;

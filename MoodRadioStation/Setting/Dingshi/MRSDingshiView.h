@@ -11,6 +11,6 @@
 @interface MRSDingshiView : UIView
 
 @property (nonatomic, strong) UILabel *timeLabel;
-@property (nonatomic, assign) BOOL isOn;
+@property (nonatomic, strong) NSNumber *isOn;
 
 @end

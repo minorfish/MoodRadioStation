@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+@class RadioPlayerViewController;
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-
+@property (nonatomic, strong) RadioPlayerViewController *radioPlayer;
 
 @end
 

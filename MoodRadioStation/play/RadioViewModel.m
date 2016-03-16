@@ -31,6 +31,9 @@ extern const NSString* RPRefreshProgressViewNotification;
 @property (nonatomic, strong) AVAudioPlayer *player;
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
+@property (nonatomic, strong) RACDisposable *preRadioInfoRequest;
+@property (nonatomic, strong) RACDisposable *preRadioRequest;
+
 @end
 
 @implementation RadioViewModel
@@ -47,6 +50,8 @@ extern const NSString* RPRefreshProgressViewNotification;
 - (void)dealloc
 {
     [self stop];
+    [self.displayLink invalidate];
+    self.displayLink = nil;
     [self.radioInfoLoaded sendCompleted];
     [self.radioLoaded sendCompleted];
 }
@@ -56,19 +61,23 @@ extern const NSString* RPRefreshProgressViewNotification;
     @weakify(self);
     _getRadioInfoCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSNumber *ID) {
         @strongify(self);
+        if (self.preRadioInfoRequest) {
+            [self.preRadioInfoRequest dispose];
+        }
         self.model.ID = ID;
         self.error = nil;
         [self.radioInfoLoaded sendNext:@(NO)];
-        return [[[self.model getRadioInfo] catch:^RACSignal *(NSError *error) {
+        self.preRadioInfoRequest = [[[self.model getRadioInfo] catch:^RACSignal *(NSError *error) {
             self.error = error;
             return [RACSignal empty];
-        }] doNext:^(RadioInfo *value) {
+        }] subscribeNext:^(RadioInfo *value) {
             @strongify(self);
             if (!value)
                 return;
             self.radioInfo = value;
             [self.radioInfoLoaded sendNext:@(YES)];
         }];
+        return [RACSignal empty];
     }];
     
     return _getRadioInfoCommand;
@@ -79,14 +88,18 @@ extern const NSString* RPRefreshProgressViewNotification;
     @weakify(self);
     _getRadioCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSString *radioURL) {
         @strongify(self);
+        if (self.preRadioRequest) {
+            [self.preRadioRequest dispose];
+        }
         self.error = nil;
         self.model.radioURL = radioURL;
         [self.radioLoaded sendNext:@(NO)];
-        return [[[self.model getRadio] catch:^RACSignal *(NSError *error) {
+        self.preRadioRequest = [[[self.model getRadio] catch:^RACSignal *(NSError *error) {
             self.error = error;
             return [RACSignal empty];
-        }] doNext:^(NSURL *filePath) {
+        }] subscribeNext:^(NSURL *filePath) {
             @strongify(self);
+            NSLog(@"radioCommand\n");
             dispatch_async(dispatch_get_main_queue(), ^{
                 NSError *error = nil;
                 self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:filePath error:&error];
@@ -100,6 +113,7 @@ extern const NSString* RPRefreshProgressViewNotification;
                 self.error = error;
             });
         }];
+        return [RACSignal empty];
     }];
     return _getRadioCommand;
 }
@@ -162,8 +176,6 @@ extern const NSString* RPRefreshProgressViewNotification;
     [self.player stop];
     self.player.currentTime = 0;
     self.player = nil;
-    [self.displayLink invalidate];
-    self.displayLink = nil;
 }
 
 - (NSTimeInterval)currentTime

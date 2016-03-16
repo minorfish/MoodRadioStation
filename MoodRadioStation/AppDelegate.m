@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import "MRSHomeViewController.h"
+#import "RadioPlayerViewController.h"
+
 @interface AppDelegate ()
 
 @end
@@ -16,6 +18,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeNone                           categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    }
     MRSHomeViewController *homeVC = [[MRSHomeViewController alloc] init];
     UINavigationController *sourceNavigationController = [[UINavigationController alloc] initWithRootViewController:homeVC];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -51,6 +57,10 @@
 {
     NSLog(@"localNotification");
     dispatch_async(dispatch_get_main_queue(), ^{
+        AppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+        if (delegate.radioPlayer && delegate.radioPlayer.isPlaying) {
+            delegate.radioPlayer.isPlaying = @(NO);
+        }
         NSDictionary *userInfo = [notification userInfo];
         
         NSString *notificationName = [userInfo objectForKey:@"cancelAction"];

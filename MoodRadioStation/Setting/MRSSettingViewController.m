@@ -13,10 +13,13 @@
 #import <Masonry.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import "MRSDingshiManager.h"
+#import "AppDelegate.h"
+#import "RadioPlayerViewController.h"
 
 extern NSString *MRSMRSPauseDisplayLinkNotification;
 @interface MRSSettingViewController ()
 
+@property (nonatomic, strong) UIScrollView *contentView;
 @property (nonatomic, strong) MRSTimerView *timerView;
 @property (nonatomic, strong) MRSDingshiView *dingshiView;
 @property (nonatomic, strong) CADisplayLink *displayLink;
@@ -31,14 +34,9 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 
 @implementation MRSSettingViewController
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [self.navigationController.navigationBar setHidden:YES];
-    self.navigationItem.title = @"设置";
-}
-
 - (void)viewDidLoad
 {
+    self.view.backgroundColor = HEXCOLOR(0xf0efed);
     [self setupUI];
 }
 
@@ -46,6 +44,11 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 {
     [self.displayLink invalidate];
     self.displayLink = nil;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.edgesForExtendedLayout = UIRectEdgeNone;
 }
 
 - (void)bind
@@ -70,24 +73,30 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 
 - (void)setupUI
 {
-//    [self loadDinshiBlockView];
     [self bind];
-    [self.view addSubview:self.dingshiView];
-    [self.view addSubview:self.timerView];
-    [self.view addSubview:self.topSeperateLine];
-    [self.view addSubview:self.bottomSeperateLine];
-    [self.view addSubview:self.leftSeperateLine];
-    [self.view addSubview:self.rightSeperateLine];
-    [self.view setNeedsLayout];
+    self.contentView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
+    [self.view addSubview:self.contentView];
+    self.contentView.backgroundColor = [UIColor whiteColor];
+    [self.contentView addSubview:self.dingshiView];
+    [self.contentView addSubview:self.timerView];
+    [self.contentView addSubview:self.topSeperateLine];
+    [self.contentView addSubview:self.bottomSeperateLine];
+    [self.contentView addSubview:self.leftSeperateLine];
+    [self.contentView addSubview:self.rightSeperateLine];
+    [self.contentView setNeedsLayout];
 }
 
 - (void)updateViewConstraints
 {
     [super updateViewConstraints];
+    [_contentView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+        make.size.equalTo(self.view);
+    }];
     [_topSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view).offset(100);
-        make.left.equalTo(self.view).offset(12);
-        make.right.equalTo(self.view).offset(-12);
+        make.top.equalTo(self.contentView).offset(12);
+        make.left.equalTo(self.contentView).offset(12);
+        make.right.equalTo(self.contentView).offset(-12);
         make.height.equalTo(@0.5);
     }];
     [_dingshiView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -108,16 +117,19 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
             make.top.equalTo(self.dingshiView.mas_bottom);
         }
         make.left.right.height.equalTo(self.topSeperateLine);
+        make.bottom.equalTo(self.contentView);
     }];
     [_leftSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.topSeperateLine.mas_bottom);
         make.bottom.equalTo(self.bottomSeperateLine.mas_top);
         make.width.equalTo(@0.5);
         make.right.equalTo(self.dingshiView.mas_left);
+        make.left.equalTo(self.contentView);
     }];
     [_rightSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.width.equalTo(self.leftSeperateLine);
         make.left.equalTo(self.dingshiView.mas_right);
+        make.right.equalTo(self.contentView);
     }];
 }
 
@@ -199,7 +211,9 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
     self.displayLink.paused = YES;
     self.dingshiView.timeLabel.text = nil;
     self.now = nil;
-    self.dingshiView.isOn = NO;
+    if ([self.dingshiView.isOn boolValue]) {
+        self.dingshiView.isOn = @(NO);
+    }
 }
 
 - (NSString *)formatTime:(int)num
@@ -214,9 +228,9 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 
 - (void)startTimerWithTime:(NSTimeInterval)time
 {
-    [self stopTimer];
+    [MRSDingshiManager cancelNotificationsForType:@"closePlay"];
     self.dingshiTime = time;
-    self.now = [NSDate date];
+    self.now = [NSDate dateWithTimeIntervalSinceNow:0];
     [MRSDingshiManager scheduleClosePlayOnDate:[[NSDate alloc]initWithTimeInterval:time sinceDate:self.now]];
     self.displayLink.paused = NO;
 }
