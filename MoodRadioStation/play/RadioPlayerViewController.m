@@ -100,6 +100,21 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     [self refresh];
 }
 
+- (void)setFmListViewModel:(FMListViewModel *)fmListViewModel
+{
+    _fmListViewModel = fmListViewModel;
+    @weakify(self);
+    [self.fmListViewModel.dataLoadedSignal subscribeNext:^(NSNumber *x) {
+        @strongify(self);
+        if (![x boolValue])
+            return;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.requestFMInfoArray addObjectsFromArray:self.fmListViewModel.infoArray];
+            self.currentFMIndex = @([self.currentFMIndex longLongValue] + 1);
+        });
+    }];
+}
+
 - (void)refresh
 {
     id reqestFMInfo = [self.requestFMInfoArray objectAtIndex:[self.currentFMIndex unsignedIntegerValue]];
@@ -209,7 +224,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     
     [_playerBackgroundView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.equalTo(self.view);
-        make.height.equalTo(@(SCREEN_HEIGHT/2));
+        make.height.equalTo(@(400 * scaleFactorBaseiPhone6));
     }];
     [_playerView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.playerBackgroundView.mas_bottom);
@@ -302,7 +317,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
             if ([self.currentFMIndex longLongValue] + 1 < [self.requestFMInfoArray count]) {
                 self.currentFMIndex = @([self.currentFMIndex longLongValue] + 1);
             } else {
-                [self.fmListViewModel.loadMoreCommand
+                [self.fmListViewModel.refreshListCommand
                    execute:@(self.requestFMInfoArray.count)];
             }
         }];

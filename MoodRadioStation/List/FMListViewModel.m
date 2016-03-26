@@ -59,10 +59,14 @@
 - (RACCommand *)refreshListCommand
 {
     @weakify(self);
-    _refreshListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id x) {
+    _refreshListCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSNumber *offset) {
+        if (offset) {
+            self.model.offset = offset ;
+        } else {
+            self.model.offset = @(0);
+        }
         @strongify(self);
         self.error = nil;
-        self.model.offset = @(0);
         [self refreshDataNeedReset:YES];
         return [RACSignal empty];
     }];

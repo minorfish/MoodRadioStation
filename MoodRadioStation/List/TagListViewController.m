@@ -107,11 +107,6 @@
 - (void)bind
 {
     @weakify(self);
-    [self.viewModel.refreshingSignal subscribeNext:^(id x) {
-        @strongify(self);
-        
-    }];
-    
     [self.viewModel.dataLoadedSignal subscribeNext:^(id x) {
         @strongify(self);
         
