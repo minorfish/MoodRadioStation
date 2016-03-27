@@ -34,6 +34,9 @@
 @property (nonatomic, strong) MRSHotFmViewProductor *hotfmViewProductor;
 @property (nonatomic, strong) MRSCellViewProductor *lessionViewProductor;
 @property (nonatomic, strong) MRSCellViewProductor *lastefmViewProductor;
+@property (nonatomic, strong) UIImageView *playerAnimationImageView;
+@property (nonatomic, strong) RadioPlayerViewController *player;
+@property (nonatomic, strong) NSNumber *isPlaying;
 
 @end
 
@@ -52,6 +55,7 @@
 
 - (void)viewDidLoad
 {
+    [self bind];
     [_viewModel.getIndexCommand execute:nil];
     
     @weakify(self);
@@ -59,6 +63,14 @@
         @strongify(self);
         [self setupUI];
     }];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.isPlaying = self.player.isPlaying;
+    if (!self.navigationController.navigationBar.hidden) {
+        [self.navigationController setNavigationBarHidden:YES animated:NO];
+    }
 }
 
 - (void)setupUI
@@ -311,6 +323,7 @@
         
         [view addSubview:tagView];
         [view addSubview:titleLabel];
+        [view addSubview:self.playerAnimationImageView];
         [view addSubview:categoryView];
         
         [tagView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -321,6 +334,11 @@
         [titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(tagView.mas_right).offset(10);
             make.centerY.equalTo(tagView);
+        }];
+        [_playerAnimationImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(titleLabel);
+            make.right.equalTo(view).offset(-12);
+            make.width.height.equalTo(@20);
         }];
         [categoryView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(tagView.mas_bottom);
@@ -415,6 +433,56 @@
     [moreCellView addGestureRecognizer:tapGes];
     
     return moreCellView;
+}
+
+- (void)bind
+{
+    @weakify(self);
+    RAC(self, isPlaying) = RACObserve(self.player, isPlaying);
+    [[[RACObserve(self, isPlaying) ignore:nil] distinctUntilChanged] subscribeNext:^(NSNumber *x) {
+        @strongify(self);
+        if ([x boolValue]) {
+            if (!self.playerAnimationImageView.isAnimating) {
+                [self.playerAnimationImageView startAnimating];
+            }
+        } else {
+            if (self.playerAnimationImageView.isAnimating) {
+                [self.playerAnimationImageView stopAnimating];
+            }
+        }
+    }];
+}
+
+- (RadioPlayerViewController *)player
+{
+    AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+    return delegate.radioPlayer;
+}
+
+- (UIImageView *)playerAnimationImageView
+{
+    if (!_playerAnimationImageView) {
+        _playerAnimationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
+        _playerAnimationImageView.userInteractionEnabled = YES;
+        _playerAnimationImageView.image = [UIImage imageNamed:@"y1"];
+        NSArray *imageArray = @[[UIImage imageNamed:@"y1"],
+                                [UIImage imageNamed:@"y2"],
+                                [UIImage imageNamed:@"y3"],
+                                [UIImage imageNamed:@"y4"],
+                                [UIImage imageNamed:@"y5"],
+                                [UIImage imageNamed:@"y6"],
+                                ];
+        [_playerAnimationImageView setAnimationImages:imageArray];
+        [_playerAnimationImageView setAnimationRepeatCount:0];
+        [_playerAnimationImageView setAnimationDuration:0.4f];
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+        [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+            
+            [self.navigationController pushViewController:[self player] animated:YES];
+        }];
+        [_playerAnimationImageView addGestureRecognizer:tapGes];
+    }
+    return _playerAnimationImageView;
 }
 
 @end

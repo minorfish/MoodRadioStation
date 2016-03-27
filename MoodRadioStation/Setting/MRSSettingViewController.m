@@ -23,6 +23,8 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 @property (nonatomic, strong) MRSTimerView *timerView;
 @property (nonatomic, strong) MRSDingshiView *dingshiView;
 @property (nonatomic, strong) CADisplayLink *displayLink;
+@property (nonatomic, strong) UIView *barView;
+
 @property (nonatomic, strong) UIView *topSeperateLine;
 @property (nonatomic, strong) UIView *bottomSeperateLine;
 @property (nonatomic, strong) UIView *leftSeperateLine;
@@ -30,13 +32,17 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 @property (nonatomic, strong) NSDate *now;
 @property (nonatomic, assign) NSTimeInterval dingshiTime;
 
+@property (nonatomic, strong) UIImageView *playerAnimationImageView;
+@property (nonatomic, strong) RadioPlayerViewController *player;
+@property (nonatomic, strong) NSNumber *isPlaying;
+
 @end
 
 @implementation MRSSettingViewController
 
 - (void)viewDidLoad
 {
-    self.view.backgroundColor = HEXCOLOR(0xf0efed);
+//    self.view.backgroundColor = HEXCOLOR(0xf0efed);
     [self setupUI];
 }
 
@@ -48,12 +54,16 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    self.edgesForExtendedLayout = UIRectEdgeNone;
+    self.isPlaying = self.player.isPlaying;
+    if (!self.navigationController.navigationBar.hidden) {
+        [self.navigationController setNavigationBarHidden:YES animated:NO];
+    }
 }
 
 - (void)bind
 {
     @weakify(self);
+    RAC(self, isPlaying) = RACObserve(self.player, isPlaying);
     [RACObserve(self.dingshiView, isOn) subscribeNext:^(NSNumber *x) {
         @strongify(self);
         if ([x boolValue]) {
@@ -68,35 +78,49 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
         }];
     }];
     
+    [[[RACObserve(self, isPlaying) ignore:nil] distinctUntilChanged] subscribeNext:^(NSNumber *x) {
+        @strongify(self);
+        if ([x boolValue]) {
+            if (!self.playerAnimationImageView.isAnimating) {
+                [self.playerAnimationImageView startAnimating];
+            }
+        } else {
+            if (self.playerAnimationImageView.isAnimating) {
+                [self.playerAnimationImageView stopAnimating];
+            }
+        }
+    }];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationAction) name:MRSMRSPauseDisplayLinkNotification object:nil];
 }
 
 - (void)setupUI
 {
     [self bind];
-    self.contentView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
-    [self.view addSubview:self.contentView];
-    self.contentView.backgroundColor = [UIColor whiteColor];
-    [self.contentView addSubview:self.dingshiView];
-    [self.contentView addSubview:self.timerView];
-    [self.contentView addSubview:self.topSeperateLine];
-    [self.contentView addSubview:self.bottomSeperateLine];
-    [self.contentView addSubview:self.leftSeperateLine];
-    [self.contentView addSubview:self.rightSeperateLine];
-    [self.contentView setNeedsLayout];
+    
+    [self.view addSubview:self.barView];
+    [self.view addSubview:self.dingshiView];
+    [self.view addSubview:self.timerView];
+    [self.view addSubview:self.topSeperateLine];
+    [self.view addSubview:self.bottomSeperateLine];
+    [self.view addSubview:self.leftSeperateLine];
+    [self.view addSubview:self.rightSeperateLine];
+    [self.view setNeedsLayout];
 }
 
 - (void)updateViewConstraints
 {
     [super updateViewConstraints];
-    [_contentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
-        make.size.equalTo(self.view);
+    [_barView mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view);
+        make.top.equalTo(self.view).offset(24);
+        make.height.equalTo(@40);
+        make.width.equalTo(@SCREEN_WIDTH);
     }];
     [_topSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.contentView).offset(12);
-        make.left.equalTo(self.contentView).offset(12);
-        make.right.equalTo(self.contentView).offset(-12);
+        make.top.equalTo(self.barView.mas_bottom).offset(12);
+        make.left.equalTo(self.view).offset(12);
+        make.right.equalTo(self.view).offset(-12);
         make.height.equalTo(@0.5);
     }];
     [_dingshiView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -117,20 +141,50 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
             make.top.equalTo(self.dingshiView.mas_bottom);
         }
         make.left.right.height.equalTo(self.topSeperateLine);
-        make.bottom.equalTo(self.contentView);
+//        make.bottom.equalTo(self.view);
     }];
     [_leftSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.topSeperateLine.mas_bottom);
         make.bottom.equalTo(self.bottomSeperateLine.mas_top);
         make.width.equalTo(@0.5);
         make.right.equalTo(self.dingshiView.mas_left);
-        make.left.equalTo(self.contentView);
     }];
     [_rightSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.width.equalTo(self.leftSeperateLine);
         make.left.equalTo(self.dingshiView.mas_right);
-        make.right.equalTo(self.contentView);
     }];
+}
+
+- (UIView *)barView
+{
+    if (!_barView) {
+        _barView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 40)];
+        UILabel *title = [[UILabel alloc] init];
+        title.text = @"设置";
+        title.font = Font(14);
+        title.textColor = HEXCOLOR(0x666666);
+        UIView *seperateLine = [[UIView alloc] init];
+        seperateLine.backgroundColor = HEXCOLOR(0xe5e5e5);
+        
+        [_barView addSubview:title];
+        [_barView addSubview:self.playerAnimationImageView];
+        [_barView addSubview:seperateLine];
+        
+        [title mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(_barView);
+        }];
+        [_playerAnimationImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(title);
+            make.right.equalTo(_barView).offset(-12);
+            make.height.width.equalTo(@20);
+        }];
+        [seperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.bottom.equalTo(_barView);
+            make.width.equalTo(_barView);
+            make.height.equalTo(@0.5);
+        }];
+    }
+    return _barView;
 }
 
 - (MRSDingshiView *)dingshiView
@@ -239,6 +293,38 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 {
     [self notificationAction];
     [MRSDingshiManager cancelNotificationsForType:@"closePlay"];
+}
+
+- (RadioPlayerViewController *)player
+{
+    AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+    return delegate.radioPlayer;
+}
+
+- (UIImageView *)playerAnimationImageView
+{
+    if (!_playerAnimationImageView) {
+        _playerAnimationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
+        _playerAnimationImageView.userInteractionEnabled = YES;
+        _playerAnimationImageView.image = [UIImage imageNamed:@"y1"];
+        NSArray *imageArray = @[[UIImage imageNamed:@"y1"],
+                                [UIImage imageNamed:@"y2"],
+                                [UIImage imageNamed:@"y3"],
+                                [UIImage imageNamed:@"y4"],
+                                [UIImage imageNamed:@"y5"],
+                                [UIImage imageNamed:@"y6"],
+                                ];
+        [_playerAnimationImageView setAnimationImages:imageArray];
+        [_playerAnimationImageView setAnimationRepeatCount:0];
+        [_playerAnimationImageView setAnimationDuration:0.4f];
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+        [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+            
+            [self.navigationController pushViewController:[self player] animated:YES];
+        }];
+        [_playerAnimationImageView addGestureRecognizer:tapGes];
+    }
+    return _playerAnimationImageView;
 }
 
 @end

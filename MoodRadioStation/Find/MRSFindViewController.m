@@ -15,6 +15,8 @@
 #import "UIKitMacros.h"
 #import "TagListViewController.h"
 #import "MRSSearchViewController.h"
+#import "RadioPlayerViewController.h"
+#import "AppDelegate.h"
 
 @interface MRSFindViewController ()
 
@@ -25,6 +27,10 @@
 @property (nonatomic, strong) UIView *searchView;
 @property (nonatomic, strong) UIScrollView *contentView;
 @property (nonatomic, assign) CGFloat contentViewHeight;
+
+@property (nonatomic, strong) UIImageView *playerAnimationImageView;
+@property (nonatomic, strong) RadioPlayerViewController *player;
+@property (nonatomic, strong) NSNumber *isPlaying;
 
 @end
 
@@ -44,10 +50,18 @@
     return _ADViewController;
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.isPlaying = self.player.isPlaying;
+    if (!self.navigationController.navigationBar.hidden) {
+        [self.navigationController setNavigationBarHidden:YES animated:NO];
+    }
+}
+
 - (void)viewDidLoad
 {
+    [self bind];
     self.view.backgroundColor = HEXCOLOR(0xf0efed);
-
     self.contentView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
     
     [self.view addSubview:self.contentView];
@@ -56,6 +70,7 @@
     [self loadSearchView];
     [self loadMoodCategoryView];
     [self loadSightCategoryView];
+
     [self.contentView setContentSize:CGSizeMake(SCREEN_WIDTH, self.contentViewHeight)];
 }
 
@@ -77,6 +92,12 @@
     [self.ADViewController loadADView:4 finished:^(UIView *view) {
         self.ADView = view;
         [self.contentView addSubview:self.ADView];
+        [self.ADView addSubview:self.playerAnimationImageView];
+        [self.playerAnimationImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(self.ADView).offset(12);
+            make.right.equalTo(self.ADView).offset(-12);
+            make.width.height.equalTo(@20);
+        }];
     }];
 }
 
@@ -259,6 +280,56 @@
 {
     TagListViewController *vc = [[TagListViewController alloc] initWithRows:@(15) KeyString:@"tag" KeyValue:tagString];
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)bind
+{
+    @weakify(self);
+    RAC(self, isPlaying) = RACObserve(self.player, isPlaying);
+    [[[RACObserve(self, isPlaying) ignore:nil] distinctUntilChanged] subscribeNext:^(NSNumber *x) {
+        @strongify(self);
+        if ([x boolValue]) {
+            if (!self.playerAnimationImageView.isAnimating) {
+                [self.playerAnimationImageView startAnimating];
+            }
+        } else {
+            if (self.playerAnimationImageView.isAnimating) {
+                [self.playerAnimationImageView stopAnimating];
+            }
+        }
+    }];
+}
+
+- (RadioPlayerViewController *)player
+{
+    AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+    return delegate.radioPlayer;
+}
+
+- (UIImageView *)playerAnimationImageView
+{
+    if (!_playerAnimationImageView) {
+        _playerAnimationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
+        _playerAnimationImageView.userInteractionEnabled = YES;
+        _playerAnimationImageView.image = [UIImage imageNamed:@"w1"];
+        NSArray *imageArray = @[[UIImage imageNamed:@"w1"],
+                                [UIImage imageNamed:@"w2"],
+                                [UIImage imageNamed:@"w3"],
+                                [UIImage imageNamed:@"w4"],
+                                [UIImage imageNamed:@"w5"],
+                                [UIImage imageNamed:@"w6"],
+                                ];
+        [_playerAnimationImageView setAnimationImages:imageArray];
+        [_playerAnimationImageView setAnimationRepeatCount:0];
+        [_playerAnimationImageView setAnimationDuration:0.4f];
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+        [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+            
+            [self.navigationController pushViewController:[self player] animated:YES];
+        }];
+        [_playerAnimationImageView addGestureRecognizer:tapGes];
+    }
+    return _playerAnimationImageView;
 }
 
 @end

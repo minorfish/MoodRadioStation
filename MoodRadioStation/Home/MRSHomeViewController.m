@@ -10,6 +10,9 @@
 #import "MRSFindViewController.h"
 #import "MRSIndexViewController.h"
 #import "MRSSettingViewController.h"
+#import <ReactiveCocoa/ReactiveCocoa.h>
+#import "AppDelegate.h"
+#import "RadioPlayerViewController.h"
 
 @interface MRSHomeViewController ()<UITabBarControllerDelegate>
 
@@ -19,6 +22,7 @@
 
 - (void)viewDidLoad
 {
+    [NSThread sleepForTimeInterval:1];
     MRSIndexViewController *indexBarController = [[MRSIndexViewController alloc] init];
     indexBarController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"主页" image:[UIImage imageNamed:@"nav_index"] selectedImage:[UIImage imageNamed:@"nav_index_act"]];
     
@@ -36,11 +40,10 @@
 }
 
 # pragma mark - UITabBarControllerDelegate
-
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
-{
-    NSInteger index = tabBarController.selectedIndex;
-    [self.navigationController presentViewController:viewController animated:YES completion:^{}];
-}
+//- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
+//{
+//    NSInteger index = tabBarController.selectedIndex;
+//   [self.navigationController pushViewController:viewController animated:YES];
+//}
 
 @end

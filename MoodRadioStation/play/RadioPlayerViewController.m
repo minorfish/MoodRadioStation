@@ -68,15 +68,9 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
-    self.navigationController.navigationBar.hidden = YES;
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
-        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    if (!self.navigationController.navigationBar.hidden) {
+        [self.navigationController setNavigationBarHidden:YES animated:NO];
     }
-    self.navigationController.navigationBar.hidden = NO;
 }
 
 - (void)dealloc

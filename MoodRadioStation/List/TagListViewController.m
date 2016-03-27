@@ -56,7 +56,7 @@
 - (void)viewDidLoad
 {
     self.refreshControll = [[MRSRefreshHeader alloc] initWithFrame:CGRectMake(0, -30, SCREEN_WIDTH, 30) RefreshView:self.tableView];
-    self.refreshControll.originEdgeInsets = UIEdgeInsetsMake(60, 0, 0, 0);
+    self.refreshControll.originEdgeInsets = UIEdgeInsetsMake(64, 0, 0, 0);
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = [UIColor clearColor];
@@ -64,10 +64,12 @@
     self.tableView.backgroundColor = HEXCOLOR(0xf0efed);
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-    
-    self.navigationItem.title = self.keyValue;
+    if ([self.keyString isEqualToString:@"is_teacher"]) {
+        self.navigationItem.title = [self.keyValue isEqualToString:@"1"] ? @"最新心理课" : @"最新FM";
+    } else {
+        self.navigationItem.title = self.keyValue;
+    }
     self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
-    
     UIImageView *backView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
     backView.image = [UIImage imageNamed:@"back"];
     backView.contentMode = UIViewContentModeScaleAspectFit;
@@ -94,6 +96,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     self.isPlaying = self.playerVC.isPlaying;
+    if (self.navigationController.navigationBar.hidden) {
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
+    }
 }
 
 - (void)dealloc
@@ -125,6 +130,8 @@
             }
             if ([self.viewModel.fetchResultController numberOfObject] > 0) {
                 self.noContentView.hidden = YES;
+            } else {
+                self.noContentView.hidden = NO;
             }
         }
     }];
@@ -152,7 +159,11 @@
 {
     CGFloat height = self.viewModel.fetchResultController.numberOfObject * [TagListCellItem CellHeight];
     if (height >= SCREEN_HEIGHT) {
-        self.loadigMoreControll = [[MRSLoadingMoreCell alloc] initWithFrame:CGRectMake(0, height, SCREEN_WIDTH, 30) RefreshView:self.tableView];
+        if (!self.loadigMoreControll) {
+            self.loadigMoreControll = [[MRSLoadingMoreCell alloc] initWithFrame:CGRectMake(0, height, SCREEN_WIDTH, 30) RefreshView:self.tableView];
+        } else {
+            self.loadigMoreControll.frame = CGRectMake(0, height, SCREEN_WIDTH, 30);
+        }
         self.loadigMoreControll.originEdgeInsets = UIEdgeInsetsMake(60, 0, 0, 0);
     }
 }

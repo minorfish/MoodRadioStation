@@ -34,7 +34,8 @@
         [self addSubview:view];
         
         [view mas_remakeConstraints:^(MASConstraintMaker *make) {
-            make.center.equalTo(self);
+            make.centerY.equalTo(self);
+            make.width.equalTo(self);
         }];
         [_noContentImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(view);

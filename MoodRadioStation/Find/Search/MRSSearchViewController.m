@@ -20,6 +20,13 @@
 
 @implementation MRSSearchViewController
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    if (self.navigationController.navigationBar.hidden) {
+        [self.navigationController setNavigationBarHidden:NO animated:NO];
+    }
+}
+
 - (void)viewDidLoad
 {
     UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.navigationController.navigationBar.frame.size.height)];

@@ -84,6 +84,9 @@
         default:
             break;
     }
+//    if (_loadingMoreState != loadingMoreState && !self.pullImage.hidden) {
+//        self.pullImage.layer.transform = CATransform3DMakeRotation(0, 1.0, 0, 0);
+//    }
     _loadingMoreState = loadingMoreState;
 }
 
