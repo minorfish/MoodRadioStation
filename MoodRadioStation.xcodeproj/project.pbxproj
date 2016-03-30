@@ -101,6 +101,10 @@
 		2FE0DE051C89D5C300A705C3 /* TagListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE0DDFE1C89D5C300A705C3 /* TagListViewController.m */; };
 		2FE0DE061C89D5C300A705C3 /* MRSLoadingMoreCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE0DE001C89D5C300A705C3 /* MRSLoadingMoreCell.m */; };
 		2FE0DE071C89D5C300A705C3 /* MRSRefreshHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE0DE021C89D5C300A705C3 /* MRSRefreshHeader.m */; };
+		2FE2718C1CABAEA30073E62E /* MRSCacheEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE2718B1CABAEA30073E62E /* MRSCacheEntity.m */; };
+		2FE2718F1CABAFCE0073E62E /* MRSMemoryCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE2718E1CABAFCE0073E62E /* MRSMemoryCacheManager.m */; };
+		2FE271951CABCB740073E62E /* MRSPersistentCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE271941CABCB740073E62E /* MRSPersistentCacheManager.m */; };
+		2FE271981CABECEE0073E62E /* MRSURLCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FE271971CABECEE0073E62E /* MRSURLCacheManager.m */; };
 		2FF9709A1C93B5F300EB7A77 /* MRSCategoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FF970991C93B5F300EB7A77 /* MRSCategoryView.m */; };
 		2FF970AE1C93D27500EB7A77 /* beishang@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FF9709B1C93D27500EB7A77 /* beishang@2x.png */; };
 		2FF970AF1C93D27500EB7A77 /* duchu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FF9709C1C93D27500EB7A77 /* duchu@2x.png */; };
@@ -276,6 +280,15 @@
 		2FE0DE001C89D5C300A705C3 /* MRSLoadingMoreCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSLoadingMoreCell.m; path = List/MRSLoadingMoreCell.m; sourceTree = "<group>"; };
 		2FE0DE011C89D5C300A705C3 /* MRSRefreshHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSRefreshHeader.h; path = List/MRSRefreshHeader.h; sourceTree = "<group>"; };
 		2FE0DE021C89D5C300A705C3 /* MRSRefreshHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSRefreshHeader.m; path = List/MRSRefreshHeader.m; sourceTree = "<group>"; };
+		2FE2718A1CABAEA30073E62E /* MRSCacheEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSCacheEntity.h; path = CacheManager/MRSCacheEntity.h; sourceTree = "<group>"; };
+		2FE2718B1CABAEA30073E62E /* MRSCacheEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSCacheEntity.m; path = CacheManager/MRSCacheEntity.m; sourceTree = "<group>"; };
+		2FE2718D1CABAFCE0073E62E /* MRSMemoryCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSMemoryCacheManager.h; path = CacheManager/MRSMemoryCacheManager.h; sourceTree = "<group>"; };
+		2FE2718E1CABAFCE0073E62E /* MRSMemoryCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSMemoryCacheManager.m; path = CacheManager/MRSMemoryCacheManager.m; sourceTree = "<group>"; };
+		2FE271901CABBCA40073E62E /* MRSCacheManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSCacheManagerProtocol.h; path = CacheManager/MRSCacheManagerProtocol.h; sourceTree = "<group>"; };
+		2FE271931CABCB740073E62E /* MRSPersistentCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSPersistentCacheManager.h; path = CacheManager/MRSPersistentCacheManager.h; sourceTree = "<group>"; };
+		2FE271941CABCB740073E62E /* MRSPersistentCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSPersistentCacheManager.m; path = CacheManager/MRSPersistentCacheManager.m; sourceTree = "<group>"; };
+		2FE271961CABECEE0073E62E /* MRSURLCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSURLCacheManager.h; path = CacheManager/MRSURLCacheManager.h; sourceTree = "<group>"; };
+		2FE271971CABECEE0073E62E /* MRSURLCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSURLCacheManager.m; path = CacheManager/MRSURLCacheManager.m; sourceTree = "<group>"; };
 		2FF970981C93B5F300EB7A77 /* MRSCategoryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSCategoryView.h; path = Find/MRSCategoryView.h; sourceTree = "<group>"; };
 		2FF970991C93B5F300EB7A77 /* MRSCategoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSCategoryView.m; path = Find/MRSCategoryView.m; sourceTree = "<group>"; };
 		2FF9709B1C93D27500EB7A77 /* beishang@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "beishang@2x.png"; path = "Resources/beishang@2x.png"; sourceTree = SOURCE_ROOT; };
@@ -388,6 +401,7 @@
 		2F33378A1C803E9800927CF8 /* MoodRadioStation */ = {
 			isa = PBXGroup;
 			children = (
+				2FE271891CABAE660073E62E /* CacheManager */,
 				2F6CABEC1C97E74900DD4984 /* Setting */,
 				2FBB52D41C968CC000EA59F6 /* Index */,
 				2F14F9EA1C9589DA0066D030 /* Home */,
@@ -616,6 +630,22 @@
 			name = List;
 			sourceTree = "<group>";
 		};
+		2FE271891CABAE660073E62E /* CacheManager */ = {
+			isa = PBXGroup;
+			children = (
+				2FE271901CABBCA40073E62E /* MRSCacheManagerProtocol.h */,
+				2FE2718A1CABAEA30073E62E /* MRSCacheEntity.h */,
+				2FE2718B1CABAEA30073E62E /* MRSCacheEntity.m */,
+				2FE2718D1CABAFCE0073E62E /* MRSMemoryCacheManager.h */,
+				2FE2718E1CABAFCE0073E62E /* MRSMemoryCacheManager.m */,
+				2FE271931CABCB740073E62E /* MRSPersistentCacheManager.h */,
+				2FE271941CABCB740073E62E /* MRSPersistentCacheManager.m */,
+				2FE271961CABECEE0073E62E /* MRSURLCacheManager.h */,
+				2FE271971CABECEE0073E62E /* MRSURLCacheManager.m */,
+			);
+			name = CacheManager;
+			sourceTree = "<group>";
+		};
 		770C8EBE75CA0D3AD92A9528 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -816,6 +846,7 @@
 				2F320E091C81942E008DC121 /* RadioInfo.m in Sources */,
 				2F6CABF61C97F9AD00DD4984 /* MRSDingshiView.m in Sources */,
 				2FCB2A281C8C47EE00851689 /* MRSSpeakerInfo.m in Sources */,
+				2FE2718C1CABAEA30073E62E /* MRSCacheEntity.m in Sources */,
 				2F3337901C803E9800927CF8 /* AppDelegate.m in Sources */,
 				2FE0DE031C89D5C300A705C3 /* FMInfo.m in Sources */,
 				2FCC59A61C87273C008B2621 /* MRSImageView.m in Sources */,
@@ -830,9 +861,11 @@
 				2FBB52E61C968CD200EA59F6 /* MRSIndexViewModel.m in Sources */,
 				2FBB52EC1C96A1AD00EA59F6 /* MRSJieMuListViewModel.m in Sources */,
 				2FB9EC571C8AB0C200356374 /* MRSURLImageView.m in Sources */,
+				2FE271981CABECEE0073E62E /* MRSURLCacheManager.m in Sources */,
 				2FBB52E31C968CD200EA59F6 /* MRSIndexInfo.m in Sources */,
 				2F89F5AF1C9190110062A870 /* MRSFindViewController.m in Sources */,
 				2F6CABF31C97E85700DD4984 /* MRSDingshiManager.m in Sources */,
+				2FE2718F1CABAFCE0073E62E /* MRSMemoryCacheManager.m in Sources */,
 				2FCC599C1C872704008B2621 /* PlayerBackgroundView.m in Sources */,
 				2FE0DE061C89D5C300A705C3 /* MRSLoadingMoreCell.m in Sources */,
 				2FE0DE051C89D5C300A705C3 /* TagListViewController.m in Sources */,
@@ -855,6 +888,7 @@
 				2FCC599F1C872704008B2621 /* RadioViewModel.m in Sources */,
 				2FE0DE071C89D5C300A705C3 /* MRSRefreshHeader.m in Sources */,
 				2FCC599D1C872704008B2621 /* RadioInfoModel.m in Sources */,
+				2FE271951CABCB740073E62E /* MRSPersistentCacheManager.m in Sources */,
 				2FB86DBC1C8EA2A200B89E76 /* MRSSpeakerDescView.m in Sources */,
 				2FBB52E11C968CD200EA59F6 /* MRSIndexCategory.m in Sources */,
 				2F6CABF91C97FE8A00DD4984 /* MRSTimerView.m in Sources */,

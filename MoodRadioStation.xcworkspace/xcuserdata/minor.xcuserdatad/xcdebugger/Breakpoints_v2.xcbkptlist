@@ -131,70 +131,6 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/play/RadioPlayerViewController.m"
-            timestampString = "480780203.383105"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "197"
-            endingLineNumber = "197"
-            landmarkName = "-bind"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/play/RadioPlayerViewController.m"
-            timestampString = "480780203.383105"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "196"
-            endingLineNumber = "196"
-            landmarkName = "-bind"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[RadioPlayerViewController bind]"
-                  moduleName = "MoodRadioStation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/minor/MoodRadioStation/MoodRadioStation/play/RadioPlayerViewController.m"
-                  timestampString = "480780347.247112"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "196"
-                  endingLineNumber = "196"
-                  offsetFromSymbolStart = "4687">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__33-[RadioPlayerViewController bind]_block_invoke230"
-                  moduleName = "MoodRadioStation"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/minor/MoodRadioStation/MoodRadioStation/play/RadioPlayerViewController.m"
-                  timestampString = "480780347.24757"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "196"
-                  endingLineNumber = "196"
-                  offsetFromSymbolStart = "36">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "MoodRadioStation/List/TagListViewController.m"
             timestampString = "480760830.656982"
             startingColumnNumber = "9223372036854775807"
@@ -228,7 +164,7 @@
                   moduleName = "MoodRadioStation"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/minor/MoodRadioStation/MoodRadioStation/play/RadioPlayerViewController.m"
-                  timestampString = "480780347.251651"
+                  timestampString = "481031156.445629"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "105"
@@ -243,7 +179,7 @@
                   moduleName = "MoodRadioStation"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/minor/MoodRadioStation/MoodRadioStation/play/RadioPlayerViewController.m"
-                  timestampString = "480780347.251925"
+                  timestampString = "481031156.445869"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "105"
@@ -251,38 +187,6 @@
                   offsetFromSymbolStart = "12">
                </Location>
             </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/play/RadioPlayerViewController.m"
-            timestampString = "480780203.383105"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "201"
-            endingLineNumber = "201"
-            landmarkName = "-bind"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/play/RadioPlayerViewController.m"
-            timestampString = "480780203.383105"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
-            landmarkName = "-bind"
-            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -340,7 +244,7 @@
                   moduleName = "MoodRadioStation"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/minor/MoodRadioStation/MoodRadioStation/List/MRSLoadingMoreCell.m"
-                  timestampString = "480780347.257093"
+                  timestampString = "481031156.449942"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "140"
@@ -355,7 +259,7 @@
                   moduleName = "MoodRadioStation"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/minor/MoodRadioStation/MoodRadioStation/List/MRSLoadingMoreCell.m"
-                  timestampString = "480780347.25731"
+                  timestampString = "481031156.450219"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "140"
@@ -451,13 +355,29 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/Index/MRSIndexViewController.m"
-            timestampString = "480764016.615082"
+            filePath = "MoodRadioStation/MRSUIFoundation/MRSModel.m"
+            timestampString = "481031146.43235"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "71"
-            endingLineNumber = "71"
-            landmarkName = "-viewWillAppear:"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
+            landmarkName = "-getRadioWithURL:finished:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MoodRadioStation/MRSUIFoundation/MRSModel.m"
+            timestampString = "481031329.979218"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "-getRadioWithURL:finished:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
