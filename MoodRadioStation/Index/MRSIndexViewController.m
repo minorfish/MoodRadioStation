@@ -156,8 +156,9 @@
                 delegate.radioPlayer.fmListViewModel = [[FMListViewModel alloc] initWithRows:@(15) KeyString:@"is_teacher" KeyValue:@"1"];
             }
 
-            delegate.radioPlayer.currentFMIndex = @(index);
             delegate.radioPlayer.requestFMInfoArray = [array mutableCopy];
+            delegate.radioPlayer.currentFMIndex = @(index);
+
             [self.navigationController pushViewController:delegate.radioPlayer animated:YES];
         };
     }

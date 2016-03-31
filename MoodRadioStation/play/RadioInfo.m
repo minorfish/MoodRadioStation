@@ -32,4 +32,28 @@
     }];
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (!object || ![object isKindOfClass:[RadioInfo class]])
+        return NO;
+    if ([super isEqual:object]) {
+        return YES;
+    }
+    RadioInfo *info = (RadioInfo *)object;
+    if (_radioID != info.radioID) {
+        return NO;
+    } else if(![_title isEqualToString:info.title]) {
+        return NO;
+    } else if (![_coverURL isEqualToString:info.coverURL]) {
+        return NO;
+    } else if (![_speak isEqualToString:info.speak]) {
+        return NO;
+    } else if (![_URL isEqualToString:info.URL]) {
+        return NO;
+    } else if (![_radiodDesc isEqualToString:info.radiodDesc]) {
+        return NO;
+    }
+    return  [_speakerInfo isEqual:info.speakerInfo];
+}
+
 @end

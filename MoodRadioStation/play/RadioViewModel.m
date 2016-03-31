@@ -11,12 +11,14 @@
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import "RadioInfoModel.h"
 #import <AVFoundation/AVFoundation.h>
+#import "MRSRadioDao.h"
 
 extern const NSString* RPRefreshProgressViewNotification;
 
 @interface RadioViewModel()<AVAudioPlayerDelegate>
 
 @property (nonatomic, strong) RadioInfoModel *model;
+@property (nonatomic, strong) MRSRadioDao *dao;
 
 @property (nonatomic, strong) RACCommand *getRadioInfoCommand;
 @property (nonatomic, strong) RACCommand *getRadioCommand;
@@ -43,6 +45,7 @@ extern const NSString* RPRefreshProgressViewNotification;
     self = [super init];
     if (self) {
         _model = [[RadioInfoModel alloc] init];
+        _dao = [[MRSRadioDao alloc] init];
     }
     return self;
 }
@@ -64,9 +67,18 @@ extern const NSString* RPRefreshProgressViewNotification;
         if (self.preRadioInfoRequest) {
             [self.preRadioInfoRequest dispose];
         }
+        [self.radioInfoLoaded sendNext:@(NO)];
+        
+        // get from cache
+        id cache = [self.dao getCacheForRadioID:[ID longLongValue]];
+        if (cache) {
+            self.radioInfo = cache;
+            [self.radioInfoLoaded sendNext:@(YES)];
+            return [RACSignal empty];
+        }
         self.model.ID = ID;
         self.error = nil;
-        [self.radioInfoLoaded sendNext:@(NO)];
+        
         self.preRadioInfoRequest = [[[self.model getRadioInfo] catch:^RACSignal *(NSError *error) {
             self.error = error;
             return [RACSignal empty];
@@ -75,6 +87,7 @@ extern const NSString* RPRefreshProgressViewNotification;
             if (!value)
                 return;
             self.radioInfo = value;
+            [self.dao saveCache:value ForID:[ID longLongValue]];
             [self.radioInfoLoaded sendNext:@(YES)];
         }];
         return [RACSignal empty];
@@ -88,34 +101,46 @@ extern const NSString* RPRefreshProgressViewNotification;
     @weakify(self);
     _getRadioCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSString *radioURL) {
         @strongify(self);
+        NSString *url = [radioURL copy];
+        url = [url stringByReplacingOccurrencesOfString:@"/" withString:@"."];
         if (self.preRadioRequest) {
             [self.preRadioRequest dispose];
         }
+        [self.radioLoaded sendNext:@(NO)];
+        NSString *filePath = [self.dao getFilePathForRadioURL:url];
+        if (filePath) {
+            [self playGetReady:[NSURL fileURLWithPath:filePath]];
+            return [RACSignal empty];
+        }
         self.error = nil;
         self.model.radioURL = radioURL;
-        [self.radioLoaded sendNext:@(NO)];
         self.preRadioRequest = [[[self.model getRadio] catch:^RACSignal *(NSError *error) {
             self.error = error;
             return [RACSignal empty];
         }] subscribeNext:^(NSURL *filePath) {
             @strongify(self);
+            [self.dao saveFilePath:filePath.path ForRadioURL:url];
             NSLog(@"radioCommand\n");
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSError *error = nil;
-                self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:filePath error:&error];
-                if (!error) {
-                    self.player.delegate = self;
-                    self.player.currentTime = 0;
-                    self.durationTime = self.player.duration;
-                    [self.player prepareToPlay];
-                    [self.radioLoaded sendNext:@(YES)];
-                }
-                self.error = error;
+                [self playGetReady:filePath];
             });
         }];
         return [RACSignal empty];
     }];
     return _getRadioCommand;
+}
+
+- (void)playGetReady:(NSURL *)filePath {
+    NSError *error = nil;
+    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:filePath error:&error];
+    if (!error) {
+        self.player.delegate = self;
+        self.player.currentTime = 0;
+        self.durationTime = self.player.duration;
+        [self.player prepareToPlay];
+        [self.radioLoaded sendNext:@(YES)];
+    }
+    self.error = error;
 }
 
 - (CADisplayLink *)displayLink

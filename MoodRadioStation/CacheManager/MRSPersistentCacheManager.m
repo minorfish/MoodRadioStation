@@ -51,27 +51,43 @@
     [fileManager createDirectoryAtPath:_cachePath withIntermediateDirectories:YES attributes:nil error:nil];
 }
 
-- (void)setEntity:(MRSCacheEntity *)entity error:(NSError *__autoreleasing *)error
+- (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key error:(NSError *__autoreleasing *)error
+{
+    return [self setCache:cache forKey:key atPath:nil error:error];
+}
+
+- (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key atPath:(NSString *)path error:(NSError *__autoreleasing *)error
+{
+    MRSCacheEntity *entity = [[MRSCacheEntity alloc] initWithCache:cache key:key path:path];
+    return [self setEntity:entity error:error];
+}
+
+- (MRSCacheEntity *)setEntity:(MRSCacheEntity *)entity error:(NSError *__autoreleasing *)error
 {
     if (![self canSupportObject:entity.cache]) {
-        return;
+        return nil;
     }
     if (error) {
         *error = nil;
     }
-    NSString *parentPath = [_directory stringByAppendingPathComponent:entity.path];
+    NSString *parentPath = [_cachePath stringByAppendingPathComponent:entity.path];
     NSString *cacheFilePath = [parentPath stringByAppendingPathComponent:entity.key];
     NSFileManager *fileManager = [[NSFileManager alloc] init];
+    NSError *thisError = nil;
     if (!entity.cache) {
-        [fileManager removeItemAtPath:cacheFilePath error:error];
+        [fileManager removeItemAtPath:cacheFilePath error:&thisError];
     }
-    if (error) {
-        return;
+    if (thisError) {
+        *error = thisError;
+        return nil;
     }
-    BOOL create = [fileManager createDirectoryAtPath:cacheFilePath withIntermediateDirectories:YES attributes:nil error:error];
+    BOOL create = [fileManager createDirectoryAtPath:parentPath withIntermediateDirectories:YES attributes:nil error:&thisError];
     if (create) {
-        [self saveObject:entity.cache atPath:cacheFilePath error:error];
+        if ([self saveObject:entity.cache atPath:cacheFilePath error:&thisError]) {
+            return entity;
+        }
     }
+    return nil;
 }
 
 - (void)getCacheForKey:(NSString *)key atPath:(NSString *)path finished:(MRSCacheManagerCallBack)finished
@@ -85,7 +101,7 @@
     }
 }
 
-- (MRSCacheEntity *)getEntityForKey:(NSString *)key error:(NSError *__autoreleasing *)error
+- (MRSCacheEntity *)getCacheForKey:(NSString *)key error:(NSError *__autoreleasing *)error
 {
     return [self getCacheForKey:key atPath:nil error:error];
 }
@@ -103,14 +119,17 @@
     if (error) {
         *error = nil;
     }
-    id cache = [self restoreObjectAtPath:path error:error];
-    if (!cache) {
+    NSError *thisError = nil;
+    id cache = [self restoreObjectAtPath:path error:&thisError];
+    if (thisError || !cache) {
+        *error = thisError;
         return nil;
     }
     
     NSFileManager *fileManager = [[NSFileManager alloc] init];
-    NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:error];
-    if (error) {
+    NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:&thisError];
+    if (thisError) {
+        *error = thisError;
         return nil;
     }
     MRSCacheEntity *entity = [[MRSCacheEntity alloc] init];

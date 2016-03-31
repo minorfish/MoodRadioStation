@@ -20,4 +20,21 @@
              @keypath(speaker, fmNum): @"fmnum"};
 }
 
+- (BOOL)isEqual:(id)object {
+   
+    if (!object || ![object isKindOfClass:[MRSSpeakerInfo class]])
+        return  NO;
+    if ([super isEqual:object])
+        return  YES;
+    MRSSpeakerInfo *info = (MRSSpeakerInfo *)object;
+    if (_ID != info.ID) {
+        return  NO;
+    } else if (![_name isEqualToString:info.name]) {
+        return NO;
+    } else if (![_cover isEqualToString:info.cover]) {
+        return NO;
+    }
+    return _fmNum == info.fmNum;
+}
+
 @end

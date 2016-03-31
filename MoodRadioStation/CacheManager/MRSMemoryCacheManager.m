@@ -16,6 +16,8 @@
     unsigned long long _cacheSize;
 }
 
+@synthesize directory = _directory;
+
 - (instancetype)init
 {
     self = [super init];        
@@ -43,7 +45,7 @@
 {
     unsigned long long cacheSize = 0;
     if (path.length) {
-         path = [NSString stringWithFormat:@"public:%@", path];
+         path = [NSString stringWithFormat:@"%@:%@", _directory ,path];
         for (NSString *key in _cacheKeys) {
             if ([key compare:path] == NSOrderedDescending) {
                 break;
@@ -65,7 +67,7 @@
     NSArray *deleteKeysArray = nil;
     
     if (path.length) {
-        path = [NSString stringWithFormat:@"public:%@", path];
+        path = [NSString stringWithFormat:@"%@:%@", _directory, path];
         for (NSString *key in _cacheKeys) {
             if ([key compare:path] == NSOrderedDescending) {
                 break;
@@ -88,42 +90,51 @@
     [_cacheKeys removeObjectsInArray:deleteKeysArray];
 }
 
-- (MRSCacheEntity *)getEntityForKey:(NSString *)key error:(NSError **)error
+- (MRSCacheEntity *)getCacheForKey:(NSString *)key error:(NSError **)error
 {
+    return [self getCacheForKey:key atPath:nil error:error];
+}
+
+- (MRSCacheEntity *)getCacheForKey:(NSString *)key atPath:(NSString *)path error:(NSError *__autoreleasing *)error
+{
+    path = path ? path : @"";
+    key = [NSString stringWithFormat:@"%@:%@@%@", _directory, path, key];
     MRSCacheEntity *entity = _memoryCache[key];
-    if ([_recentlyAccessedKeys containsObject:entity]) {
-        [_recentlyAccessedKeys removeObject:entity];
+    if ([_recentlyAccessedKeys containsObject:key]) {
+        [_recentlyAccessedKeys removeObject:key];
     }
-    [_recentlyAccessedKeys insertObject:entity atIndex:0];
+    
+    [_recentlyAccessedKeys insertObject:key atIndex:0];
     return entity;
 }
 
-- (void)setCache:(id)cache forKey:(NSString *)key error:(NSError *__autoreleasing *)error
+- (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key error:(NSError *__autoreleasing *)error
 {
-    [self setCache:cache forKey:key atPath:nil error:error];
+    return [self setCache:cache forKey:key atPath:nil error:error];
 }
 
-- (void)setCache:(id)cache forKey:(NSString *)key atPath:(NSString *)path error:(NSError *__autoreleasing *)error
+- (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key atPath:(NSString *)path error:(NSError *__autoreleasing *)error
 {
     NSError *innrError = nil;
     MRSCacheEntity *entity = [[MRSCacheEntity alloc] initWithCache:cache key:key path:path];
-    [self setEntity:entity error:&innrError];
+    MRSCacheEntity *staleEntity = [self setEntity:entity error:&innrError];
     if (innrError) {
         *error = innrError;
     }
+    return staleEntity;
 }
 
-- (void)setEntity:(MRSCacheEntity *)entity error:(NSError **)error
+- (MRSCacheEntity *)setEntity:(MRSCacheEntity *)entity error:(NSError **)error
 {
     entity.dirty = YES;
-    NSString *key = [NSString stringWithFormat:@"public:%@@%@", entity.path, entity.key];
+    NSString *key = [NSString stringWithFormat:@"%@:%@@%@", _directory, entity.path, entity.key];
     NSString *longestUnAccessKey = nil;
     MRSCacheEntity *longestUnAccessObject = nil;
     
     unsigned long long oldEntitySize = 0;
     if (!entity.cache) {
         [_memoryCache removeObjectForKey:key];
-        return;
+        return nil;
     }
     
     if ([entity.cache conformsToProtocol:@protocol(NSCoding) ]) {
@@ -135,7 +146,7 @@
     
     @synchronized(self) {
         if (_memoryCache[key]) {
-            oldEntitySize = [NSKeyedArchiver archivedDataWithRootObject:_memoryCache[key]].length;
+            oldEntitySize = [NSKeyedArchiver archivedDataWithRootObject:((MRSCacheEntity *)_memoryCache[key]).cache].length;
         } else {
             if (_recentlyAccessedKeys.count > _limit) {
                 longestUnAccessKey = [_recentlyAccessedKeys lastObject];
@@ -152,9 +163,10 @@
         }
         
         [_recentlyAccessedKeys insertObject:key atIndex:0];
-        _memoryCache[key] = entity.cache;
+        _memoryCache[key] = entity;
         _cacheSize += entity.size - oldEntitySize;
     }
+    return longestUnAccessObject;
 }
 
 - (unsigned long long)cacheSize

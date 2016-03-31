@@ -23,14 +23,14 @@ typedef void(^MRSCacheManagerCallBack)(MRSCacheEntity *, NSError *);
 - (void)cleanCacheAtPath:(NSString *)path;
 
 #pragma mark cache
-- (MRSCacheEntity *)getEntityForKey:(NSString *)key error:(NSError **)error;
-- (void)getEntityForKey:(NSString *)key finished:(MRSCacheManagerCallBack)finished;
+- (MRSCacheEntity *)getCacheForKey:(NSString *)key error:(NSError **)error;
+- (void)getCacheForKey:(NSString *)key finished:(MRSCacheManagerCallBack)finished;
 
 - (MRSCacheEntity *)getCacheForKey:(NSString *)key atPath:(NSString *)path error:(NSError **)error;
 - (void)getCacheForKey:(NSString *)key atPath:(NSString *)path finished:(MRSCacheManagerCallBack)finished;
 
-- (void)setEntity:(MRSCacheEntity *)entity error:(NSError **)error;
-- (void)setCache:(id)cache forKey:(NSString *)key error:(NSError **)error;
-- (void)setCache:(id)cache forKey:(NSString *)key atPath:(NSString *)path error:(NSError **)error;
+- (MRSCacheEntity *)setEntity:(MRSCacheEntity *)entity error:(NSError **)error;
+- (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key error:(NSError **)error;
+- (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key atPath:(NSString *)path error:(NSError **)error;
 
 @end

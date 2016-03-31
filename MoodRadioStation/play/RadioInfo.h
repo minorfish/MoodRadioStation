@@ -8,7 +8,7 @@
 
 #import <Mantle/Mantle.h>
 
-@class  MRSSpeakerInfo;
+@class MRSSpeakerInfo;
 
 @interface RadioInfo : MTLModel<MTLJSONSerializing>
 

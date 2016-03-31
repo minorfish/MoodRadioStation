@@ -19,6 +19,9 @@
 		2F14F9FF1C958E9C0066D030 /* nav_setting_act@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F14F9F91C958E9C0066D030 /* nav_setting_act@2x.png */; };
 		2F14FA001C958E9C0066D030 /* nav_setting@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F14F9FA1C958E9C0066D030 /* nav_setting@2x.png */; };
 		2F14FA021C958F950066D030 /* index_first_meng@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2F14FA011C958F950066D030 /* index_first_meng@2x.png */; };
+		2F2FA8021CACE4A500540441 /* MRSCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F2FA8011CACE4A500540441 /* MRSCacheManager.m */; };
+		2F2FA8051CACF8E300540441 /* MRSObjectCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F2FA8041CACF8E300540441 /* MRSObjectCacheManager.m */; };
+		2F2FA8081CAD081C00540441 /* MRSRadioDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F2FA8071CAD081C00540441 /* MRSRadioDao.m */; };
 		2F320E091C81942E008DC121 /* RadioInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F320E081C81942E008DC121 /* RadioInfo.m */; };
 		2F33378D1C803E9800927CF8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F33378C1C803E9800927CF8 /* main.m */; };
 		2F3337901C803E9800927CF8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F33378F1C803E9800927CF8 /* AppDelegate.m */; };
@@ -148,6 +151,12 @@
 		2F14F9F91C958E9C0066D030 /* nav_setting_act@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "nav_setting_act@2x.png"; path = "Resources/nav_setting_act@2x.png"; sourceTree = SOURCE_ROOT; };
 		2F14F9FA1C958E9C0066D030 /* nav_setting@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "nav_setting@2x.png"; path = "Resources/nav_setting@2x.png"; sourceTree = SOURCE_ROOT; };
 		2F14FA011C958F950066D030 /* index_first_meng@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "index_first_meng@2x.png"; path = "Resources/index_first_meng@2x.png"; sourceTree = SOURCE_ROOT; };
+		2F2FA8001CACE4A500540441 /* MRSCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSCacheManager.h; path = CacheManager/MRSCacheManager.h; sourceTree = "<group>"; };
+		2F2FA8011CACE4A500540441 /* MRSCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSCacheManager.m; path = CacheManager/MRSCacheManager.m; sourceTree = "<group>"; };
+		2F2FA8031CACF8E300540441 /* MRSObjectCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSObjectCacheManager.h; path = CacheManager/MRSObjectCacheManager.h; sourceTree = "<group>"; };
+		2F2FA8041CACF8E300540441 /* MRSObjectCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSObjectCacheManager.m; path = CacheManager/MRSObjectCacheManager.m; sourceTree = "<group>"; };
+		2F2FA8061CAD081C00540441 /* MRSRadioDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MRSRadioDao.h; path = play/MRSRadioDao.h; sourceTree = "<group>"; };
+		2F2FA8071CAD081C00540441 /* MRSRadioDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MRSRadioDao.m; path = play/MRSRadioDao.m; sourceTree = "<group>"; };
 		2F320E071C81942E008DC121 /* RadioInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RadioInfo.h; path = play/RadioInfo.h; sourceTree = "<group>"; };
 		2F320E081C81942E008DC121 /* RadioInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RadioInfo.m; path = play/RadioInfo.m; sourceTree = "<group>"; };
 		2F3337881C803E9800927CF8 /* MoodRadioStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoodRadioStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -376,6 +385,8 @@
 				2FCC59971C872704008B2621 /* RadioInfoModel.m */,
 				2FCC599A1C872704008B2621 /* RadioViewModel.h */,
 				2FCC599B1C872704008B2621 /* RadioViewModel.m */,
+				2F2FA8061CAD081C00540441 /* MRSRadioDao.h */,
+				2F2FA8071CAD081C00540441 /* MRSRadioDao.m */,
 			);
 			name = play;
 			sourceTree = "<group>";
@@ -642,6 +653,10 @@
 				2FE271941CABCB740073E62E /* MRSPersistentCacheManager.m */,
 				2FE271961CABECEE0073E62E /* MRSURLCacheManager.h */,
 				2FE271971CABECEE0073E62E /* MRSURLCacheManager.m */,
+				2F2FA8001CACE4A500540441 /* MRSCacheManager.h */,
+				2F2FA8011CACE4A500540441 /* MRSCacheManager.m */,
+				2F2FA8031CACF8E300540441 /* MRSObjectCacheManager.h */,
+				2F2FA8041CACF8E300540441 /* MRSObjectCacheManager.m */,
 			);
 			name = CacheManager;
 			sourceTree = "<group>";
@@ -846,6 +861,7 @@
 				2F320E091C81942E008DC121 /* RadioInfo.m in Sources */,
 				2F6CABF61C97F9AD00DD4984 /* MRSDingshiView.m in Sources */,
 				2FCB2A281C8C47EE00851689 /* MRSSpeakerInfo.m in Sources */,
+				2F2FA8051CACF8E300540441 /* MRSObjectCacheManager.m in Sources */,
 				2FE2718C1CABAEA30073E62E /* MRSCacheEntity.m in Sources */,
 				2F3337901C803E9800927CF8 /* AppDelegate.m in Sources */,
 				2FE0DE031C89D5C300A705C3 /* FMInfo.m in Sources */,
@@ -853,6 +869,7 @@
 				2FB9EC511C8AA55E00356374 /* NSArrayAdditions.m in Sources */,
 				2FB9EC541C8AADDF00356374 /* TagListCellItem.m in Sources */,
 				2FB86DC41C8F055400B89E76 /* MRSPlayerImageAnimationLoadingView.m in Sources */,
+				2F2FA8081CAD081C00540441 /* MRSRadioDao.m in Sources */,
 				2FBB52EF1C96A32C00EA59F6 /* MRSJieMuListViewController.m in Sources */,
 				2F6CABDF1C97E65500DD4984 /* MRSHotTagInfo.m in Sources */,
 				2FE0DDEC1C89875000A705C3 /* MRSListViewController.m in Sources */,
@@ -876,6 +893,7 @@
 				2F6CABE01C97E65500DD4984 /* MRSHotTagModel.m in Sources */,
 				2F14F9ED1C9589F30066D030 /* MRSHomeViewController.m in Sources */,
 				2FBB52E91C96A02300EA59F6 /* MRSJieMuListModel.m in Sources */,
+				2F2FA8021CACE4A500540441 /* MRSCacheManager.m in Sources */,
 				2F6CABE11C97E65500DD4984 /* MRSHotTagViewModel.m in Sources */,
 				2FCB2A251C8BCDEB00851689 /* MRSFetchResultSectionInfo.m in Sources */,
 				2FF9709A1C93B5F300EB7A77 /* MRSCategoryView.m in Sources */,

@@ -187,8 +187,8 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         @strongify(self);
         self.isLoading = @(NO);
     }];
-    
-    [[[RACObserve(self, currentFMIndex) ignore:nil] distinctUntilChanged] subscribeNext:^(id x) {
+    [[RACSignal combineLatest:@[[[RACObserve(self, currentFMIndex) ignore :nil] distinctUntilChanged],
+                              [[RACObserve(self, requestFMInfoArray) ignore:nil] distinctUntilChanged]]]subscribeNext:^(id x) {
         @strongify(self);
         [self refresh];
     }];

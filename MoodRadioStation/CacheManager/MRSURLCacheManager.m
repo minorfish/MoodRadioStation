@@ -31,7 +31,8 @@
         cacheData = [string dataUsingEncoding:NSUTF8StringEncoding];
     }
     
-    return [cacheData writeToFile:path options:NSDataWritingAtomic error:error];
+    BOOL success = [cacheData writeToFile:path options:NSDataWritingAtomic error:error];
+    return success;
 }
 
 - (id)restoreObjectAtPath:(NSString *)path error:(NSError **)error
