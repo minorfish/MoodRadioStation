@@ -107,9 +107,9 @@ extern const NSString* RPRefreshProgressViewNotification;
             [self.preRadioRequest dispose];
         }
         [self.radioLoaded sendNext:@(NO)];
-        NSString *filePath = [self.dao getFilePathForRadioURL:url];
+        NSURL *filePath = [self.dao getFilePathForRadioURL:url];
         if (filePath) {
-            [self playGetReady:[NSURL fileURLWithPath:filePath]];
+            [self playGetReady:filePath];
             return [RACSignal empty];
         }
         self.error = nil;
@@ -119,7 +119,7 @@ extern const NSString* RPRefreshProgressViewNotification;
             return [RACSignal empty];
         }] subscribeNext:^(NSURL *filePath) {
             @strongify(self);
-            [self.dao saveFilePath:filePath.path ForRadioURL:url];
+            [self.dao saveFilePath:filePath ForRadioURL:url];
             NSLog(@"radioCommand\n");
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self playGetReady:filePath];
@@ -132,7 +132,12 @@ extern const NSString* RPRefreshProgressViewNotification;
 
 - (void)playGetReady:(NSURL *)filePath {
     NSError *error = nil;
-    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:filePath error:&error];
+    NSData *songFile = [[NSData alloc] initWithContentsOfURL:filePath options:NSDataReadingMappedIfSafe error:&error];
+    if (error) {
+        return;
+    }
+    self.player = [[AVAudioPlayer alloc] initWithData:songFile error:&error];
+//    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:filePath error:&error];
     if (!error) {
         self.player.delegate = self;
         self.player.currentTime = 0;

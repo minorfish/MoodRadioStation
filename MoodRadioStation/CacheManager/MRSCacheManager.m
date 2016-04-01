@@ -44,10 +44,10 @@ static MRSCacheManagerStrategy ObjectCacheStrategy;
 
 - (void)setDirectory:(NSString *)directory
 {
-    directory = directory.length > 0? directory: @"public";
+    _directory = directory.length > 0? directory: @"public";
     dispatch_barrier_sync(_queue, ^{
-        _memoryCacheManager.directory = directory;
-        _persistentCacheManager.directory = directory;
+        _memoryCacheManager.directory = _directory;
+        _persistentCacheManager.directory = _directory;
     });
 }
 
@@ -222,7 +222,7 @@ static MRSCacheManagerStrategy ObjectCacheStrategy;
                 return;
             }
             NSError *error = nil;
-            [_persistentCacheManager setCache:obj.cache forKey:key error:&error];
+            [_persistentCacheManager setCache:obj.cache forKey:obj.key error:&error];
             if (error) {
                 *stop = YES;
             }

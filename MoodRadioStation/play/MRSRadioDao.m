@@ -15,7 +15,6 @@ static NSString* MRSRadioKey = @"MRSRadio";
 
 @interface MRSRadioDao()
 
-@property (nonatomic, strong) MRSCacheManager *URLCacheManager;
 @property (nonatomic, strong) MRSCacheManager *objectCahceManager;
 
 @end
@@ -25,7 +24,8 @@ static NSString* MRSRadioKey = @"MRSRadio";
 - (id)getCacheForRadioID:(long long)ID
 {
     NSError *error = nil;
-    MRSCacheEntity *entity = [self.objectCahceManager getCacheForKey:[NSString stringWithFormat:@"%@_%@", MRSRadioKey, @(ID)] error:&error];
+    NSString *key = [NSString stringWithFormat:@"%@_%@", MRSRadioKey, @(ID)];
+    MRSCacheEntity *entity = [self.objectCahceManager getCacheForKey:key error:&error];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *now  = [dateFormatter stringFromDate:[NSDate date]];
@@ -48,10 +48,11 @@ static NSString* MRSRadioKey = @"MRSRadio";
     [self.objectCahceManager setCache:cache forKey:key error:&error];
 }
 
-- (NSString *)getFilePathForRadioURL:(NSString *)radioURL
+- (NSURL *)getFilePathForRadioURL:(NSString *)radioURL
 {
     NSError *error = nil;
-    MRSCacheEntity *entity = [self.URLCacheManager getCacheForKey:[NSString stringWithFormat:@"%@_%@", MRSRadioKey, radioURL] error:&error];
+    NSString *key = [NSString stringWithFormat:@"%@_%@", MRSRadioKey, radioURL];
+    MRSCacheEntity *entity = [self.objectCahceManager getCacheForKey:key error:&error];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *now  = [dateFormatter stringFromDate:[NSDate date]];
@@ -63,23 +64,15 @@ static NSString* MRSRadioKey = @"MRSRadio";
     return entity.cache;
 }
 
-- (void)saveFilePath:(NSString *)filePath ForRadioURL:(NSString *)radioURL
+- (void)saveFilePath:(NSURL *)filePath ForRadioURL:(NSString *)radioURL
 {
     NSError *error = nil;
     NSString *key = [NSString stringWithFormat:@"%@_%@", MRSRadioKey, radioURL];
-    MRSCacheEntity *entity = [self.URLCacheManager getCacheForKey:key error:&error];
-    if ([filePath isEqualToString:entity.cache]) {
+    MRSCacheEntity *entity = [self.objectCahceManager getCacheForKey:key error:&error];
+    if ([filePath isEqual:entity.cache]) {
         return;
     }
-    [self.URLCacheManager setCache:filePath forKey:key error:&error];
-}
-
-- (MRSCacheManager *)URLCacheManager
-{
-    if (!_URLCacheManager) {
-        _URLCacheManager = [MRSCacheManager defaultURLCacheManager];
-    }
-    return _URLCacheManager;
+    [self.objectCahceManager setCache:filePath forKey:key error:&error];
 }
 
 - (MRSCacheManager *)objectCahceManager

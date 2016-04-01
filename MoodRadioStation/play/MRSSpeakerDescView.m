@@ -20,6 +20,7 @@
         [self addSubview:self.circleImageView];
         [self addSubview:self.fmNumLabel];
         [self addSubview:self.speakerNameLabel];
+        [self addSubview:self.downLoadImage];
         
         [_circleImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.top.left.equalTo(self).offset(12);
@@ -33,6 +34,11 @@
         [_fmNumLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(self.speakerNameLabel.mas_bottom).offset(10);
             make.left.equalTo(self.speakerNameLabel);
+        }];
+        [_downLoadImage mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(self);
+            make.right.equalTo(self).offset(-15);
+            make.width.height.equalTo(@30);
         }];
     }
     return self;
@@ -66,6 +72,14 @@
         _speakerNameLabel.font = Font(14);
     }
     return _speakerNameLabel;
+}
+
+- (UIImageView *)downLoadImage
+{
+    if (!_downLoadImage) {
+        _downLoadImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"my_download"]];
+    }
+    return _downLoadImage;
 }
 
 @end

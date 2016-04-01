@@ -14,7 +14,7 @@
 - (id)getCacheForRadioID:(long long)ID;
 - (void)saveCache:(RadioInfo *)cache ForID:(long long)ID;
 
-- (NSString *)getFilePathForRadioURL:(NSString *)radioURL;
-- (void)saveFilePath:(NSString *)filePath ForRadioURL:(NSString *)radioURL;
+- (NSURL *)getFilePathForRadioURL:(NSString *)radioURL;
+- (void)saveFilePath:(NSURL *)filePath ForRadioURL:(NSString *)radioURL;
 
 @end

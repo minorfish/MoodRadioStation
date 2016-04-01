@@ -40,9 +40,10 @@
     if (error) {
         *error = nil;
     }
-    
-    NSData *data = [NSData dataWithContentsOfFile:path options:NSDataReadingUncached error:error];
-    if (error) {
+    NSError *thisError = nil;
+    NSData *data = [NSData dataWithContentsOfFile:path options:NSDataReadingUncached error:&thisError];
+    if (thisError) {
+        *error = thisError;
         return nil;
     }
     return data;

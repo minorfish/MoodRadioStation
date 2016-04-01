@@ -15,6 +15,7 @@
 #import "MRSDingshiManager.h"
 #import "AppDelegate.h"
 #import "RadioPlayerViewController.h"
+#import "MRSPersistentCacheManager.h"
 
 extern NSString *MRSMRSPauseDisplayLinkNotification;
 @interface MRSSettingViewController ()
@@ -36,6 +37,10 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 @property (nonatomic, strong) RadioPlayerViewController *player;
 @property (nonatomic, strong) NSNumber *isPlaying;
 
+@property (nonatomic, strong) UIView *cleanImageCacheView;
+@property (nonatomic, strong) UILabel *cacheSizeLabel;
+@property (nonatomic, strong) MRSPersistentCacheManager *cacheManager;
+
 @end
 
 @implementation MRSSettingViewController
@@ -55,6 +60,7 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 - (void)viewWillAppear:(BOOL)animated
 {
     self.isPlaying = self.player.isPlaying;
+    self.cacheSizeLabel.text = [self translateFileSizeByte:self.cacheManager.cacheSize];
     if (!self.navigationController.navigationBar.hidden) {
         [self.navigationController setNavigationBarHidden:YES animated:NO];
     }
@@ -105,6 +111,7 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
     [self.view addSubview:self.bottomSeperateLine];
     [self.view addSubview:self.leftSeperateLine];
     [self.view addSubview:self.rightSeperateLine];
+    [self.view addSubview:self.cleanImageCacheView];
     [self.view setNeedsLayout];
 }
 
@@ -134,12 +141,22 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
             make.left.equalTo(self.dingshiView);
         }];
     }
-    [_bottomSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
+    [_cleanImageCacheView mas_remakeConstraints:^(MASConstraintMaker *make) {
         if (!self.timerView.hidden) {
             make.top.equalTo(self.timerView.mas_bottom);
         } else {
             make.top.equalTo(self.dingshiView.mas_bottom);
         }
+        make.left.right.equalTo(_dingshiView);
+    }];
+    
+    [_bottomSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
+//        if (!self.timerView.hidden) {
+//            make.top.equalTo(self.timerView.mas_bottom);
+//        } else {
+//            make.top.equalTo(self.dingshiView.mas_bottom);
+//        }
+        make.top.equalTo(_cleanImageCacheView.mas_bottom);
         make.left.right.height.equalTo(self.topSeperateLine);
 //        make.bottom.equalTo(self.view);
     }];
@@ -153,6 +170,21 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
         make.top.bottom.width.equalTo(self.leftSeperateLine);
         make.left.equalTo(self.dingshiView.mas_right);
     }];
+}
+
+- (NSString *)translateFileSizeByte:(unsigned long long)fileSize
+{
+    NSString *size = nil;
+    if (fileSize >= pow(1000, 3)) {
+        size = [NSString stringWithFormat:@"%.2lfG", (double)fileSize / pow(1000, 3)];
+    } else if (fileSize >= pow(1000, 2)) {
+        size = [NSString stringWithFormat:@"%.2lfM", (double)fileSize / pow(1000, 2)];
+    } else if (fileSize >= pow(1000, 1)) {
+        size = [NSString stringWithFormat:@"%.2lfK", (double)fileSize / pow(1000, 1)];
+    } else {
+        size = [NSString stringWithFormat:@"%@B", @(fileSize)];
+    }
+    return size;
 }
 
 - (UIView *)barView
@@ -325,6 +357,67 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
         [_playerAnimationImageView addGestureRecognizer:tapGes];
     }
     return _playerAnimationImageView;
+}
+
+- (UIView *)cleanImageCacheView
+{
+    if (!_cleanImageCacheView) {
+        _cleanImageCacheView = [[UIView alloc] init];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"image_clean_icon"]];
+        UILabel *titleLabel = [[UILabel alloc] init];
+        titleLabel.font = Font(15);
+        titleLabel.text = @"清理图片缓存";
+        
+        _cacheSizeLabel = [[UILabel alloc] init];
+        _cacheSizeLabel.font = Font(15);
+        _cacheSizeLabel.tintColor = HEXCOLOR(0x999999);
+        
+        UIView *seperateLine = [[UIView alloc] init];
+        seperateLine.backgroundColor = HEXCOLOR(0xe5e5e5);
+        
+        [_cleanImageCacheView addSubview:seperateLine];
+        [_cleanImageCacheView addSubview:imageView];
+        [_cleanImageCacheView addSubview:titleLabel];
+        [_cleanImageCacheView addSubview:_cacheSizeLabel];
+        
+        [seperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.left.right.equalTo(_cleanImageCacheView);
+            make.height.equalTo(@0.5);
+        }];
+        
+        [imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(seperateLine).offset(15);
+            make.top.equalTo(seperateLine.mas_bottom).offset(15);
+            make.bottom.equalTo(_cleanImageCacheView).offset(-15);
+            make.height.width.equalTo(@30);
+        }];
+        
+        [titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(imageView);
+            make.left.equalTo(imageView.mas_right).offset(15);
+        }];
+        
+        [_cacheSizeLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(imageView);
+            make.right.equalTo(_cleanImageCacheView).offset(-15);
+        }];
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+        [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+            [self.cacheManager cleanCache];
+            self.cacheSizeLabel.text = @"0K";
+        }];
+        [_cleanImageCacheView addGestureRecognizer:tapGes];
+    }
+    return _cleanImageCacheView;
+}
+
+- (MRSPersistentCacheManager *)cacheManager
+{
+    if (!_cacheManager) {
+        _cacheManager = [[MRSPersistentCacheManager alloc] init];
+        _cacheManager.directory = @"default/com.hackemist.SDWebImageCache.default";
+    }
+    return _cacheManager;
 }
 
 @end

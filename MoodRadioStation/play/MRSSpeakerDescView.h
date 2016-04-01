@@ -15,5 +15,6 @@
 @property (nonatomic, strong) MRSCircleImageView *circleImageView;
 @property (nonatomic, strong) UILabel *fmNumLabel;
 @property (nonatomic, strong) UILabel *speakerNameLabel;
+@property (nonatomic, strong) UIImageView *downLoadImage;
 
 @end

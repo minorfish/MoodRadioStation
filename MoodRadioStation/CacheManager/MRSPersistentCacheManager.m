@@ -13,6 +13,19 @@
 
 @synthesize directory = _directory;
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        NSArray *cachePaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        if (!cachePaths.count) {
+            return nil;
+        }
+        _rootCachePath = cachePaths[0];
+    }
+    return self;
+}
+
 - (instancetype)initWithRoot:(NSString *)root
 {
     self = [super init];
@@ -70,6 +83,7 @@
     if (error) {
         *error = nil;
     }
+
     NSString *parentPath = [_cachePath stringByAppendingPathComponent:entity.path];
     NSString *cacheFilePath = [parentPath stringByAppendingPathComponent:entity.key];
     NSFileManager *fileManager = [[NSFileManager alloc] init];
@@ -111,7 +125,10 @@
     path = path ? path : @"";
     NSString *parentPath = [_cachePath stringByAppendingPathComponent:path];
     NSString *cacheFilePath = [parentPath stringByAppendingPathComponent:key];
-    return [self getEntityAtPath:cacheFilePath error:error];
+    MRSCacheEntity *entity = [self getEntityAtPath:cacheFilePath error:error];
+    entity.key = key;
+    entity.path = path;
+    return entity;
 }
 
 - (MRSCacheEntity *)getEntityAtPath:(NSString *)path error:(NSError **)error
@@ -156,17 +173,20 @@
     NSString *fileType = [attributes fileType];
     if ([fileType isEqualToString:NSFileTypeRegular]) {
         cacheSize += [attributes fileSize];
-    } else if ([fileType isEqualToString:NSFileTypeDirectory]) {
+    } else if (![fileType isEqualToString:NSFileTypeDirectory]) {
         return 0;
     } else if ([fileType isEqualToString:NSFileTypeDirectory]) {
         NSArray *files = [fileManager subpathsOfDirectoryAtPath:realPath error:&error];
         if (error) {
             return 0;
         }
+        
         for (NSString *subPath in files) {
-            NSDictionary *subAttributes = [fileManager attributesOfItemAtPath:subPath error:&error];
+            NSError *thisError = nil;
+            NSDictionary *subAttributes = [fileManager attributesOfItemAtPath:[realPath stringByAppendingPathComponent:subPath]
+                                            error:&thisError];
             
-            if (error) {
+            if (thisError) {
                 continue;
             }
             
