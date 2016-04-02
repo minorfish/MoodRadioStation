@@ -16,6 +16,7 @@ static NSString* MRSRadioKey = @"MRSRadio";
 @interface MRSRadioDao()
 
 @property (nonatomic, strong) MRSCacheManager *objectCahceManager;
+@property (nonatomic, strong) MRSCacheManager *URLCacheManager;
 
 @end
 
@@ -45,17 +46,21 @@ static NSString* MRSRadioKey = @"MRSRadio";
     if ([cache isEqual:entity.cache]) {
         return;
     }
-    [self.objectCahceManager setCache:cache forKey:key error:&error];
+    [self.objectCahceManager setCache:cache
+                               forKey:key
+                       forceWriteBack:NO
+                                error:&error];
 }
 
-- (NSURL *)getFilePathForRadioURL:(NSString *)radioURL
+- (NSData *)getRadioDataForRadioURL:(NSString *)radioURL
 {
     NSError *error = nil;
+    radioURL = [radioURL stringByReplacingOccurrencesOfString:@"/" withString:@"."];
     NSString *key = [NSString stringWithFormat:@"%@_%@", MRSRadioKey, radioURL];
-    MRSCacheEntity *entity = [self.objectCahceManager getCacheForKey:key error:&error];
+    MRSCacheEntity *entity = [self.URLCacheManager getCacheForKey:key error:&error];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-    NSString *now  = [dateFormatter stringFromDate:[NSDate date]];
+    NSString *now = [dateFormatter stringFromDate:[NSDate date]];
     NSString *entityDate = [dateFormatter stringFromDate:entity.date];
     if (error || [now compare:entityDate] == NSOrderedDescending) {
         return nil;
@@ -64,15 +69,30 @@ static NSString* MRSRadioKey = @"MRSRadio";
     return entity.cache;
 }
 
-- (void)saveFilePath:(NSURL *)filePath ForRadioURL:(NSString *)radioURL
+- (void)saveRadioData:(NSData *)data ForRadioURL:(NSString *)radioURL
 {
     NSError *error = nil;
+    radioURL = [radioURL stringByReplacingOccurrencesOfString:@"/" withString:@"."];
     NSString *key = [NSString stringWithFormat:@"%@_%@", MRSRadioKey, radioURL];
-    MRSCacheEntity *entity = [self.objectCahceManager getCacheForKey:key error:&error];
-    if ([filePath isEqual:entity.cache]) {
+    MRSCacheEntity *entity = [self.URLCacheManager getCacheForKey:key error:&error];
+    if ([data isEqual:entity.cache]) {
         return;
     }
-    [self.objectCahceManager setCache:filePath forKey:key error:&error];
+    [self.URLCacheManager setCache:data
+                            forKey:key
+                    forceWriteBack:NO
+                             error:&error];
+}
+
+- (void)savePersistentRadioData:(NSData *)data ForRadioURL:(NSString *)radioURL
+{
+    NSError *error = nil;
+    radioURL = [radioURL stringByReplacingOccurrencesOfString:@"/" withString:@"."];
+    NSString *key = [NSString stringWithFormat:@"%@_%@", MRSRadioKey, radioURL];
+    [self.URLCacheManager setCache:data
+                            forKey:key
+                    forceWriteBack:YES
+                             error:&error];
 }
 
 - (MRSCacheManager *)objectCahceManager
@@ -82,6 +102,14 @@ static NSString* MRSRadioKey = @"MRSRadio";
         [_objectCahceManager setStrategy:MRSCacheManagerStrategy_writeThrough];
     }
     return _objectCahceManager;
+}
+
+- (MRSCacheManager *)URLCacheManager
+{
+    if (!_URLCacheManager) {
+        _URLCacheManager = [MRSCacheManager defaultURLCacheManager];
+    }
+    return _URLCacheManager;
 }
 
 @end

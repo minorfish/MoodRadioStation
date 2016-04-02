@@ -22,10 +22,11 @@
 #import "MRSCircleImageView.h"
 #import "FMInfo.h"
 #import "FMListViewModel.h"
+#import "MRSCacheManager.h"
 
 const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.refrshProgress";
 
-@interface RadioPlayerViewController ()
+@interface RadioPlayerViewController () <UIAlertViewDelegate>
 
 @property (nonatomic, strong) RadioViewModel *viewModel;
 
@@ -427,8 +428,25 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         _speakerDescView = [[MRSSpeakerDescView alloc] init];
         _speakerDescView.circleImageView.image = _speakerDescView.circleImageView.defaultImage;
         _speakerDescView.backgroundColor = [UIColor whiteColor];
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+        [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+            [self download];
+        }];
+        [_speakerDescView.downLoadImage addGestureRecognizer:tapGes];
     }
     return _speakerDescView;
+}
+
+- (void)download
+{
+    BOOL success = [self.viewModel download];
+    UIAlertView *alertView = nil;
+    if (!success) {
+        alertView = [[UIAlertView alloc] initWithTitle:@"下载提示" message:success?@"成功":@"失败" delegate:self cancelButtonTitle:@"完成" otherButtonTitles:@"重新下载", nil];
+    } else {
+        alertView = [[UIAlertView alloc] initWithTitle:@"下载提示" message:success?@"成功":@"失败" delegate:self cancelButtonTitle:@"完成" otherButtonTitles:nil];
+    }
+    [alertView show];
 }
 
 - (MRSImageAnimationLoadingView *)animationLoadingView
@@ -489,6 +507,23 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
     self.progressX = @(self.viewModel.progress * SCREEN_WIDTH);
 }
 
+#pragma mark UIAlertViewDelegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex) {
+        case 0: {
+            
+        }
+            break;
+        case 1: {
+            [self download];
+        }
+            break;
+        default:
+            break;
+    }
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

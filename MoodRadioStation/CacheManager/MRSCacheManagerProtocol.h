@@ -33,4 +33,16 @@ typedef void(^MRSCacheManagerCallBack)(MRSCacheEntity *, NSError *);
 - (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key error:(NSError **)error;
 - (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key atPath:(NSString *)path error:(NSError **)error;
 
+- (MRSCacheEntity *)setEntity:(MRSCacheEntity *)entity
+               forceWriteBack:(BOOL)forceWrite
+                        error:(NSError **)error;
+- (MRSCacheEntity *)setCache:(id)cache
+                      forKey:(NSString *)key
+              forceWriteBack:(BOOL)forceWrite
+                       error:(NSError **)error;
+- (MRSCacheEntity *)setCache:(id)cache
+                      forKey:(NSString *)key
+                      atPath:(NSString *)path
+              forceWriteBack:(BOOL)forceWrite
+                       error:(NSError **)error;
 @end

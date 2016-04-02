@@ -29,6 +29,7 @@
 - (void)play;
 - (void)pause;
 - (void)stop;
+- (BOOL)download;
 - (NSString *)formatTime:(int)num;
 
 @end

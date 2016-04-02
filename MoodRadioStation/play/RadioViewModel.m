@@ -12,6 +12,8 @@
 #import "RadioInfoModel.h"
 #import <AVFoundation/AVFoundation.h>
 #import "MRSRadioDao.h"
+#import "MRSDownloadHelper.h"
+#import "MRSCacheEntity.h"
 
 extern const NSString* RPRefreshProgressViewNotification;
 
@@ -25,7 +27,7 @@ extern const NSString* RPRefreshProgressViewNotification;
 
 @property (nonatomic, assign) float progress;
 @property (nonatomic, assign) NSTimeInterval durationTime;
-@property (nonatomic, strong) NSURL *filePath;
+@property (nonatomic, strong) NSData *radioData;
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, strong) RACSubject *radioInfoLoaded;
 @property (nonatomic, strong) RACSubject *radioLoaded;
@@ -35,6 +37,7 @@ extern const NSString* RPRefreshProgressViewNotification;
 
 @property (nonatomic, strong) RACDisposable *preRadioInfoRequest;
 @property (nonatomic, strong) RACDisposable *preRadioRequest;
+@property (nonatomic, strong) MRSDownloadHelper *downloadHelper;
 
 @end
 
@@ -102,14 +105,13 @@ extern const NSString* RPRefreshProgressViewNotification;
     _getRadioCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSString *radioURL) {
         @strongify(self);
         NSString *url = [radioURL copy];
-        url = [url stringByReplacingOccurrencesOfString:@"/" withString:@"."];
         if (self.preRadioRequest) {
             [self.preRadioRequest dispose];
         }
         [self.radioLoaded sendNext:@(NO)];
-        NSURL *filePath = [self.dao getFilePathForRadioURL:url];
-        if (filePath) {
-            [self playGetReady:filePath];
+        NSData *radioData = [self.dao getRadioDataForRadioURL:url];
+        if (radioData) {
+            [self playGetReady:radioData];
             return [RACSignal empty];
         }
         self.error = nil;
@@ -119,10 +121,17 @@ extern const NSString* RPRefreshProgressViewNotification;
             return [RACSignal empty];
         }] subscribeNext:^(NSURL *filePath) {
             @strongify(self);
-            [self.dao saveFilePath:filePath ForRadioURL:url];
+            NSError *error = nil;
+            NSData *songFile = [[NSData alloc] initWithContentsOfURL:filePath options:NSDataReadingMappedIfSafe error:&error];
+            if (error) {
+                _radioData = nil;
+                return;
+            }
+             _radioData = songFile;
+            [self.dao saveRadioData:songFile ForRadioURL:url];
             NSLog(@"radioCommand\n");
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self playGetReady:filePath];
+                [self playGetReady:songFile];
             });
         }];
         return [RACSignal empty];
@@ -130,14 +139,9 @@ extern const NSString* RPRefreshProgressViewNotification;
     return _getRadioCommand;
 }
 
-- (void)playGetReady:(NSURL *)filePath {
+- (void)playGetReady:(NSData *)data {
     NSError *error = nil;
-    NSData *songFile = [[NSData alloc] initWithContentsOfURL:filePath options:NSDataReadingMappedIfSafe error:&error];
-    if (error) {
-        return;
-    }
-    self.player = [[AVAudioPlayer alloc] initWithData:songFile error:&error];
-//    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:filePath error:&error];
+    self.player = [[AVAudioPlayer alloc] initWithData:data error:&error];
     if (!error) {
         self.player.delegate = self;
         self.player.currentTime = 0;
@@ -174,6 +178,37 @@ extern const NSString* RPRefreshProgressViewNotification;
     return _radioInfoLoaded;
 }
 
+- (NSString *)translateFileSizeByte:(unsigned long long)fileSize
+{
+    NSString *size = nil;
+    if (fileSize >= pow(1000, 3)) {
+        size = [NSString stringWithFormat:@"%.2lfG", (double)fileSize / pow(1000, 3)];
+    } else if (fileSize >= pow(1000, 2)) {
+        size = [NSString stringWithFormat:@"%.2lfM", (double)fileSize / pow(1000, 2)];
+    } else if (fileSize >= pow(1000, 1)) {
+        size = [NSString stringWithFormat:@"%.2lfK", (double)fileSize / pow(1000, 1)];
+    } else {
+        size = [NSString stringWithFormat:@"%@B", @(fileSize)];
+    }
+    return size;
+}
+
+- (BOOL)download
+{
+    MRSCacheEntity *entity = [self.dao getCacheForRadioID:_radioInfo.radioID];
+    if (!entity) {
+        [self.dao saveCache:_radioInfo ForID:_radioInfo.radioID];
+    }
+    
+    NSData *data = [self.dao getRadioDataForRadioURL:_radioInfo.URL];
+    if (!data) {
+        return NO;
+    }
+    [self.dao savePersistentRadioData:data ForRadioURL:_radioInfo.URL];
+    [self.downloadHelper saveRadioSize:[self translateFileSizeByte:data.length] forRadioID:_radioInfo.radioID];
+    return YES;
+}
+
 - (void)displayLinkAction:(CADisplayLink *)dis
 {
     if (self.player.duration <= 0) {
@@ -182,6 +217,14 @@ extern const NSString* RPRefreshProgressViewNotification;
     self.progress = self.player.currentTime / self.player.duration;
     // 通知根据时间进度更新UI
     [[NSNotificationCenter defaultCenter] postNotificationName:RPRefreshProgressViewNotification object:nil];
+}
+
+- (MRSDownloadHelper *)downloadHelper
+{
+    if (!_downloadHelper) {
+        _downloadHelper = [MRSDownloadHelper shareDownloadHelper];
+    }
+    return _downloadHelper;
 }
 
 #pragma palyerAction

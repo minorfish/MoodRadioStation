@@ -85,22 +85,42 @@ static MRSCacheManagerStrategy ObjectCacheStrategy;
     ObjectCacheStrategy = strategy;
 }
 
-- (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key error:(NSError *__autoreleasing *)error
+- (MRSCacheEntity *)setCache:(id)cache
+                      forKey:(NSString *)key
+              forceWriteBack:(BOOL)forceWrite
+                       error:(NSError *__autoreleasing *)error
 {
-    return [self setCache:cache forKey:key atPath:nil error:error];
+    return [self setCache:cache forKey:key atPath:nil forceWriteBack:forceWrite error:error ];
 }
 
-- (MRSCacheEntity *)setCache:(id)cache forKey:(NSString *)key atPath:(NSString *)path error:(NSError *__autoreleasing *)error
+- (MRSCacheEntity *)setCache:(id)cache
+                      forKey:(NSString *)key
+                      atPath:(NSString *)path
+              forceWriteBack:(BOOL)forceWrite
+                       error:(NSError *__autoreleasing *)error
 {
     path = path ? path : @"";
     MRSCacheEntity *entity = [[MRSCacheEntity alloc] initWithCache:cache key:key path:path];
-    return [self setEntity:entity error:error];
+    return [self setEntity:entity forceWriteBack:forceWrite error:error];
 }
 
-- (MRSCacheEntity *)setEntity:(MRSCacheEntity *)entity error:(NSError *__autoreleasing *)error
+- (MRSCacheEntity *)setEntity:(MRSCacheEntity *)entity
+               forceWriteBack:(BOOL)forceWrite
+                        error:(NSError *__autoreleasing *)error
 {
     __block NSError *innerError = nil;
-    if (_strategy == MRSCacheManagerStrategy_writeBack) {
+    if (forceWrite || _strategy == MRSCacheManagerStrategy_writeThrough) {
+        __block MRSCacheEntity *resultEntity = nil;
+        dispatch_barrier_sync(_queue, ^{
+            [_memoryCacheManager setEntity:entity error:&innerError];
+            if (innerError) {
+                *error = innerError;
+                return;
+            }
+            resultEntity = [_persistentCacheManager setEntity:entity error:&innerError];
+        });
+        return resultEntity;
+    } else {
         __block MRSCacheEntity *staleEntity = nil;
         dispatch_barrier_sync(_queue, ^{
             staleEntity = [_memoryCacheManager setEntity:entity error:&innerError];
@@ -115,17 +135,6 @@ static MRSCacheManagerStrategy ObjectCacheStrategy;
             });
         }
         return entity;
-    } else {
-        __block MRSCacheEntity *resultEntity = nil;
-        dispatch_barrier_sync(_queue, ^{
-            [_memoryCacheManager setEntity:entity error:&innerError];
-            if (innerError) {
-                *error = innerError;
-                return;
-            }
-            resultEntity = [_persistentCacheManager setEntity:entity error:&innerError];
-        });
-        return resultEntity;
     }
 }
 

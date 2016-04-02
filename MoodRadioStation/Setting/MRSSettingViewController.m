@@ -16,6 +16,7 @@
 #import "AppDelegate.h"
 #import "RadioPlayerViewController.h"
 #import "MRSPersistentCacheManager.h"
+#import "MRSMyDownLoadTableViewController.h"
 
 extern NSString *MRSMRSPauseDisplayLinkNotification;
 @interface MRSSettingViewController ()
@@ -40,6 +41,7 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
 @property (nonatomic, strong) UIView *cleanImageCacheView;
 @property (nonatomic, strong) UILabel *cacheSizeLabel;
 @property (nonatomic, strong) MRSPersistentCacheManager *cacheManager;
+@property (nonatomic, strong) UIView *myDownload;
 
 @end
 
@@ -112,6 +114,7 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
     [self.view addSubview:self.leftSeperateLine];
     [self.view addSubview:self.rightSeperateLine];
     [self.view addSubview:self.cleanImageCacheView];
+    [self.view addSubview:self.myDownload];
     [self.view setNeedsLayout];
 }
 
@@ -150,13 +153,18 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
         make.left.right.equalTo(_dingshiView);
     }];
     
+    [_myDownload mas_remakeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.cleanImageCacheView.mas_bottom);
+        make.left.right.equalTo(self.cleanImageCacheView);
+    }];
+    
     [_bottomSeperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
 //        if (!self.timerView.hidden) {
 //            make.top.equalTo(self.timerView.mas_bottom);
 //        } else {
 //            make.top.equalTo(self.dingshiView.mas_bottom);
 //        }
-        make.top.equalTo(_cleanImageCacheView.mas_bottom);
+        make.top.equalTo(self.myDownload.mas_bottom);
         make.left.right.height.equalTo(self.topSeperateLine);
 //        make.bottom.equalTo(self.view);
     }];
@@ -409,6 +417,58 @@ extern NSString *MRSMRSPauseDisplayLinkNotification;
         [_cleanImageCacheView addGestureRecognizer:tapGes];
     }
     return _cleanImageCacheView;
+}
+
+- (UIView *)myDownload
+{
+    if (!_myDownload) {
+        _myDownload = [[UIView alloc] init];
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"my_download"]];
+        UILabel *titleLabel = [[UILabel alloc] init];
+        titleLabel.font = Font(15);
+        titleLabel.text = @"我的下载";
+        
+        UIImageView *detail = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"detail"]];
+        
+        UIView *seperateLine = [[UIView alloc] init];
+        seperateLine.backgroundColor = HEXCOLOR(0xe5e5e5);
+        
+        [_myDownload addSubview:seperateLine];
+        [_myDownload addSubview:imageView];
+        [_myDownload addSubview:titleLabel];
+        [_myDownload addSubview:detail];
+        
+        [seperateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.left.right.equalTo(_myDownload);
+            make.height.equalTo(@0.5);
+        }];
+        
+        [imageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(seperateLine).offset(15);
+            make.top.equalTo(seperateLine.mas_bottom).offset(15);
+            make.bottom.equalTo(_myDownload).offset(-15);
+            make.height.width.equalTo(@30);
+        }];
+        
+        [titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(imageView);
+            make.left.equalTo(imageView.mas_right).offset(15);
+        }];
+        
+        [detail mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.equalTo(imageView);
+            make.right.equalTo(_myDownload).offset(-15);
+            make.width.height.equalTo(@10);
+        }];
+        UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
+        [tapGes.rac_gestureSignal subscribeNext:^(id x) {
+            MRSMyDownLoadTableViewController *vc = [[MRSMyDownLoadTableViewController alloc] init];
+
+            [self.navigationController pushViewController:vc animated:NO];
+        }];
+        [_myDownload addGestureRecognizer:tapGes];
+    }
+    return _myDownload;
 }
 
 - (MRSPersistentCacheManager *)cacheManager

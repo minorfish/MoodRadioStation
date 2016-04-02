@@ -22,7 +22,7 @@
 
 - (void)viewDidLoad
 {
-    [NSThread sleepForTimeInterval:1];
+    [NSThread sleepForTimeInterval:0.5];
     MRSIndexViewController *indexBarController = [[MRSIndexViewController alloc] init];
     indexBarController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"主页" image:[UIImage imageNamed:@"nav_index"] selectedImage:[UIImage imageNamed:@"nav_index_act"]];
     

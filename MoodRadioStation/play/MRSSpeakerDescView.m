@@ -78,6 +78,7 @@
 {
     if (!_downLoadImage) {
         _downLoadImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"my_download"]];
+        _downLoadImage.userInteractionEnabled = YES;
     }
     return _downLoadImage;
 }

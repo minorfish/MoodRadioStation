@@ -52,7 +52,7 @@
         return NO;
     } else if (![_radiodDesc isEqualToString:info.radiodDesc]) {
         return NO;
-    }
+    } 
     return  [_speakerInfo isEqual:info.speakerInfo];
 }
 

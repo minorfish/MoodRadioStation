@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 @class FMInfo;
+@class RadioInfo;
 
 @interface TagListCellItem : NSObject
 

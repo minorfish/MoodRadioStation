@@ -20,5 +20,6 @@
 @property (nonatomic, strong) NSString *radiodDesc;
 
 @property (nonatomic, strong) MRSSpeakerInfo *speakerInfo;
+@property (nonatomic, strong) NSString *dataSize;
 
 @end
