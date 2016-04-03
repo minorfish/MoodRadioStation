@@ -50,9 +50,14 @@ const NSInteger kMaxLine = 15;
     [self.dataLoadSignal sendNext:@(self.fetchResultController.numberOfObject > 0)];
 }
 
-- (BOOL)deleteFileWithID:(long long)ID
+- (BOOL)deleteFileWithID:(long long)ID indexPath:(NSIndexPath *)indexPath
 {
-    return [self.downloadHelper deleteRadioWithID:ID];
+    BOOL success = [self.downloadHelper deleteRadioWithID:ID];
+    if (success) {
+        [self.fetchResultController removeObjectAtIndexPath:indexPath];
+        [_infoArray removeObjectAtIndex:indexPath.row];
+    }
+    return success;
 }
 
 - (NSArray *)infoArray
@@ -90,13 +95,17 @@ const NSInteger kMaxLine = 15;
                 
                 RadioInfo *info = [self.dao getCacheForRadioID:[key longLongValue]];
                 info.dataSize = obj;
-                [array addObject:info];
+                if (info) {
+                    [array addObject:info];
+                }
                 count++;
                 if (count >= kMaxLine) {
                     *stop = YES;
                 }
             }];
-            [_infoArray addObjectsFromArray:array];
+            if (array) {
+                [_infoArray addObjectsFromArray:array];
+            }
             [self.fetchResultController addObjectsInLastSection:array];
             self.isloading = NO;
             return [RACSignal empty];
@@ -118,7 +127,9 @@ const NSInteger kMaxLine = 15;
                 if (count >= self.fetchResultController.numberOfObject) {
                     RadioInfo *info = [self.dao getCacheForRadioID:[key longLongValue]];
                     info.dataSize = obj;
-                    [array addObject:info];
+                    if (info) {
+                        [array addObject:info];
+                    }
                 }
                 count++;
                 
@@ -126,7 +137,9 @@ const NSInteger kMaxLine = 15;
                     *stop = YES;
                 }
             }];
-            [_infoArray arrayByAddingObjectsFromArray:array];
+            if (array) {
+                [_infoArray arrayByAddingObjectsFromArray:array];
+            }
             [self.fetchResultController addObjectsInLastSection:array];
             self.isloading = NO;
             return [RACSignal empty];

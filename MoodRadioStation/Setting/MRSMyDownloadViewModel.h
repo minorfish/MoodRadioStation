@@ -20,6 +20,6 @@
 @property (nonatomic, readonly) RACSubject *dataLoadSignal;
 @property (nonatomic, readonly) NSArray *infoArray;
 
-- (BOOL)deleteFileWithID:(long long)ID;
+- (BOOL)deleteFileWithID:(long long)ID indexPath:(NSIndexPath *)indexPath;
 
 @end

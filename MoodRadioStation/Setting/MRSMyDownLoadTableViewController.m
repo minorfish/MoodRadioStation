@@ -25,6 +25,8 @@
 @property (nonatomic, strong) RadioPlayerViewController *playerVC;
 @property (nonatomic, strong) UIImageView *playerAnimationImageView;
 @property (nonatomic, assign) BOOL isPlaying;
+@property (nonatomic, assign) long long ID;
+@property (nonatomic, strong) NSIndexPath *deleteIndexPath;
 
 @end
 
@@ -144,13 +146,7 @@
                    title:(NSString *)title
                  speaker:(NSString *)speaker
 {
-    BOOL success = [self.viewModel deleteFileWithID:ID];
-    UIAlertView *alertView = nil;
-    if (success) {
-        alertView = [[UIAlertView alloc] initWithTitle:@"删除结果提示" message:[NSString stringWithFormat:@"%@ 主播：%@", title, speaker] delegate:self cancelButtonTitle:@"完成" otherButtonTitles:nil];
-    } else {
-        alertView = [[UIAlertView alloc] initWithTitle:@"删除结果提示" message:@"删除失败" delegate:self cancelButtonTitle:@"完成" otherButtonTitles:@"重新删除", nil];
-    }
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"删除提示" message:[NSString stringWithFormat:@"确定删除%@ 主播：%@？", title, speaker] delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
     [alertView show];
 }
 
@@ -235,17 +231,25 @@
     item.radioInfo = [self.viewModel.fetchResultController objectAtIndexPath:indexPath];
     cell.item = item;
     cell.didTap = ^(NSString *title, NSString *speaker, long long ID) {
-        
+        self.deleteIndexPath = indexPath;
+        self.ID = ID;
+        [self deleteFileWithID:ID title:title speaker:speaker];
     };
     return cell;
 }
+
 
 #pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     switch (buttonIndex) {
         case 1: {
-            self deleteFileWithID:<#(long long)#> title:<#(NSString *)#> speaker:<#(NSString *)#>
+            BOOL success = [self.viewModel deleteFileWithID:self.ID indexPath:self.deleteIndexPath];
+            [self.tableView reloadData];
+            if (!success) {
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"删除结果提示" message:@"删除失败" delegate:nil cancelButtonTitle:@"完成" otherButtonTitles:nil];
+                [alertView show];
+            }
         }
             break;
             

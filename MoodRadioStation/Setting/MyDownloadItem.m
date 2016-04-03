@@ -56,6 +56,7 @@
 
 - (void)setItem:(MyDownloadItem *)item
 {
+    _item = item;
     self.URLImageView.URLString = item.radioInfo.coverURL;
     self.titleLabel.text = item.radioInfo.title;
     self.speakLabel.text = [NSString stringWithFormat:@"主播 %@", item.radioInfo.speakerInfo.name];

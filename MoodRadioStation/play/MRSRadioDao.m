@@ -10,6 +10,7 @@
 #import "MRSCacheManager.h"
 #import "MRSCacheEntity.h"
 #import "RadioInfo.h"
+#import "MRSDownloadHelper.h"
 
 static NSString* MRSRadioKey = @"MRSRadio";
 
@@ -17,6 +18,8 @@ static NSString* MRSRadioKey = @"MRSRadio";
 
 @property (nonatomic, strong) MRSCacheManager *objectCahceManager;
 @property (nonatomic, strong) MRSCacheManager *URLCacheManager;
+
+@property (nonatomic, strong) MRSDownloadHelper *downloadHelper;
 
 @end
 
@@ -27,6 +30,12 @@ static NSString* MRSRadioKey = @"MRSRadio";
     NSError *error = nil;
     NSString *key = [NSString stringWithFormat:@"%@_%@", MRSRadioKey, @(ID)];
     MRSCacheEntity *entity = [self.objectCahceManager getCacheForKey:key error:&error];
+    
+    NSDictionary *downloadList = [self.downloadHelper getDownLoadRadios];
+    if ([downloadList objectForKey:[[NSNumber numberWithLongLong:ID] stringValue]]) {
+        return entity.cache;
+    }
+    
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *now  = [dateFormatter stringFromDate:[NSDate date]];
@@ -55,9 +64,16 @@ static NSString* MRSRadioKey = @"MRSRadio";
 - (NSData *)getRadioDataForRadioURL:(NSString *)radioURL
 {
     NSError *error = nil;
+    NSString *ID = [radioURL lastPathComponent];
     radioURL = [radioURL stringByReplacingOccurrencesOfString:@"/" withString:@"."];
     NSString *key = [NSString stringWithFormat:@"%@_%@", MRSRadioKey, radioURL];
     MRSCacheEntity *entity = [self.URLCacheManager getCacheForKey:key error:&error];
+    
+    NSDictionary *downloadList = [self.downloadHelper getDownLoadRadios];
+    if ([downloadList objectForKey:ID]) {
+        return entity.cache;
+    }
+    
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *now = [dateFormatter stringFromDate:[NSDate date]];
@@ -110,6 +126,14 @@ static NSString* MRSRadioKey = @"MRSRadio";
         _URLCacheManager = [MRSCacheManager defaultURLCacheManager];
     }
     return _URLCacheManager;
+}
+
+- (MRSDownloadHelper *)downloadHelper
+{
+    if (!_downloadHelper) {
+        _downloadHelper = [MRSDownloadHelper shareDownloadHelper];
+    }
+    return _downloadHelper;
 }
 
 @end
