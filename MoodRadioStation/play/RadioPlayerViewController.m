@@ -25,6 +25,7 @@
 #import "MRSCacheManager.h"
 
 const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.refrshProgress";
+const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompleted";
 
 @interface RadioPlayerViewController () <UIAlertViewDelegate>
 
@@ -55,6 +56,7 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 @implementation RadioPlayerViewController
 
 - (instancetype)initWithKeyString:(NSString *)keyString KeyVale:(NSString *)keyValue Rows:(NSNumber *)rows
+
 {
     self = [super init];
     if (self) {
@@ -91,6 +93,11 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
             [self refreshProgressView];
         }
     }];
+    [[[[NSNotificationCenter defaultCenter] rac_addObserverForName:RPPlayCompletedNotification object:nil] deliverOnMainThread] subscribeNext:^(id x) {
+        if ([x isKindOfClass:[NSNotification class]]) {
+            [self nextSong];
+        }
+    }];
     
     [self refresh];
 }
@@ -112,6 +119,10 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
 
 - (void)refresh
 {
+    self.shapeLayer.strokeEnd = 0;
+    self.progressX = @(0);
+    self.remainTime = @(0);
+    
     id reqestFMInfo = [self.requestFMInfoArray objectAtIndex:[self.currentFMIndex unsignedIntegerValue]];
     
     [self.viewModel stop];
@@ -309,16 +320,21 @@ const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.ref
         _nextButton.userInteractionEnabled = YES;
         UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] init];
         [tapGes.rac_gestureSignal subscribeNext:^(id x) {
-            if ([self.currentFMIndex longLongValue] + 1 < [self.requestFMInfoArray count]) {
-                self.currentFMIndex = @([self.currentFMIndex longLongValue] + 1);
-            } else {
-                [self.fmListViewModel.refreshListCommand
-                   execute:@(self.requestFMInfoArray.count)];
-            }
+            [self nextSong];
         }];
         [_nextButton addGestureRecognizer:tapGes];
     }
     return _nextButton;
+}
+
+- (void)nextSong
+{
+    if ([self.currentFMIndex longLongValue] + 1 < [self.requestFMInfoArray count]) {
+        self.currentFMIndex = @([self.currentFMIndex longLongValue] + 1);
+    } else {
+        [self.fmListViewModel.refreshListCommand
+         execute:@(self.requestFMInfoArray.count)];
+    }
 }
 
 - (UIImageView *)preButton

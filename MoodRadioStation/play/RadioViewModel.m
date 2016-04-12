@@ -16,6 +16,7 @@
 #import "MRSCacheEntity.h"
 
 extern const NSString* RPRefreshProgressViewNotification;
+extern const NSString* RPPlayCompletedNotification;
 
 @interface RadioViewModel()<AVAudioPlayerDelegate>
 
@@ -33,6 +34,7 @@ extern const NSString* RPRefreshProgressViewNotification;
 @property (nonatomic, strong) RACSubject *radioLoaded;
 
 @property (nonatomic, strong) AVAudioPlayer *player;
+
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
 @property (nonatomic, strong) RACDisposable *preRadioInfoRequest;
@@ -282,7 +284,7 @@ extern const NSString* RPRefreshProgressViewNotification;
     [self stop];
     self.progress = 0;
     // 播放结束通知UI发生变化
-    [[NSNotificationCenter defaultCenter] postNotificationName:RPRefreshProgressViewNotification object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RPPlayCompletedNotification object:nil];
 }
 
 

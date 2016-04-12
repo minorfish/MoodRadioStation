@@ -26,7 +26,7 @@
                          progressBlock:nil
                         completion:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                             @strongify(self);
-//                            self.image = image;
+                            self.image = image;
                         }];
 }
 

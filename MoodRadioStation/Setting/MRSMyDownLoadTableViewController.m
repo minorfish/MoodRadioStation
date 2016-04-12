@@ -24,7 +24,7 @@
 @property (nonatomic, strong) MRSMyDownloadViewModel *viewModel;
 @property (nonatomic, strong) RadioPlayerViewController *playerVC;
 @property (nonatomic, strong) UIImageView *playerAnimationImageView;
-@property (nonatomic, assign) BOOL isPlaying;
+@property (nonatomic, strong) NSNumber *isPlaying;
 @property (nonatomic, assign) long long ID;
 @property (nonatomic, strong) NSIndexPath *deleteIndexPath;
 

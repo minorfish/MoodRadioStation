@@ -142,7 +142,7 @@
     [tapGes.rac_gestureSignal subscribeNext:^(id x) {
         MRSSearchViewController *vc = [[MRSSearchViewController alloc] init];
         vc.placeholder = @"搜索主播名或节目名";
-        [self.navigationController pushViewController:vc animated:YES];
+        [self.navigationController pushViewController:vc animated:NO];
     }];
     [bgView addGestureRecognizer:tapGes];
 }
