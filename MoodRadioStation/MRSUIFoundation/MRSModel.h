@@ -22,4 +22,6 @@
 - (NSURLSessionDownloadTask *)getRadioWithURL:(NSString*)radioURL
                                      finished:(void(^)(NSURL *filePath, NSError *error))finished;
 
+- (NSURLSessionDataTask *)getRedictRadioURLWithURL:(NSString*)radioURL finished:(void(^)(NSURL *redirectPath, NSError *error))finished;
+
 @end

@@ -24,8 +24,11 @@
 - (instancetype)init{
     self = [super init];
     if (self) {
+        @weakify(self);
         [self.manager setTaskWillPerformHTTPRedirectionBlock:^NSURLRequest * _Nonnull(NSURLSession * _Nonnull session, NSURLSessionTask * _Nonnull task, NSURLResponse * _Nonnull response, NSURLRequest * _Nonnull request) {
-            return request;
+            @strongify(self);
+            self.redirectBlock(request.URL);
+            return nil;
         }];
     }
     return self;
@@ -71,6 +74,27 @@
         
         disposable = [RACSerialDisposable disposableWithBlock:^{
             [requestOperation cancel];
+        }];
+        return disposable;
+    }];
+}
+
+- (RACSignal *)getRedirectRadioURL
+{
+    @weakify(self);
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        @strongify(self);
+        __block RACDisposable *disposable = nil;
+        NSURLSessionDataTask *task = [self getRedictRadioURLWithURL:self.radioURL finished:^(NSURL *redirectPath, NSError *error) {
+            if (!disposable.disposed) {
+                if (redirectPath) {
+                    [subscriber sendNext:redirectPath];
+                }
+            }
+            [subscriber sendCompleted];
+        }];
+        disposable = [RACDisposable disposableWithBlock:^{
+            [task cancel];
         }];
         return disposable;
     }];

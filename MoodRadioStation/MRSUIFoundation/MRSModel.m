@@ -45,6 +45,23 @@
     return op;
 }
 
+- (NSURLSessionDataTask *)getRedictRadioURLWithURL:(NSString*)radioURL finished:(void(^)(NSURL *redirectPath, NSError *error))finished
+{
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:radioURL]];
+    NSURLSessionDownloadTask *downloadTask = [_manager downloadTaskWithRequest:request
+                                                                      progress:nil
+                                                                   destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
+                                                                       NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+                                                                       return [documentsDirectoryURL URLByAppendingPathComponent:[response suggestedFilename]];
+                                                                   } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
+                                                                       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                                                                       NSDictionary *dict = (NSDictionary *)[httpResponse allHeaderFields];
+                                                                       NSURL *URL = [dict objectForKey:@"Location"];
+                                                                       finished(URL, error);           }];
+    [downloadTask resume];
+    return downloadTask;
+}
+
 - (NSURLSessionDownloadTask *)getRadioWithURL:(NSString*)radioURL finished:(void(^)(NSURL *filePath, NSError *error))finished
 {
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:radioURL]];

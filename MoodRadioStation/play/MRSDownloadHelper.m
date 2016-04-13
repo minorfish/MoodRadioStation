@@ -71,7 +71,12 @@
     if (rootDict[key]) {
         @synchronized(self) {
             [rootDict removeObjectForKey:key];
+            NSString *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).lastObject;
+            NSString *movePath = [document stringByAppendingPathComponent:
+                                  [NSString stringWithFormat:@"%@.mp3", @(ID)]];
             [rootDict writeToFile:downFilePath atomically:YES];
+            [[NSFileManager defaultManager] removeItemAtPath:movePath
+                                                       error:nil];
         }
     } else {
         return NO;

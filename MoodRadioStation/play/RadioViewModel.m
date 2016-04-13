@@ -14,26 +14,30 @@
 #import "MRSRadioDao.h"
 #import "MRSDownloadHelper.h"
 #import "MRSCacheEntity.h"
+#import "MRSLoaderURLManager.h"
+#import "MRSStreamPlayer.h"
 
 extern const NSString* RPRefreshProgressViewNotification;
 extern const NSString* RPPlayCompletedNotification;
 
-@interface RadioViewModel()<AVAudioPlayerDelegate>
+@interface RadioViewModel()<MRSStreamPlayerDelegate>
 
 @property (nonatomic, strong) RadioInfoModel *model;
 @property (nonatomic, strong) MRSRadioDao *dao;
 
 @property (nonatomic, strong) RACCommand *getRadioInfoCommand;
-@property (nonatomic, strong) RACCommand *getRadioCommand;
+//@property (nonatomic, strong) RACCommand *getRadioCommand;
+@property (nonatomic, strong) RACCommand *playRadioCommand;
 
-@property (nonatomic, assign) float progress;
+@property (nonatomic, assign) CGFloat progress;
+@property (nonatomic, assign) CGFloat loadedProgress;
+
 @property (nonatomic, assign) NSTimeInterval durationTime;
 @property (nonatomic, strong) NSData *radioData;
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, strong) RACSubject *radioInfoLoaded;
-@property (nonatomic, strong) RACSubject *radioLoaded;
 
-@property (nonatomic, strong) AVAudioPlayer *player;
+@property (nonatomic, strong) MRSStreamPlayer *player;
 
 @property (nonatomic, strong) CADisplayLink *displayLink;
 
@@ -61,7 +65,6 @@ extern const NSString* RPPlayCompletedNotification;
     [self.displayLink invalidate];
     self.displayLink = nil;
     [self.radioInfoLoaded sendCompleted];
-    [self.radioLoaded sendCompleted];
 }
 
 - (RACCommand *)getRadioInfoCommand
@@ -101,57 +104,71 @@ extern const NSString* RPPlayCompletedNotification;
     return _getRadioInfoCommand;
 }
 
-- (RACCommand *)getRadioCommand
+- (RACCommand *)playRadioCommand
 {
     @weakify(self);
-    _getRadioCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSString *radioURL) {
+    
+    _playRadioCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSString *radioURL) {
         @strongify(self);
-        NSString *url = [radioURL copy];
-        if (self.preRadioRequest) {
-            [self.preRadioRequest dispose];
-        }
-        [self.radioLoaded sendNext:@(NO)];
-        NSData *radioData = [self.dao getRadioDataForRadioURL:url];
-        if (radioData) {
-            [self playGetReady:radioData];
-            return [RACSignal empty];
-        }
-        self.error = nil;
-        self.model.radioURL = radioURL;
-        self.preRadioRequest = [[[self.model getRadio] catch:^RACSignal *(NSError *error) {
-            self.error = error;
-            return [RACSignal empty];
-        }] subscribeNext:^(NSURL *filePath) {
+        if (_radioInfo.filePath) {
+            NSURLComponents *realURLComponents = [[NSURLComponents alloc] initWithString:_radioInfo.filePath];
+            realURLComponents.scheme = @"file";
+            [self.player playWithURL:[realURLComponents URL]];
+        } else {
+            self.model.radioURL = radioURL;
+            [[self.model getRadio] subscribeNext:^(id x) {}];
+            self.model.redirectBlock = ^(NSURL *redirectURL) {
             @strongify(self);
-            NSError *error = nil;
-            NSData *songFile = [[NSData alloc] initWithContentsOfURL:filePath options:NSDataReadingMappedIfSafe error:&error];
-            if (error) {
-                _radioData = nil;
-                return;
-            }
-             _radioData = songFile;
-            [self.dao saveRadioData:songFile ForRadioURL:url];
-            NSLog(@"radioCommand\n");
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self playGetReady:songFile];
-            });
-        }];
+                [self.player playWithURL:redirectURL];
+            };
+        }
         return [RACSignal empty];
     }];
-    return _getRadioCommand;
+    return _playRadioCommand;
 }
 
-- (void)playGetReady:(NSData *)data {
-    NSError *error = nil;
-    self.player = [[AVAudioPlayer alloc] initWithData:data error:&error];
-    if (!error) {
-        self.player.delegate = self;
-        self.player.currentTime = 0;
-        self.durationTime = self.player.duration;
-        [self.player prepareToPlay];
-        [self.radioLoaded sendNext:@(YES)];
+//- (RACCommand *)getRadioCommand
+//{
+//    @weakify(self);
+//    _getRadioCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(NSString *radioURL) {
+//        @strongify(self);
+//        NSString *url = [radioURL copy];
+//        if (self.preRadioRequest) {
+//            [self.preRadioRequest dispose];
+//        }
+//        [self.radioLoaded sendNext:@(NO)];
+//        NSData *radioData = [self.dao getRadioDataForRadioURL:url];
+//        if (radioData) {
+//            return [RACSignal empty];
+//        }
+//        self.error = nil;
+//        self.model.radioURL = radioURL;
+//        self.preRadioRequest = [[[self.model getRadio] catch:^RACSignal *(NSError *error) {
+//            self.error = error;
+//            return [RACSignal empty];
+//        }] subscribeNext:^(NSURL *filePath) {
+//            @strongify(self);
+//            NSError *error = nil;
+//            NSData *songFile = [[NSData alloc] initWithContentsOfURL:filePath options:NSDataReadingMappedIfSafe error:&error];
+//            if (error) {
+//                _radioData = nil;
+//                return;
+//            }
+//             _radioData = songFile;
+//            [self.dao saveRadioData:songFile ForRadioURL:url];
+//        }];
+//        return [RACSignal empty];
+//    }];
+//    return _getRadioCommand;
+//}
+
+- (MRSStreamPlayer *)player
+{
+    if (!_player) {
+        _player = [MRSStreamPlayer sharedPlayer];
+        _player.delegate = self;
     }
-    self.error = error;
+    return _player;
 }
 
 - (CADisplayLink *)displayLink
@@ -162,14 +179,6 @@ extern const NSString* RPPlayCompletedNotification;
         _displayLink.paused = NO;
     }
     return _displayLink;
-}
-
-- (RACSubject *)radioLoaded
-{
-    if (!_radioLoaded) {
-        _radioLoaded = [RACSubject subject];
-    }
-    return _radioLoaded;
 }
 
 - (RACSubject *)radioInfoLoaded
@@ -197,17 +206,28 @@ extern const NSString* RPPlayCompletedNotification;
 
 - (BOOL)download
 {
-    MRSCacheEntity *entity = [self.dao getCacheForRadioID:_radioInfo.radioID];
-    if (!entity) {
+    if (!self.player.isRequestFinished) {
+        return NO;
+    }
+    
+    NSString *document = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).lastObject;
+    NSString *filePath = [document stringByAppendingPathComponent:@"tmp.mp3"];
+    
+    NSString *movePath = [document stringByAppendingPathComponent:
+                          [NSString stringWithFormat:@"%@.mp3", @(_radioInfo.radioID)]];
+    BOOL isSuccess = [[NSFileManager defaultManager] copyItemAtPath:filePath toPath:movePath error:nil];
+    if (!isSuccess) {
+        return NO;
+    }
+    // get from cache
+    _radioInfo.filePath = movePath;
+    id cache = [self.dao getCacheForRadioID:_radioInfo.radioID];
+    if (!cache || ![((RadioInfo *)cache).filePath isEqualToString:movePath]) {
         [self.dao saveCache:_radioInfo ForID:_radioInfo.radioID];
     }
     
-    NSData *data = [self.dao getRadioDataForRadioURL:_radioInfo.URL];
-    if (!data) {
-        return NO;
-    }
-    [self.dao savePersistentRadioData:data ForRadioURL:_radioInfo.URL];
-    [self.downloadHelper saveRadioSize:[self translateFileSizeByte:data.length] forRadioID:_radioInfo.radioID];
+    NSData *fileData = [NSData dataWithContentsOfFile:movePath];
+    [self.downloadHelper saveRadioSize:[self translateFileSizeByte:fileData.length] forRadioID:_radioInfo.radioID];
     return YES;
 }
 
@@ -217,6 +237,7 @@ extern const NSString* RPPlayCompletedNotification;
         return;
     }
     self.progress = self.player.currentTime / self.player.duration;
+    self.loadedProgress = self.player.loadedProgress;
     // 通知根据时间进度更新UI
     [[NSNotificationCenter defaultCenter] postNotificationName:RPRefreshProgressViewNotification object:nil];
 }
@@ -232,24 +253,19 @@ extern const NSString* RPPlayCompletedNotification;
 #pragma palyerAction
 - (void)play
 {
-    if (!self.player.playing) {
-        [self.player play];
-        self.displayLink.paused = NO;
-    }
+    [self.player resume];
+    self.displayLink.paused = NO;
 }
 
 - (void)pause
 {
-    if (self.player.playing) {
-        [self.player pause];
-        self.displayLink.paused = YES;
-    }
+    [self.player pause];
+    self.displayLink.paused = YES;
 }
 
 - (void)stop
 {
     [self.player stop];
-    self.player.currentTime = 0;
     self.player = nil;
 }
 
@@ -261,11 +277,24 @@ extern const NSString* RPPlayCompletedNotification;
     return 0;
 }
 
+- (NSTimeInterval)durationTime
+{
+    if (self.player) {
+        return self.player.duration;
+    }
+    return 0;
+}
+
 - (void)setCurrentTime:(NSTimeInterval)currentTime
 {
     if (self.player) {
-        self.player.currentTime = currentTime;
+        [self.player seekToTime:currentTime];
     }
+}
+
+- (MRSStreamPlayerState)playerState
+{
+    return self.player.state;
 }
 
 - (NSString *)formatTime:(int)num
@@ -278,14 +307,12 @@ extern const NSString* RPPlayCompletedNotification;
     return [NSString stringWithFormat:@"%02d:%02d",min,sec];
 }
 
-#pragma AVAudioPlayerDelegate
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+#pragma MRSStreamPlayerDelegate
+- (void)audioPlayerDidFinishPlaying
 {
     [self stop];
-    self.progress = 0;
     // 播放结束通知UI发生变化
     [[NSNotificationCenter defaultCenter] postNotificationName:RPPlayCompletedNotification object:nil];
 }
-
 
 @end

@@ -23,6 +23,7 @@
 #import "FMInfo.h"
 #import "FMListViewModel.h"
 #import "MRSCacheManager.h"
+#import "MRSStreamPlayer.h"
 
 const NSString* RPRefreshProgressViewNotification = @"com.minor.notification.refrshProgress";
 const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompleted";
@@ -46,6 +47,7 @@ const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompl
 @property (nonatomic, strong) UILabel *timeView;
 @property (nonatomic, strong) UIImageView *progressBtn;
 @property (nonatomic, strong) CAShapeLayer *shapeLayer;
+@property (nonatomic, strong) CAShapeLayer *loadedProgressLayer;
 
 @property (nonatomic, strong) MRSSpeakerDescView *speakerDescView;
 
@@ -131,11 +133,11 @@ const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompl
     if ([reqestFMInfo isKindOfClass:[FMInfo class]]) {
         FMInfo *info = (FMInfo *)reqestFMInfo;
         [self.viewModel.getRadioInfoCommand execute:@(info.ID)];
-        [self.viewModel.getRadioCommand execute:info.mediaURL];
+        [self.viewModel.playRadioCommand execute:info.mediaURL];
     } else if ([reqestFMInfo isKindOfClass:[RadioInfo class]]){
         RadioInfo *info = (RadioInfo *)reqestFMInfo;
         self.viewModel.radioInfo = info;
-        [self.viewModel.getRadioCommand execute:info.URL];
+        [self.viewModel.playRadioCommand execute:info.URL];
         [self.viewModel.radioInfoLoaded sendNext:@(YES)];
     }
 }
@@ -143,7 +145,9 @@ const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompl
 - (void)bind
 {
     @weakify(self);
-    [RACObserve(self, isPlaying) subscribeNext:^(NSNumber *isPlaying)  {
+    RAC(self.loadedProgressLayer, strokeStart) = RACObserve(self.shapeLayer, strokeEnd);
+    
+    [[RACObserve(self, isPlaying) ignore:nil]subscribeNext:^(NSNumber *isPlaying)  {
         @strongify(self);
         if ([isPlaying boolValue]) {
             [self.viewModel play];
@@ -183,12 +187,10 @@ const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompl
         }];
     }];
     
-    [[RACSignal combineLatest:@[
-                                self.viewModel.radioInfoLoaded ,
-                                self.viewModel.radioLoaded
-                                ]] subscribeNext:^(RACTuple *array) {
+    
+    [self.viewModel.radioInfoLoaded subscribeNext:^(id x) {
         @strongify(self);
-        if (!self.viewModel.error && [array objectAtIndex:0] && [array objectAtIndex:1]) {
+        if (!self.viewModel.error) {
             [self refreshViewWithData];
             self.isLoading = @(NO);
             self.isPlaying = @(YES);
@@ -304,6 +306,15 @@ const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompl
     return _shapeLayer;
 }
 
+- (CAShapeLayer *)loadedProgressLayer
+{
+    if (!_loadedProgressLayer) {
+        _loadedProgressLayer = [self createCAShapeLayerWithColor:[UIColor blueColor] LineWidth:0.5];
+        _shapeLayer.strokeEnd = 0;
+    }
+    return _loadedProgressLayer;
+}
+
 - (UIImageView *)playOrPauseButton
 {
     if (!_playOrPauseButton) {
@@ -372,6 +383,7 @@ const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompl
 
             UIView *layerView = [[UIView alloc] initWithFrame:self.shapeLayer.bounds];
             [layerView.layer addSublayer:[self createCAShapeLayerWithColor:[UIColor grayColor] LineWidth:0.5]];
+            [layerView.layer addSublayer:self.loadedProgressLayer];
             [layerView.layer addSublayer:self.shapeLayer];
             _progressBtn = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"progress_btn"]];
             _progressBtn.userInteractionEnabled = YES;
@@ -519,6 +531,7 @@ const NSString* RPPlayCompletedNotification = @"com.minor.nitification.playCompl
 - (void)refreshProgressView
 {
     self.shapeLayer.strokeEnd = self.viewModel.progress;
+    self.loadedProgressLayer.strokeEnd = self.viewModel.loadedProgress;
     self.remainTime = @((1 - self.viewModel.progress) * self.viewModel.durationTime);
     self.progressX = @(self.viewModel.progress * SCREEN_WIDTH);
 }

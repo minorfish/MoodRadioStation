@@ -11,6 +11,7 @@
 #import "MRSCacheEntity.h"
 #import "RadioInfo.h"
 #import "MRSDownloadHelper.h"
+#import "MRSPersistentCacheManager.h"
 
 static NSString* MRSRadioKey = @"MRSRadio";
 

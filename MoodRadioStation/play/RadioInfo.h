@@ -21,5 +21,6 @@
 
 @property (nonatomic, strong) MRSSpeakerInfo *speakerInfo;
 @property (nonatomic, strong) NSString *dataSize;
+@property (nonatomic, strong) NSString *filePath;
 
 @end
