@@ -77,13 +77,13 @@ extern const NSString* RPPlayCompletedNotification;
         }
         [self.radioInfoLoaded sendNext:@(NO)];
         
-        // get from cache
-        id cache = [self.dao getCacheForRadioID:[ID longLongValue]];
-        if (cache) {
-            self.radioInfo = cache;
-            [self.radioInfoLoaded sendNext:@(YES)];
-            return [RACSignal empty];
-        }
+//        // get from cache
+//        id cache = [self.dao getCacheForRadioID:[ID longLongValue]];
+//        if (cache) {
+//            self.radioInfo = cache;
+//            [self.radioInfoLoaded sendNext:@(YES)];
+//            return [RACSignal empty];
+//        }
         self.model.ID = ID;
         self.error = nil;
         
@@ -95,7 +95,7 @@ extern const NSString* RPPlayCompletedNotification;
             if (!value)
                 return;
             self.radioInfo = value;
-            [self.dao saveCache:value ForID:[ID longLongValue]];
+//            [self.dao saveCache:value ForID:[ID longLongValue]];
             [self.radioInfoLoaded sendNext:@(YES)];
         }];
         return [RACSignal empty];

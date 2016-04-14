@@ -19,13 +19,45 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/play/MRSStreamPlayer.m"
-            timestampString = "482247829.949609"
+            filePath = "MoodRadioStation/play/RadioViewModel.m"
+            timestampString = "482290177.519094"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "291"
-            endingLineNumber = "291"
-            landmarkName = "-playerItemDidPlayToEnd:"
+            startingLineNumber = "223"
+            endingLineNumber = "223"
+            landmarkName = "-download"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MoodRadioStation/play/MRSLoaderURLManager.m"
+            timestampString = "482290599.112872"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "135"
+            endingLineNumber = "135"
+            landmarkName = "-resourceLoader:shouldWaitForLoadingOfRequestedResource:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MoodRadioStation/play/MRSLoaderURLManager.m"
+            timestampString = "482290628.568929"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "127"
+            endingLineNumber = "127"
+            landmarkName = "-dealWithLoadingRequset:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -36,12 +68,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MoodRadioStation/play/RadioViewModel.m"
-            timestampString = "482247724.926186"
+            timestampString = "482291031.568566"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "313"
-            endingLineNumber = "313"
-            landmarkName = "-audioPlayerDidFinishPlaying"
+            startingLineNumber = "114"
+            endingLineNumber = "114"
+            landmarkName = "-playRadioCommand"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -51,46 +83,46 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/play/RadioPlayerViewController.m"
-            timestampString = "482247749.210442"
+            filePath = "MoodRadioStation/play/MRSRadioRequestTask.m"
+            timestampString = "482292608.112772"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
-            landmarkName = "-viewDidLoad"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "-connection:didFailWithError:"
             landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/play/MRSDownloadHelper.m"
-            timestampString = "482248800.284255"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
-            landmarkName = "-deleteRadioWithID:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MoodRadioStation/play/MRSDownloadHelper.m"
-            timestampString = "482248801.978879"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
-            landmarkName = "-deleteRadioWithID:"
-            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[MRSRadioRequestTask connection:didFailWithError:]"
+                  moduleName = "MoodRadioStation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/minor/MoodRadioStation/MoodRadioStation/play/MRSRadioRequestTask.m"
+                  timestampString = "482292925.62184"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "154"
+                  endingLineNumber = "154"
+                  offsetFromSymbolStart = "140">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__51-[MRSRadioRequestTask connection:didFailWithError:]_block_invoke"
+                  moduleName = "MoodRadioStation"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/minor/MoodRadioStation/MoodRadioStation/play/MRSRadioRequestTask.m"
+                  timestampString = "482292925.62207"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "154"
+                  endingLineNumber = "154"
+                  offsetFromSymbolStart = "12">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
